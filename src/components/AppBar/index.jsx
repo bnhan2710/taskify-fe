@@ -18,13 +18,14 @@ import Profiles from './Menus/Profiles'
 
 function AppBar() {
   return (
-    <Box px={2} sx={{
+    <Box sx={{
       backgroundColor:'white',
       width: '100%',
       height: (theme) => theme.trello.appBarHeight,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
+      padding:2,
       gap: 2,
       overflowX: 'auto'
     }}>
