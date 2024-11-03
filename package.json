@@ -1,10 +1,10 @@
 {
-  "name": "trello-fe",
+  "name": "taskify-fe",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "author": "bnhan2710",
-  "description": "Trello Frontend",
+  "description": "Taskify Frontend",
   "scripts": {
     "dev": "vite --host",
     "build": "vite build --base=./",

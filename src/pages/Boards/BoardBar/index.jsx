@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
-import DashboardIcon from '@mui/icons-material/Dashboard'
+import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
 import VpnLockIcon from '@mui/icons-material/VpnLock'
 import AddToDriveIcon from '@mui/icons-material/AddToDrive'
 import BoltIcon from '@mui/icons-material/Bolt'
@@ -12,13 +12,13 @@ import Button from '@mui/material/Button'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 const MENU_STYLES ={
-  color: 'primary.main',
-  bgcolor: 'white',
+  color: 'white',
+  bgcolor: 'transparent',
   border: 'none',
   paddingX: '5px',
   borderRadius: '4px',
   '& .MuiChip-icon': {
-    color: 'primary.main'
+    color: 'white'
   },
   '&:hover':{
     bgcolor:'primary.50'
@@ -31,20 +31,21 @@ function BoardBar() {
       sx={{
         backgroundColor: 'white',
         width: '100%',
-        height: (theme) => theme.trello.boardBarHeight,
+        height: (theme) => theme.taskify.boardBarHeight,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 2,
         padding: 2,
         overflowX: 'auto',
-        borderTop: '1px solid #00bfa5'
+        bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#0B3F75' : '#1565c0'),
+        borderBottom: '1px solid #E0E0E0'
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Chip
           sx={MENU_STYLES}
-          icon={<DashboardIcon />}
+          icon={<SpaceDashboardIcon />}
           label="Bao Nhan Board"
           clickable
         />
@@ -80,7 +81,8 @@ function BoardBar() {
             '& .MuiAvatar-root':{
               width:34,
               height:34,
-              fontSize:16
+              fontSize:16,
+              border: 'none'
             }
           }}
         >
@@ -105,7 +107,7 @@ function BoardBar() {
               src="https://avatars.githubusercontent.com/u/130585782?v=4" />
           </Tooltip>
         </AvatarGroup>
-        <Button sx={{ display:'flex', gap:0.5 }} variant="outlined"><PersonAddAltIcon size="small" />Share</Button>
+        <Button sx={{ display:'flex', gap:0.5, color:'white', borderColor:'white', '&:hover':{ borderColor:'white' } }} variant="outlined"><PersonAddAltIcon size="small" />Share</Button>
         <MoreHorizIcon/>
       </Box>
     </Box>
