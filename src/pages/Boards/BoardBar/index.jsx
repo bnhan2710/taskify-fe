@@ -39,7 +39,8 @@ function BoardBar() {
         padding: 2,
         overflowX: 'auto',
         bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#0B3F75' : '#1565c0'),
-        borderBottom: '1px solid #E0E0E0'
+        borderBottom: '1px solid #E0E0E0',
+        opacity: 0.9
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -76,16 +77,34 @@ function BoardBar() {
           clickable
         />
         <AvatarGroup
-          max={3}
+          max={5}
           sx = {{
             '& .MuiAvatar-root':{
               width:34,
               height:34,
               fontSize:16,
-              border: 'none'
+              border: 'none',
+              color:'white',
+              cursor:'pointer',
+              '&:first-of-type':{ color:'#a4b0be' }
             }
           }}
         >
+          <Tooltip title ="Bao Nhan">
+            <Avatar
+              alt="Remy Sharp"
+              src="https://avatars.githubusercontent.com/u/130585782?v=4" />
+          </Tooltip>
+          <Tooltip title ="Bao Nhan">
+            <Avatar
+              alt="Remy Sharp"
+              src="https://avatars.githubusercontent.com/u/130585782?v=4" />
+          </Tooltip>
+          <Tooltip title ="Bao Nhan">
+            <Avatar
+              alt="Remy Sharp"
+              src="https://avatars.githubusercontent.com/u/130585782?v=4" />
+          </Tooltip>
           <Tooltip title ="Bao Nhan">
             <Avatar
               alt="Remy Sharp"
