@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Box from '@mui/material/Box'
-import SelectMode from '~/components/SelectMode'
+import SelectMode from '~/components/SelectMode/SelectMode'
 import { ReactComponent as MainIcon } from '~/assets/main-logo.svg'
 import SvgIcon from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
