@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import List from './List/List'
 import Button from '@mui/material/Button'
 import AddIcon from '@mui/icons-material/Add'
-function ColumnLists() {
+function ColumnLists({ lists }) {
 
   return (
     <Box
@@ -15,15 +15,9 @@ function ColumnLists() {
         overflowY: 'hidden',
         '*::-webkit-scrollbar-track': { m:2 }
       }}>
-      {/* box01 */}
-      <List />
-      {/* box02 */}
-      <List />
-      <List />
-      <List />
-      <List />
-
-
+      { lists?.map( list => 
+        <List key={list.id} list={list}/>
+      )}
 
       {/* add new List Button */}
       <Box sx ={{

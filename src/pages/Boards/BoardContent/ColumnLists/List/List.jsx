@@ -19,7 +19,7 @@ import DragHandleIcon from '@mui/icons-material/DragHandle'
 import ListCard from './ListCards/ListCard'
 
 
-function List() {
+function List({ list }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
 
@@ -61,7 +61,8 @@ function List() {
           color: (theme) => (theme.palette.mode === 'dark' ? '#B6C2CF' : '#B6C2CF')
         }}>
 
-    List Title</Typography>
+          {list?.title}
+        </Typography>
         <Box>
           <Tooltip title= "More options">
             <KeyboardArrowDownIcon
@@ -138,7 +139,7 @@ function List() {
       </Box>
 
       {/* List card */}
-      <ListCard />
+      <ListCard cards = {list?.cards}/>
       {/* Footer */}
       <Box
         sx={{

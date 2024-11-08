@@ -11,6 +11,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+import { capitalizeFirstLetter } from '~/utils/formatter'
 const MENU_STYLES ={
   color: 'white',
   bgcolor: 'transparent',
@@ -25,7 +26,8 @@ const MENU_STYLES ={
   }
 }
 
-function BoardBar() {
+function BoardBar({ board }) {
+
   return (
     <Box
       sx={{
@@ -46,13 +48,13 @@ function BoardBar() {
         <Chip
           sx={MENU_STYLES}
           icon={<SpaceDashboardIcon />}
-          label="Bao Nhan Board"
+          label={board?.title}
           clickable
         />
         <Chip
           sx={MENU_STYLES}
           icon={<VpnLockIcon />}
-          label="Workspace visible"
+          label= {capitalizeFirstLetter(board?.type)}
           clickable
         />
         <Chip

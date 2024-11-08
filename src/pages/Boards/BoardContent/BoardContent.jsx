@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import ColumnLists from './ColumnLists/ColumnsLists'
-function BoardContent() {
+function BoardContent({ board }) {
   return (
     <Box
       sx={{
@@ -14,7 +14,7 @@ function BoardContent() {
         overflowY: 'hidden'
       }}
     >
-      <ColumnLists />
+      <ColumnLists lists = {board?.lists} />
     </Box>
   )
 }
