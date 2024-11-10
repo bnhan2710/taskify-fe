@@ -5,9 +5,9 @@ export const mockData = {
     title: 'Bao Nhan Board',
     description: 'Taskify Board Description',
     type: 'public', // 'private'
-    ownerIds: [], // Những users là Admin của board
-    memberIds: [], // Những users là member bình thường của board
-    listOrderIds: ['list-id-03', 'list-id-01', 'list-id-02'], // Thứ tự sắp xếp / vị trí của các lists trong 1 boards
+    ownerIds: [],
+    memberIds: [],
+    listOrderIds: ['list-id-03', 'list-id-01', 'list-id-02'],
     lists: [
       {
         id: 'list-id-01',
@@ -41,9 +41,9 @@ export const mockData = {
         title: 'Inprogress list 02',
         cardOrderIds: ['card-id-08', 'card-id-09', 'card-id-10'],
         cards: [
-          { id: 'card-id-08', boardId: 'board-id-01', listId: 'list-id-02', title: 'Title of card 08', description: null, cover: null, memberIds: [], comments: [], attachments: [] },
-          { id: 'card-id-09', boardId: 'board-id-01', listId: 'list-id-02', title: 'Title of card 09', description: null, cover: null, memberIds: [], comments: [], attachments: [] },
-          { id: 'card-id-10', boardId: 'board-id-01', listId: 'list-id-02', title: 'Title of card 10', description: null, cover: null, memberIds: [], comments: [], attachments: [] }
+          { id: 'card-id-08', boardId: 'board-id-01', listId: 'list-id-02', title: 'Title of card 08', description: null, cover: null, checklist:[], comments: [], attachments: [] },
+          { id: 'card-id-09', boardId: 'board-id-01', listId: 'list-id-02', title: 'Title of card 09', description: null, cover: null, checklist:[], comments: [], attachments: [] },
+          { id: 'card-id-10', boardId: 'board-id-01', listId: 'list-id-02', title: 'Title of card 10', description: null, cover: null, checklist:[], comments: [], attachments: [] }
         ]
       },
       {

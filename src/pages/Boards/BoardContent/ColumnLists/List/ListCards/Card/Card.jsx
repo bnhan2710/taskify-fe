@@ -7,18 +7,31 @@ import CardMedia from '@mui/material/CardMedia'
 import CommentIcon from '@mui/icons-material/Comment'
 import AttachmentIcon from '@mui/icons-material/Attachment'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+
 function Card({ card }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging
+  } = useSortable({ id: card.id, data: { ...card } })
+  const dndkitCardStyles = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1
+  }
 
   const shouldShowCardActtions = () => {
     return !!card.comments?.length || !!card.attachments?.length || !!card.checklist?.length
   }
 
   return (
-    <MuiCard sx={{
-      cursor: 'pointer',
-      boxShadow: '0px 1px 1px rgba(0,0,0,0.2)',
-      overflow: 'unset'
-    }}>
+    <MuiCard ref={setNodeRef} style = {dndkitCardStyles} {...attributes} {...listeners}
+      sx={{
+
+        cursor: 'pointer',
+        boxShadow: '0px 1px 1px rgba(0,0,0,0.2)',
+        overflow: 'unset',
+        borderRadius: '12px'
+      }}>
       {card?.cover && <CardMedia sx={{ height: 140 }} image={card.cover}/>}
 
       <CardContent sx={{ p:1.5, '&:last-child':{ p:1.5 } }}>

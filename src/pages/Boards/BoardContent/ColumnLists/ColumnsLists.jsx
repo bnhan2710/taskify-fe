@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import AddIcon from '@mui/icons-material/Add'
 import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 function ColumnLists({ lists }) {
+
   // SortableContet require items is array with form ['id-1', 'id-2', 'id-3', ...]
   // if wrong format we can drag and drop but not don't see the animation
 
@@ -25,7 +26,7 @@ function ColumnLists({ lists }) {
 
         {/* add new List Button */}
         <Box sx ={{
-          minWidth:'200px',
+          minWidth:'250px',
           maxWidth:'300px',
           mx:2,
           borderRadius: '6px',

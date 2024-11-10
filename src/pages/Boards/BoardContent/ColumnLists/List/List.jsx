@@ -22,12 +22,14 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
 function List({ list }) {
-  const { attributes, listeners, setNodeRef, transform, transition
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging
   } = useSortable({ id: list.id, data: { ...list } })
 
   const dndkitListStyles = {
     transform: CSS.Translate.toString(transform),
-    transition
+    transition,
+    height:'100%',
+    opacity: isDragging ? 0.5 : undefined
   }
 
 
@@ -44,136 +46,134 @@ function List({ list }) {
   }
   const orderedCards = mapOrder(list?.cards, list?.cardOrderIds, 'id')
   return (
-    <Box
-      ref={setNodeRef}
-      style = {dndkitListStyles}
-      {...attributes}
-      {...listeners}
-      sx={{
-        minWidth: '300px',
-        maxWidth: '300px',
-        bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#101204' : '#F4F5F7'),
-        ml: 2,
-        borderRadius: '6px',
-        height: 'fit-content',
-        maxHeight: (theme) => `calc(1${theme.taskify.boardContentHeight} - ${theme.spacing(5)})`
-      }}
-    >
-      {/* Box list header */}
-      <Box
+    <div ref={setNodeRef} style = {dndkitListStyles} {...attributes} >
+      <Box {...listeners}
         sx={{
-          height:(theme) => theme.taskify.listHeaderHeight,
-          p: 2,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
+          minWidth: '300px',
+          maxWidth: '300px',
+          bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#101204' : '#F4F5F7'),
+          ml: 2,
+          borderRadius: '12px',
+          height: 'fit-content',
+          maxHeight: (theme) => `calc(1${theme.taskify.boardContentHeight} - ${theme.spacing(5)})`
         }}
       >
-        <Typography variant="h6" sx={{
-          fontSize: '1rem',
-          fontWeight: 'bold',
-          cursor: 'pointer',
-          color: (theme) => (theme.palette.mode === 'dark' ? '#B6C2CF' : '#B6C2CF')
-        }}>
+        {/* Box list header */}
+        <Box
+          sx={{
+            height:(theme) => theme.taskify.listHeaderHeight,
+            p: 2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Typography variant="h6" sx={{
+            fontSize: '1rem',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            color: (theme) => (theme.palette.mode === 'dark' ? '#B6C2CF' : '#B6C2CF')
+          }}>
 
-          {list?.title}
-        </Typography>
-        <Box>
-          <Tooltip title= "More options">
-            <KeyboardArrowDownIcon
-              sx={{
-                color: '#9EACBA',
-                cursor: 'pointer',
-                '&:hover': {
-                  bgcolor: '#282F27',
-                  borderRadius: '4px',
-                  alignItems: 'center'
-                }
+            {list?.title}
+          </Typography>
+          <Box>
+            <Tooltip title= "More options">
+              <KeyboardArrowDownIcon
+                sx={{
+                  color: '#9EACBA',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    bgcolor: '#282F27',
+                    borderRadius: '4px',
+                    alignItems: 'center'
+                  }
+                }}
+                id="basic-LIST-dropdown"
+                aria-controls={open ? 'basic-menu-LIST-dropdown' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                onClick={handleClick}
+              />
+            </Tooltip>
+            <Menu
+              sx ={{
               }}
-              id="basic-LIST-dropdown"
-              aria-controls={open ? 'basic-menu-LIST-dropdown' : undefined}
-              aria-haspopup="true"
-              aria-expanded={open ? 'true' : undefined}
-              onClick={handleClick}
-            />
-          </Tooltip>
-          <Menu
-            sx ={{
-            }}
-            id="basic-menu-workspaces"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-LIST-dropdown"'
-            }}
-          >
-            <MenuItem>
-              <ListItemIcon>
-                <AddCardIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Add new card</ListItemText>
-            </MenuItem>
+              id="basic-menu-workspaces"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                'aria-labelledby': 'basic-LIST-dropdown"'
+              }}
+            >
+              <MenuItem>
+                <ListItemIcon>
+                  <AddCardIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Add new card</ListItemText>
+              </MenuItem>
 
-            <MenuItem>
-              <ListItemIcon>
-                <ContentCut fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Cut</ListItemText>
-            </MenuItem>
+              <MenuItem>
+                <ListItemIcon>
+                  <ContentCut fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Cut</ListItemText>
+              </MenuItem>
 
 
-            <MenuItem>
-              <ListItemIcon>
-                <ContentCopy fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Copy</ListItemText>
-            </MenuItem>
+              <MenuItem>
+                <ListItemIcon>
+                  <ContentCopy fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Copy</ListItemText>
+              </MenuItem>
 
-            <MenuItem>
-              <ListItemIcon>
-                <ContentPaste fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Paste</ListItemText>
-            </MenuItem>
+              <MenuItem>
+                <ListItemIcon>
+                  <ContentPaste fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Paste</ListItemText>
+              </MenuItem>
 
-            <MenuItem onClick={handleClose}>
-            </MenuItem>
-            <Divider />
-            <MenuItem onClick={handleClose}>
-              <ListItemIcon><DeleteOutlineIcon fontSize="small" /></ListItemIcon>
-              <ListItemText>Remove this list</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={handleClose}>
-              <ListItemIcon><Cloud fontSize="small" /></ListItemIcon>
-              <ListItemText>Archive this list</ListItemText>
-            </MenuItem>
-          </Menu>
+              <MenuItem onClick={handleClose}>
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={handleClose}>
+                <ListItemIcon><DeleteOutlineIcon fontSize="small" /></ListItemIcon>
+                <ListItemText>Remove this list</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={handleClose}>
+                <ListItemIcon><Cloud fontSize="small" /></ListItemIcon>
+                <ListItemText>Archive this list</ListItemText>
+              </MenuItem>
+            </Menu>
+          </Box>
+
         </Box>
 
+        {/* List card */}
+        <ListCard cards = {orderedCards}/>
+        {/* Footer */}
+        <Box
+          sx={{
+            height: (theme) => theme.taskify.listFooterHeight,
+            p: 2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Button
+            startIcon={<AddCardIcon />}
+            width="100%"
+          >Add a card </Button>
+          <Tooltip title="Drag to move">
+            <DragHandleIcon sx={{ cursor:'pointer' }}/>
+          </Tooltip>
+        </Box>
       </Box>
-
-      {/* List card */}
-      <ListCard cards = {orderedCards}/>
-      {/* Footer */}
-      <Box
-        sx={{
-          height: (theme) => theme.taskify.listFooterHeight,
-          p: 2,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}
-      >
-        <Button
-          startIcon={<AddCardIcon />}
-          width="100%"
-        >Add a card </Button>
-        <Tooltip title="Drag to move">
-          <DragHandleIcon sx={{ cursor:'pointer' }}/>
-        </Tooltip>
-      </Box>
-    </Box>
+    </div>
   )
 }
 
