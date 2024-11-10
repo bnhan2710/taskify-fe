@@ -32,7 +32,7 @@ function AppBar() {
       padding:2,
       gap: 2,
       overflowX: 'auto',
-      bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#1D2125' : 'gray' )
+      bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#1D2125' : '#0b3e76' )
     }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap : 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap : 1 }} >

@@ -17,9 +17,20 @@ import AddCardIcon from '@mui/icons-material/AddCard'
 import Button from '@mui/material/Button'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import ListCard from './ListCards/ListCard'
-
+import { mapOrder } from '~/utils/sorts'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 function List({ list }) {
+  const { attributes, listeners, setNodeRef, transform, transition
+  } = useSortable({ id: list.id, data: { ...list } })
+
+  const dndkitListStyles = {
+    transform: CSS.Translate.toString(transform),
+    transition
+  }
+
+
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
 
@@ -31,9 +42,13 @@ function List({ list }) {
   const handleClose = () => {
     setAnchorEl(null)
   }
-
+  const orderedCards = mapOrder(list?.cards, list?.cardOrderIds, 'id')
   return (
     <Box
+      ref={setNodeRef}
+      style = {dndkitListStyles}
+      {...attributes}
+      {...listeners}
       sx={{
         minWidth: '300px',
         maxWidth: '300px',
@@ -139,7 +154,7 @@ function List({ list }) {
       </Box>
 
       {/* List card */}
-      <ListCard cards = {list?.cards}/>
+      <ListCard cards = {orderedCards}/>
       {/* Footer */}
       <Box
         sx={{

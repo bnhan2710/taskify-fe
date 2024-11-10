@@ -12,6 +12,7 @@ import Button from '@mui/material/Button'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { capitalizeFirstLetter } from '~/utils/formatter'
+
 const MENU_STYLES ={
   color: 'white',
   bgcolor: 'transparent',
@@ -40,13 +41,13 @@ function BoardBar({ board }) {
         gap: 2,
         padding: 2,
         overflowX: 'auto',
-        bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#0B3F75' : '#1565c0'),
+        bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#0D4374' : '#1565c0'),
         opacity: 0.9
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Chip
-          sx={MENU_STYLES}
+          sx={{ ...MENU_STYLES, fontSize: '1.1rem', fontWeight: 'bold', backgroundColor: 'transparent' }}
           icon={<SpaceDashboardIcon />}
           label={board?.title}
           clickable

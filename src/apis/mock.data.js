@@ -7,7 +7,7 @@ export const mockData = {
     type: 'public', // 'private'
     ownerIds: [], // Những users là Admin của board
     memberIds: [], // Những users là member bình thường của board
-    listOrderIds: ['list-id-01', 'list-id-02', 'list-id-03'], // Thứ tự sắp xếp / vị trí của các lists trong 1 boards
+    listOrderIds: ['list-id-03', 'list-id-01', 'list-id-02'], // Thứ tự sắp xếp / vị trí của các lists trong 1 boards
     lists: [
       {
         id: 'list-id-01',
