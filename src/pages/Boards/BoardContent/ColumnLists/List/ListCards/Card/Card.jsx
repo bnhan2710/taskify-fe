@@ -16,7 +16,8 @@ function Card({ card }) {
   const dndkitCardStyles = {
     transform: CSS.Translate.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1
+    opacity: isDragging ? 0.5 : undefined,
+    border: isDragging ? '1px solid #ccc' : undefined
   }
 
   const shouldShowCardActtions = () => {

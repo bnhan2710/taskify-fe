@@ -1,11 +1,18 @@
 import Box from '@mui/material/Box'
 import ColumnLists from './ColumnLists/ColumnsLists'
 import { mapOrder } from '~/utils/sorts'
-import { DndContext, PointerSensor, useSensor, useSensors, DragOverlay, defaultDropAnimationSideEffects } from '@dnd-kit/core'
+import {
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  defaultDropAnimationSideEffects, closestCorners } from '@dnd-kit/core'
 import { useEffect, useState } from 'react'
 import { arrayMove } from '@dnd-kit/sortable'
 import List from './ColumnLists/List/List'
 import Card from './ColumnLists/List/ListCards/Card/Card'
+import { cloneDeep } from 'lodash'
 const ACTIVE_DRAG_ITEM_TYPE = {
   LIST: 'ACTIVE_DRAG_ITEM_TYPE_LIST',
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
@@ -20,7 +27,7 @@ function BoardContent({ board }) {
   const pointerSensor = useSensor(PointerSensor)
   const sensors = useSensors(pointerSensor)
 
-  const [oderedLists, setOrderedLists] = useState([])
+  const [orderedLists, setOrderedLists] = useState([])
 
   //only 1 item can be dragged at a time
   const [activeDragItemId, setActiveDragItemId] = useState(null)
@@ -31,20 +38,82 @@ function BoardContent({ board }) {
     setOrderedLists(mapOrder( board?.lists, board?.listOrderIds, 'id'))
   }, [board])
 
+  const findListByCardId = (cardId) => {
+    return orderedLists.find(list => list?.cards?.some(card => card.id === cardId))
+  }
   const handleDragStart = (event) => {
     setActiveDragItemId(event?.active?.id)
     setActiveDragItemType(event?.active?.data?.current.listId ? ACTIVE_DRAG_ITEM_TYPE.CARD : ACTIVE_DRAG_ITEM_TYPE.LIST)
     setActiveDragItemData(event?.active?.data?.current)
   }
 
-  const handleDragEnd = (event) => {
+  const handleDragOver = (event) => {
+    //if dragging list, do nothing
+    if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.LIST) return
+    //if dragging card
     const { active, over } = event
-    if (!over) return
-    if (active.id !== over.id) {
-      const oldIndex = oderedLists.findIndex(list => list.id === active.id)
-      const newIndex = oderedLists.findIndex(list => list.id === over.id)
+    if (!active || !over) return
+    //active is the card being dragged
+    const { id: activeDragingCardId, data : { current: activeDraggingCardData } } = active
+    //over is the card under the dragged card
+    const { id: overCardId } = over
+    //find 2 lists that contain cardId and overCardId
+    const activeList = findListByCardId(activeDragingCardId)
+    const overList = findListByCardId(overCardId)
 
-      const dndOrderedLists = arrayMove(oderedLists, oldIndex, newIndex)
+    if (!overList || !activeList) return
+
+    if (activeList.id !== overList.id) {
+      setOrderedLists(prevList => {
+        //find index of overCardId in overList
+        const overCardIndex = overList.cards.findIndex(card => card.id === overCardId)
+
+        let newCardIndex
+        //check if active card is dragged bellow or above overCard
+        const isBellowOverItem = active.rect.current.translated &&
+        active.rect.current.translated.top > over.rect.top + over.rect.height
+        const modifier = isBellowOverItem ? 1 : 0
+        newCardIndex = overCardIndex >= 0 ? overCardIndex + modifier : overList?.cards?.length + 1
+        //clone the previous list
+        const nextLists = cloneDeep(prevList)
+        const nextActiveList = nextLists.find(list => list.id === activeList.id)
+        const nextOverList = nextLists.find(list => list.id === overList.id)
+        //lu qua
+
+        if (nextActiveList) {
+          nextActiveList.cards = nextActiveList.cards.filter(card => card.id !== activeDragingCardId)
+          //update cardOrderIds of active list
+          nextActiveList.cardOrderIds = nextActiveList.cards.map(card => card.id)
+        }
+        //update cardOrderIds of over list
+        if (nextOverList) {
+          //check if overCardId is not in the same list as activeCardId
+          nextOverList.cards = nextOverList.cards.filter(card => card.id !== activeDragingCardId)
+          //add activeCardId to overList with new index
+          nextOverList.cards = nextOverList.cards.toSpliced(newCardIndex, 0, activeDraggingCardData)
+          //update cardOrderIds of nextOverList
+          nextOverList.cardOrderIds = nextOverList.cards.map(card => card.id)
+        }
+        console.log('nextLists', nextLists)
+
+        return nextLists
+      })
+    }
+  }
+  const handleDragEnd = (event) => {
+    // console.log('handleDragEnd', event)
+
+    if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD) {
+      // console.log('Drag and drop card')
+      return
+    }
+    const { active, over } = event
+    if (!active || !over) return
+    if (active.id !== over.id) {
+      const oldIndex = orderedLists.findIndex(list => list.id === active.id)
+      const newIndex = orderedLists.findIndex(list => list.id === over.id)
+
+      const dndOrderedLists = arrayMove(orderedLists, oldIndex, newIndex)
       // using for backend save new order to database
       // const dndOrderedListsIds = dndOrderedLists.map(list => list.id)
 
@@ -59,8 +128,10 @@ function BoardContent({ board }) {
   return (
     <DndContext
       sensors={sensors}
+      collisionDetection={closestCorners}
       onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd} >
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}>
       <Box
         sx={{
           backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#0093E9' : '#1976d2'),
@@ -72,7 +143,7 @@ function BoardContent({ board }) {
           overflowX: 'auto',
           overflowY: 'hidden'
         }}>
-        <ColumnLists lists = {oderedLists} />
+        <ColumnLists lists = {orderedLists} />
         <DragOverlay dropAnimation={ dropAnimation }>
           {!activeDragItemType && null}
           {(activeDragItemId && activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.LIST) && <List list = {activeDragItemData} isPreview />}
