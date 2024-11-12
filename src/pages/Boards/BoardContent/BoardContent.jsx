@@ -13,12 +13,61 @@ import { arrayMove } from '@dnd-kit/sortable'
 import List from './ColumnLists/List/List'
 import Card from './ColumnLists/List/ListCards/Card/Card'
 import { cloneDeep } from 'lodash'
+
 const ACTIVE_DRAG_ITEM_TYPE = {
   LIST: 'ACTIVE_DRAG_ITEM_TYPE_LIST',
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
 }
 
 function BoardContent({ board }) {
+  const moveCardBetweenDiffList = (
+    overList,
+    overCardId,
+    active,
+    over,
+    activeList,
+    activeDragingCardId,
+    activeDraggingCardData
+  ) => {
+    setOrderedLists(prevList => {
+      //find index of overCardId in overList
+      const overCardIndex = overList.cards.findIndex(card => card.id === overCardId)
+
+      let newCardIndex
+      //check if active card is dragged bellow or above overCard
+      const isBellowOverItem = active.rect.current.translated &&
+      active.rect.current.translated.top > over.rect.top + over.rect.height
+      const modifier = isBellowOverItem ? 1 : 0
+      newCardIndex = overCardIndex >= 0 ? overCardIndex + modifier : overList?.cards?.length + 1
+      //clone the previous list
+      const nextLists = cloneDeep(prevList)
+      const nextActiveList = nextLists.find(list => list.id === activeList.id)
+      const nextOverList = nextLists.find(list => list.id === overList.id)
+      //lu qua
+
+      if (nextActiveList) {
+        nextActiveList.cards = nextActiveList.cards.filter(card => card.id !== activeDragingCardId)
+        //update cardOrderIds of active list
+        nextActiveList.cardOrderIds = nextActiveList.cards.map(card => card.id)
+      }
+      //update cardOrderIds of over list
+      if (nextOverList) {
+        //check if overCardId is not in the same list as activeCardId
+        nextOverList.cards = nextOverList.cards.filter(card => card.id !== activeDragingCardId)
+
+        //add activeCardId to overList with new index , update data of card when drag and drop to another list
+        nextOverList.cards = nextOverList.cards.toSpliced(newCardIndex, 0, {
+          ...activeDraggingCardData,
+          listId: overList.id
+        })
+        //update cardOrderIds of nextOverList
+        nextOverList.cardOrderIds = nextOverList.cards.map(card => card.id)
+      }
+      // console.log('nextLists', nextLists)
+
+      return nextLists
+    })
+  }
 
   const dropAnimation = {
     sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.5' } } })
@@ -33,7 +82,7 @@ function BoardContent({ board }) {
   const [activeDragItemId, setActiveDragItemId] = useState(null)
   const [activeDragItemType, setActiveDragItemType] = useState(null)
   const [activeDragItemData, setActiveDragItemData] = useState(null)
-
+  const [oldListDragging, setOldListDragging] = useState(null)
   useEffect(() => {
     setOrderedLists(mapOrder( board?.lists, board?.listOrderIds, 'id'))
   }, [board])
@@ -45,6 +94,10 @@ function BoardContent({ board }) {
     setActiveDragItemId(event?.active?.id)
     setActiveDragItemType(event?.active?.data?.current.listId ? ACTIVE_DRAG_ITEM_TYPE.CARD : ACTIVE_DRAG_ITEM_TYPE.LIST)
     setActiveDragItemData(event?.active?.data?.current)
+    //if dragging card, find the list that contains the card
+    if (event?.active?.data?.current.listId) {
+      setOldListDragging(findListByCardId(event?.active?.id))
+    }
   }
 
   const handleDragOver = (event) => {
@@ -60,70 +113,87 @@ function BoardContent({ board }) {
     //find 2 lists that contain cardId and overCardId
     const activeList = findListByCardId(activeDragingCardId)
     const overList = findListByCardId(overCardId)
-
     if (!overList || !activeList) return
 
     if (activeList.id !== overList.id) {
-      setOrderedLists(prevList => {
-        //find index of overCardId in overList
-        const overCardIndex = overList.cards.findIndex(card => card.id === overCardId)
-
-        let newCardIndex
-        //check if active card is dragged bellow or above overCard
-        const isBellowOverItem = active.rect.current.translated &&
-        active.rect.current.translated.top > over.rect.top + over.rect.height
-        const modifier = isBellowOverItem ? 1 : 0
-        newCardIndex = overCardIndex >= 0 ? overCardIndex + modifier : overList?.cards?.length + 1
-        //clone the previous list
-        const nextLists = cloneDeep(prevList)
-        const nextActiveList = nextLists.find(list => list.id === activeList.id)
-        const nextOverList = nextLists.find(list => list.id === overList.id)
-        //lu qua
-
-        if (nextActiveList) {
-          nextActiveList.cards = nextActiveList.cards.filter(card => card.id !== activeDragingCardId)
-          //update cardOrderIds of active list
-          nextActiveList.cardOrderIds = nextActiveList.cards.map(card => card.id)
-        }
-        //update cardOrderIds of over list
-        if (nextOverList) {
-          //check if overCardId is not in the same list as activeCardId
-          nextOverList.cards = nextOverList.cards.filter(card => card.id !== activeDragingCardId)
-          //add activeCardId to overList with new index
-          nextOverList.cards = nextOverList.cards.toSpliced(newCardIndex, 0, activeDraggingCardData)
-          //update cardOrderIds of nextOverList
-          nextOverList.cardOrderIds = nextOverList.cards.map(card => card.id)
-        }
-        console.log('nextLists', nextLists)
-
-        return nextLists
-      })
+      moveCardBetweenDiffList(
+        overList,
+        overCardId,
+        active,
+        over,
+        activeList,
+        activeDragingCardId,
+        activeDraggingCardData
+      )
     }
   }
   const handleDragEnd = (event) => {
     // console.log('handleDragEnd', event)
-
-    if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD) {
-      // console.log('Drag and drop card')
-      return
-    }
     const { active, over } = event
     if (!active || !over) return
-    if (active.id !== over.id) {
-      const oldIndex = orderedLists.findIndex(list => list.id === active.id)
-      const newIndex = orderedLists.findIndex(list => list.id === over.id)
 
-      const dndOrderedLists = arrayMove(orderedLists, oldIndex, newIndex)
-      // using for backend save new order to database
-      // const dndOrderedListsIds = dndOrderedLists.map(list => list.id)
+    //handle drag and drop card
+    if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD) {
+      //active is the card being dragged
+      const { id: activeDragingCardId, data : { current: activeDraggingCardData } } = active
+      //over is the card under the dragged card
+      const { id: overCardId } = over
+      //find 2 lists that contain cardId and overCardId
+      const activeList = findListByCardId(activeDragingCardId)
+      const overList = findListByCardId(overCardId)
+      //if overList or activeList is not found, do nothing
+      if (!overList || !activeList) return
+      // console.log('oldListDragging', oldListDragging)
+      // console.log('overList', overList)
+      if (oldListDragging.id !== overList.id) {
+        //if drag and drop card to another list
+        moveCardBetweenDiffList(
+          overList,
+          overCardId,
+          active,
+          over,
+          activeList,
+          activeDragingCardId,
+          activeDraggingCardData
+        )
+      } else {
+        const oldCardIndex = oldListDragging?.cards?.findIndex(c => c.id === activeDragItemId)
 
-      // console.log('dndOrderedLists', dndOrderedLists)
-      // console.log('dndOrderedListsIds', dndOrderedListsIds)
-      setOrderedLists(dndOrderedLists)
+        const newCardIndex = overList?.cards?.findIndex(c => c.id === overCardId)
+        //using Array move to reorder cards
+        const dndOrderedCards = arrayMove(oldListDragging?.cards, oldCardIndex, newCardIndex)
+        setOrderedLists(prevLists => {
+          const nextLists = cloneDeep(prevLists)
+          const targetList = nextLists.find(list => list.id === overList.id)
+          if (targetList) {
+            targetList.cards = dndOrderedCards
+            targetList.cardOrderIds = dndOrderedCards.map(card => card.id)
+          }
+          //return new state with correct position of cards
+          return nextLists
+        })
+      }
+    }
+    //handle drag and drop list
+    if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.LIST) {
+      if (active.id !== over.id) {
+        const oldListIndex = orderedLists.findIndex(list => list.id === active.id)
+        const newListIndex = orderedLists.findIndex(list => list.id === over.id)
+
+        const dndOrderedLists = arrayMove(orderedLists, oldListIndex, newListIndex)
+        // using for backend save new order to database
+        // const dndOrderedListsIds = dndOrderedLists.map(list => list.id)
+
+        // console.log('dndOrderedLists', dndOrderedLists)
+        // console.log('dndOrderedListsIds', dndOrderedListsIds)
+        setOrderedLists(dndOrderedLists)
+      }
+
     }
     setActiveDragItemId(null)
     setActiveDragItemType(null)
     setActiveDragItemData(null)
+    setOldListDragging(null)
   }
   return (
     <DndContext
