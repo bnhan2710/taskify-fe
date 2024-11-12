@@ -20,6 +20,54 @@ const ACTIVE_DRAG_ITEM_TYPE = {
 }
 
 function BoardContent({ board }) {
+  const moveCardBetweenDiffList = (
+    overList,
+    overCardId,
+    active,
+    over,
+    activeList,
+    activeDragingCardId,
+    activeDraggingCardData
+  ) => {
+    setOrderedLists(prevList => {
+      //find index of overCardId in overList
+      const overCardIndex = overList.cards.findIndex(card => card.id === overCardId)
+
+      let newCardIndex
+      //check if active card is dragged bellow or above overCard
+      const isBellowOverItem = active.rect.current.translated &&
+      active.rect.current.translated.top > over.rect.top + over.rect.height
+      const modifier = isBellowOverItem ? 1 : 0
+      newCardIndex = overCardIndex >= 0 ? overCardIndex + modifier : overList?.cards?.length + 1
+      //clone the previous list
+      const nextLists = cloneDeep(prevList)
+      const nextActiveList = nextLists.find(list => list.id === activeList.id)
+      const nextOverList = nextLists.find(list => list.id === overList.id)
+      //lu qua
+
+      if (nextActiveList) {
+        nextActiveList.cards = nextActiveList.cards.filter(card => card.id !== activeDragingCardId)
+        //update cardOrderIds of active list
+        nextActiveList.cardOrderIds = nextActiveList.cards.map(card => card.id)
+      }
+      //update cardOrderIds of over list
+      if (nextOverList) {
+        //check if overCardId is not in the same list as activeCardId
+        nextOverList.cards = nextOverList.cards.filter(card => card.id !== activeDragingCardId)
+
+        //add activeCardId to overList with new index , update data of card when drag and drop to another list
+        nextOverList.cards = nextOverList.cards.toSpliced(newCardIndex, 0, {
+          ...activeDraggingCardData,
+          listId: overList.id
+        })
+        //update cardOrderIds of nextOverList
+        nextOverList.cardOrderIds = nextOverList.cards.map(card => card.id)
+      }
+      // console.log('nextLists', nextLists)
+
+      return nextLists
+    })
+  }
 
   const dropAnimation = {
     sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.5' } } })
@@ -68,40 +116,15 @@ function BoardContent({ board }) {
     if (!overList || !activeList) return
 
     if (activeList.id !== overList.id) {
-      setOrderedLists(prevList => {
-        //find index of overCardId in overList
-        const overCardIndex = overList.cards.findIndex(card => card.id === overCardId)
-
-        let newCardIndex
-        //check if active card is dragged bellow or above overCard
-        const isBellowOverItem = active.rect.current.translated &&
-        active.rect.current.translated.top > over.rect.top + over.rect.height
-        const modifier = isBellowOverItem ? 1 : 0
-        newCardIndex = overCardIndex >= 0 ? overCardIndex + modifier : overList?.cards?.length + 1
-        //clone the previous list
-        const nextLists = cloneDeep(prevList)
-        const nextActiveList = nextLists.find(list => list.id === activeList.id)
-        const nextOverList = nextLists.find(list => list.id === overList.id)
-        //lu qua
-
-        if (nextActiveList) {
-          nextActiveList.cards = nextActiveList.cards.filter(card => card.id !== activeDragingCardId)
-          //update cardOrderIds of active list
-          nextActiveList.cardOrderIds = nextActiveList.cards.map(card => card.id)
-        }
-        //update cardOrderIds of over list
-        if (nextOverList) {
-          //check if overCardId is not in the same list as activeCardId
-          nextOverList.cards = nextOverList.cards.filter(card => card.id !== activeDragingCardId)
-          //add activeCardId to overList with new index
-          nextOverList.cards = nextOverList.cards.toSpliced(newCardIndex, 0, activeDraggingCardData)
-          //update cardOrderIds of nextOverList
-          nextOverList.cardOrderIds = nextOverList.cards.map(card => card.id)
-        }
-        // console.log('nextLists', nextLists)
-
-        return nextLists
-      })
+      moveCardBetweenDiffList(
+        overList,
+        overCardId,
+        active,
+        over,
+        activeList,
+        activeDragingCardId,
+        activeDraggingCardData
+      )
     }
   }
   const handleDragEnd = (event) => {
@@ -124,6 +147,15 @@ function BoardContent({ board }) {
       // console.log('overList', overList)
       if (oldListDragging.id !== overList.id) {
         //if drag and drop card to another list
+        moveCardBetweenDiffList(
+          overList,
+          overCardId,
+          active,
+          over,
+          activeList,
+          activeDragingCardId,
+          activeDraggingCardData
+        )
       } else {
         const oldCardIndex = oldListDragging?.cards?.findIndex(c => c.id === activeDragItemId)
 
