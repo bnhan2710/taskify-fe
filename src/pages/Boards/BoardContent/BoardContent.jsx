@@ -13,7 +13,7 @@ import { arrayMove } from '@dnd-kit/sortable'
 import List from './ColumnLists/List/List'
 import Card from './ColumnLists/List/ListCards/Card/Card'
 import { cloneDeep } from 'lodash'
-
+import { generatePlaceholder } from '~/utils/formatter'
 const ACTIVE_DRAG_ITEM_TYPE = {
   LIST: 'ACTIVE_DRAG_ITEM_TYPE_LIST',
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
@@ -49,6 +49,10 @@ function BoardContent({ board }) {
         nextActiveList.cards = nextActiveList.cards.filter(card => card.id !== activeDragingCardId)
         //update cardOrderIds of active list
         nextActiveList.cardOrderIds = nextActiveList.cards.map(card => card.id)
+        //if is last card in list, add placeholder to the end of list
+        if (nextActiveList.cards.length === 0) {
+          nextActiveList.cards = [generatePlaceholder(nextActiveList)]
+        }
       }
       //update cardOrderIds of over list
       if (nextOverList) {
@@ -60,6 +64,10 @@ function BoardContent({ board }) {
           ...activeDraggingCardData,
           listId: overList.id
         })
+
+        //delete placeholder if exist
+        nextOverList.cards = nextOverList.cards.filter(card => !card.FE_Placeholder)
+
         //update cardOrderIds of nextOverList
         nextOverList.cardOrderIds = nextOverList.cards.map(card => card.id)
       }

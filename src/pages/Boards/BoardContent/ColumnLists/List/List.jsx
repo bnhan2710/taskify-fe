@@ -149,7 +149,6 @@ function List({ list }) {
               </MenuItem>
             </Menu>
           </Box>
-
         </Box>
 
         {/* List card */}

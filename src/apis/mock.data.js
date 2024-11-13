@@ -7,7 +7,7 @@ export const mockData = {
     type: 'public', // 'private'
     ownerIds: [],
     memberIds: [],
-    listOrderIds: ['list-id-03', 'list-id-01', 'list-id-02'],
+    listOrderIds: ['list-id-03', 'list-id-01', 'list-id-02', 'list-id-04'],
     lists: [
       {
         id: 'list-id-01',
@@ -55,6 +55,18 @@ export const mockData = {
           { id: 'card-id-11', boardId: 'board-id-01', listId: 'list-id-03', title: 'Title of card 11', description: null, cover: null, memberIds: [], comments: [], attachments: [] },
           { id: 'card-id-12', boardId: 'board-id-01', listId: 'list-id-03', title: 'Title of card 12', description: null, cover: null, memberIds: [], comments: [], attachments: [] },
           { id: 'card-id-13', boardId: 'board-id-01', listId: 'list-id-03', title: 'Title of card 13', description: null, cover: null, memberIds: [], comments: [], attachments: [] }
+        ]
+      },
+      {
+        id: 'list-id-04',
+        boardId: 'board-id-01',
+        title: 'Empty list 04',
+        cardOrderIds: ['list-id-04-placeholder-card'],
+        //Special card when list is empty only exist in this list with fe placeholder
+        cards: [
+          { id: 'list-id-04-placeholder-card', boardId: 'board-id-01', listId: 'list-id-04',
+            FE_Placeholder: true
+          }
         ]
       }
     ]
