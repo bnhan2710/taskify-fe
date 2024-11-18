@@ -81,7 +81,7 @@ function BoardContent({ board }) {
     sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.5' } } })
   }
 
-  const pointerSensor = useSensor(PointerSensor)
+  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
   const sensors = useSensors(pointerSensor)
 
   const [orderedLists, setOrderedLists] = useState([])

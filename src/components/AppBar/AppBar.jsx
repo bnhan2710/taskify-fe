@@ -69,10 +69,12 @@ function AppBar() {
               </InputAdornment>
             ),
             endAdornment: (
-              <CloseIcon
-                sx={{ fontSize:'small', color: searchValue ? '#9EACBA' : 'transparent', cursor:'pointer' }}
-                onClick={() => setSearchValue('')}
-              />
+              <InputAdornment position="end">
+                <CloseIcon
+                  sx={{ fontSize:'small', color: searchValue ? '#9EACBA' : 'transparent', cursor:'pointer' }}
+                  onClick={() => setSearchValue('')}
+                />
+              </InputAdornment>
             )
           }}
           sx={{ minWidth: 120, maxWidth: 170, '& label': { color:'#9EACBA' }, '& .MuiInputBase-root': { color:'white' } }}

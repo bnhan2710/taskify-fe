@@ -35,7 +35,10 @@ function Card({ card }) {
         opacity: card.FE_Placeholder ? '0' : '1',
         minWidth: card.FE_Placeholder ? '280px' : 'unset',
         pointerEvents: card.FE_Placeholder ? 'none' : 'unset',
-        position: card.FE_Placeholder ? 'fixed' : 'unset'
+        position: card.FE_Placeholder ? 'fixed' : 'unset',
+        border: '1px solid transparent',
+        '&:hover':  { borderColor: (theme) => theme.palette.primary.main }
+
       }}>
       {card?.cover && <CardMedia sx={{ height: 140 }} image={card.cover}/>}
 

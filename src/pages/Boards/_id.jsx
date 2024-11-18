@@ -13,7 +13,7 @@ function Board() {
       setBoard(board)
     })
   }, [])
-  console.log(board?.data)
+  console.log(board)
   return (
     <Container disableGutters maxWidth = {false} sx = {{ height: '100vh', backgroundColor: 'primary.main' }}>
       <AppBar/>
