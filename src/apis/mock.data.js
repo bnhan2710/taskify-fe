@@ -5,7 +5,7 @@ export const mockData = {
     title: 'Bao Nhan Board',
     description: 'Taskify Board Description',
     type: 'public', // 'private'
-    ownerIds: [],
+    ownerIds: 'user-id-01',
     memberIds: [],
     listOrderIds: ['list-id-03', 'list-id-01', 'list-id-02', 'list-id-04'],
     lists: [
@@ -28,7 +28,7 @@ export const mockData = {
             attachments: ['test attachment 01', 'test attachment 02', 'test attachment 03']
           },
           { id: 'card-id-02', boardId: 'board-id-01', listId: 'list-id-01', title: 'Title of card 02', description: null, cover: null, checklist:[], comments: [], attachments: [] },
-          { id: 'card-id-03', boardId: 'board-id-01', listId: 'list-id-01', title: 'Title of card 03', description: null, cover: null, checklist:[], comments: [], attachments: [] },
+          { id: 'card-id-03', boardId: 'board-id-01', listId: 'list-id-01', title: 'Title of card 03', description: null, cover: null, checklist:[], comments: [], attachments: [] }
         ]
       },
       {

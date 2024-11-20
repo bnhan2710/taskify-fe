@@ -19,7 +19,7 @@ const ACTIVE_DRAG_ITEM_TYPE = {
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
 }
 
-function BoardContent({ board }) {
+function BoardContent({ board, createNewList, createNewCard }) {
   const moveCardBetweenDiffList = (
     overList,
     overCardId,
@@ -221,7 +221,11 @@ function BoardContent({ board }) {
           overflowX: 'auto',
           overflowY: 'hidden'
         }}>
-        <ColumnLists lists = {orderedLists} />
+        <ColumnLists
+          lists = {orderedLists}
+          createNewList = {createNewList}
+          createNewCard = {createNewCard}
+        />
         <DragOverlay dropAnimation={ dropAnimation }>
           {!activeDragItemType && null}
           {(activeDragItemId && activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.LIST) && <List list = {activeDragItemData} isPreview />}

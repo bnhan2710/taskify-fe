@@ -23,7 +23,7 @@ import { mapOrder } from '~/utils/sorts'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-function List({ list }) {
+function List({ list, createNewCard }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging
   } = useSortable({ id: list.id, data: { ...list } })
 
@@ -33,7 +33,6 @@ function List({ list }) {
     height:'100%',
     opacity: isDragging ? 0.5 : undefined
   }
-
 
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
@@ -52,11 +51,13 @@ function List({ list }) {
 
   const [newCardTitle, setNewCardTitle] = useState('')
 
-  const addNewCard = () => {
+  const addNewCard = async () => {
     if (!newCardTitle.trim()) return
-    // console.log(newListTitle)
-    //call api to add new list
-
+    const newCardDto = {
+      title: newCardTitle.trim(),
+      listId: list.id
+    }
+    await createNewCard(newCardDto)
     setNewCardTitle('')
     toggleOpenNewCardForm()
   }

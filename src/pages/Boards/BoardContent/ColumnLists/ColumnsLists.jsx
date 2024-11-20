@@ -6,22 +6,26 @@ import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortabl
 import { useState } from 'react'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
-function ColumnLists({ lists }) {
+
+function ColumnLists({ lists, createNewList, createNewCard }) {
   const [openNewListForm, setOpenNewListForm] = useState(false)
   const toggleOpenNewListForm = () => setOpenNewListForm(!openNewListForm)
 
   const [newListTitle, setNewListTitle] = useState('')
 
-  const addNewList = () => {
+  const addNewList = async () => {
     if (!newListTitle.trim()) return
-    // console.log(newListTitle)
-    //call api to add new list
-
+    const newListDto = {
+      title: newListTitle.trim()
+    }
+    await createNewList(newListDto)
     setNewListTitle('')
     toggleOpenNewListForm()
   }
+
+
   return (
-    <SortableContext items={lists?.map((list) => list.id)} strategy={horizontalListSortingStrategy}>
+    <SortableContext items={lists?.map(list => list.id)} strategy={horizontalListSortingStrategy}>
       <Box
         sx={{
           bgcolor: 'inherit',
@@ -33,9 +37,7 @@ function ColumnLists({ lists }) {
           '*::-webkit-scrollbar-track': { m: 2 }
         }}
       >
-        {lists?.map((list) => (
-          <List key={list.id} list={list} />
-        ))}
+        {lists?.map(list => <List key={list.id} list={list} createNewCard={createNewCard} /> )}
 
         {/* Add New List Button or Form */}
         {!openNewListForm ? (

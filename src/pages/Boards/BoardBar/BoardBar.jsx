@@ -11,7 +11,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import { capitalizeFirstLetter } from '~/utils/formatter'
+// import { capitalizeFirstLetter } from '~/utils/formatter'
 
 const MENU_STYLES ={
   color: 'white',
