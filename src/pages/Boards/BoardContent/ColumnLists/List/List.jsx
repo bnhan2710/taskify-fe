@@ -19,7 +19,6 @@ import DragHandleIcon from '@mui/icons-material/DragHandle'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import ListCard from './ListCards/ListCard'
-import { mapOrder } from '~/utils/sorts'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
@@ -51,18 +50,18 @@ function List({ list, createNewCard }) {
 
   const [newCardTitle, setNewCardTitle] = useState('')
 
-  const addNewCard = async () => {
+  const addNewCard = () => {
     if (!newCardTitle.trim()) return
     const newCardDto = {
       title: newCardTitle.trim(),
       listId: list.id
     }
-    await createNewCard(newCardDto)
+    createNewCard(newCardDto)
     setNewCardTitle('')
     toggleOpenNewCardForm()
   }
 
-  const orderedCards = mapOrder(list?.cards, list?.cardOrderIds, 'id')
+  const orderedCards = list.cards
   return (
     <div ref={setNodeRef} style = {dndkitListStyles} {...attributes} >
       <Box {...listeners}

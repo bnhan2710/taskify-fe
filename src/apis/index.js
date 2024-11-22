@@ -25,3 +25,18 @@ export const addCardAPI = async (newCardDto) => {
   return response.data
 
 }
+
+export const updateBoard = async (boardId, updateBoardDto) => {
+  const response = await axios.put(`${API_URL}/boards/${boardId}`, updateBoardDto)
+  return response.data
+}
+
+export const updateList = async (listId, updateListDto) => {
+  const response = await axios.put(`${API_URL}/lists/${listId}`, updateListDto)
+  return response.data
+}
+
+export const updateCard = async (cardId, updateCardDto) => {
+  const response = await axios.put(`${API_URL}/cards/${cardId}`, updateCardDto)
+  return response.data
+}
