@@ -13,7 +13,7 @@ import { isEmpty } from 'lodash'
 function Board() {
   const [board, setBoard] = useState(null)
   useEffect(() => {
-    const boardId = 8
+    const boardId = '26603603-4019-4b87-856e-acb515a20cc2'
     FetchBoardDetailsAPI(boardId).then((board) => {
       board.lists = mapOrder(board.lists, board.listOrderIds, 'id')
       board.lists.forEach(list => {
