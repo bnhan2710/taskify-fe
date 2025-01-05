@@ -6,7 +6,8 @@ import AppBar from '~/components/AppBar/AppBar'
 import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
 import { useEffect, useState } from 'react'
-import { FetchBoardDetailsAPI, addListAPI, addCardAPI, updateBoard, updateList, updateCard } from '~/apis'
+import { FetchBoardDetailsAPI, addListAPI, addCardAPI, updateBoard, updateList, updateCard, removeListAPI } from '~/apis'
+import { toast } from 'react-toastify'
 import { mapOrder } from '~/utils/sorts'
 import { generatePlaceholder } from '~/utils/formatter'
 import { isEmpty } from 'lodash'
@@ -89,6 +90,18 @@ function Board() {
     updateList(nextListId, { cardOrderIds: nextList.cardOrderIds })
   }
 
+  const deleteList = async (listId) => {
+    // update board state
+    const newBoard = { ...board }
+    newBoard.lists = newBoard.lists.filter(list => list.id !== listId)
+    newBoard.listOrderIds = newBoard.listOrderIds.filter(id => id !== listId)
+    setBoard(newBoard)
+    // call api delete list
+    removeListAPI(listId).then(res => {
+      toast.success(`${res.message}`)
+    })
+    await updateBoard(board.id, { listOrderIds: newBoard.listOrderIds })
+  }
   if (!board) {
     return (
       <Box sx = {{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', gap: 2, width:' 100vw' }}>
@@ -110,6 +123,7 @@ function Board() {
         moveList = {moveList}
         moveCardInTheSameList = {moveCardInTheSameList}
         moveCardToAnotherList = {moveCardToAnotherList}
+        deleteList = {deleteList}
       />
     </Container>
   )

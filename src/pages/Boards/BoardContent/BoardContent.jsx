@@ -25,7 +25,8 @@ function BoardContent({
   createNewCard,
   moveList,
   moveCardInTheSameList,
-  moveCardToAnotherList
+  moveCardToAnotherList,
+  deleteList
 }) {
   const moveCardBetweenDiffList = (
     overList,
@@ -130,7 +131,7 @@ function BoardContent({
     //if dragging card
     const { active, over } = event
     if (!active || !over) return
-    console.log ('Card is dragging', active)
+    // console.log ('Card is dragging', active)
     //active is the card being dragged
     const { id: activeDragingCardId, data : { current: activeDraggingCardData } } = active
     //over is the card under the dragged card
@@ -243,6 +244,7 @@ function BoardContent({
           lists = {orderedLists}
           createNewList = {createNewList}
           createNewCard = {createNewCard}
+          deleteList = {deleteList}
         />
         <DragOverlay dropAnimation={ dropAnimation }>
           {!activeDragItemType && null}

@@ -21,8 +21,10 @@
     "@mui/material": "^5.13.0",
     "axios": "^1.7.7",
     "lodash": "^4.17.21",
+    "material-ui-confirm": "^3.0.16",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-toastify": "^11.0.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",

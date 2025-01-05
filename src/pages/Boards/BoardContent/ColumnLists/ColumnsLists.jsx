@@ -7,7 +7,7 @@ import { useState } from 'react'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 
-function ColumnLists({ lists, createNewList, createNewCard }) {
+function ColumnLists({ lists, createNewList, createNewCard, deleteList }) {
   const [openNewListForm, setOpenNewListForm] = useState(false)
   const toggleOpenNewListForm = () => setOpenNewListForm(!openNewListForm)
 
@@ -37,7 +37,8 @@ function ColumnLists({ lists, createNewList, createNewCard }) {
           '*::-webkit-scrollbar-track': { m: 2 }
         }}
       >
-        {lists?.map(list => <List key={list.id} list={list} createNewCard={createNewCard} /> )}
+        {lists?.map(list =>
+          <List key={list.id} list={list} createNewCard={createNewCard} deleteList= {deleteList} /> )}
 
         {/* Add New List Button or Form */}
         {!openNewListForm ? (

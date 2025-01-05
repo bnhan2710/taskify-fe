@@ -40,3 +40,8 @@ export const updateCard = async (cardId, updateCardDto) => {
   const response = await axios.put(`${API_URL}/cards/${cardId}`, updateCardDto)
   return response.data
 }
+
+export const removeListAPI = async (listId) => {
+  const response = await axios.delete(`${API_URL}/lists/${listId}`)
+  return response.data
+}

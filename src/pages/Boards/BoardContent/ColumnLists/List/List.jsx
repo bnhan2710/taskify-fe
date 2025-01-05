@@ -20,9 +20,10 @@ import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import ListCard from './ListCards/ListCard'
 import { useSortable } from '@dnd-kit/sortable'
+import { useConfirm } from 'material-ui-confirm'
 import { CSS } from '@dnd-kit/utilities'
 
-function List({ list, createNewCard }) {
+function List({ list, createNewCard, deleteList }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging
   } = useSortable({ id: list.id, data: { ...list } })
 
@@ -57,10 +58,33 @@ function List({ list, createNewCard }) {
       listId: list.id
     }
     createNewCard(newCardDto)
-    setNewCardTitle('')
     toggleOpenNewCardForm()
+    setNewCardTitle('')
   }
 
+  //handle delete list
+  const confirmDelete = useConfirm()
+
+  const handleDeleteList = () => {
+    confirmDelete({
+      title: 'Delete this List?',
+      description: 'This action will permanently delete this list and all the cards in it. Please input the list title to confirm.',
+      confirmationText: 'Yes, delete it',
+      confirmationButtonProps: {
+        variant: 'contained',
+        color: 'error'
+      },
+      cancellationText: 'Cancel',
+      cancellationButtonProps: {
+        variant: 'contained',
+        color: 'primary'
+      },
+      confirmationKeyword: `${list.title}`
+    }).then(() => {
+      deleteList(list.id)
+    }
+    ).catch(() => {})
+  }
   const orderedCards = list.cards
   return (
     <div ref={setNodeRef} style = {dndkitListStyles} {...attributes} >
@@ -121,13 +145,24 @@ function List({ list, createNewCard }) {
               anchorEl={anchorEl}
               open={open}
               onClose={handleClose}
+              onClick={handleClose}
               MenuListProps={{
                 'aria-labelledby': 'basic-LIST-dropdown"'
               }}
             >
-              <MenuItem>
+              <MenuItem
+                sx={{
+                  '&:hover': {
+                    color: 'success.light',
+                    '& .add-card-icon': {
+                      color: 'success.light'
+                    }
+                  }
+                }}
+                onClick={toggleOpenNewCardForm}
+              >
                 <ListItemIcon>
-                  <AddCardIcon fontSize="small" />
+                  <AddCardIcon className='add-card-icon' fontSize="small" />
                 </ListItemIcon>
                 <ListItemText>Add new card</ListItemText>
               </MenuItem>
@@ -157,11 +192,20 @@ function List({ list, createNewCard }) {
               <MenuItem onClick={handleClose}>
               </MenuItem>
               <Divider />
-              <MenuItem onClick={handleClose}>
-                <ListItemIcon><DeleteOutlineIcon fontSize="small" /></ListItemIcon>
-                <ListItemText>Remove this list</ListItemText>
+              <MenuItem onClick={handleDeleteList}
+                sx={{
+                  '&:hover': {
+                    color: 'red',
+                    '& .delete-forever-icon': {
+                      color: 'red'
+                    }
+                  }
+                }}>
+                <ListItemIcon><DeleteOutlineIcon className="delete-forever-icon" fontSize="small" /></ListItemIcon>
+                <ListItemText>Delete this list</ListItemText>
               </MenuItem>
-              <MenuItem onClick={handleClose}>
+              <MenuItem onClick={handleClose}
+              >
                 <ListItemIcon><Cloud fontSize="small" /></ListItemIcon>
                 <ListItemText>Archive this list</ListItemText>
               </MenuItem>
