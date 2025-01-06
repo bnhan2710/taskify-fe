@@ -6,11 +6,18 @@ import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortabl
 import { useState } from 'react'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
+import { cloneDeep } from 'lodash'
+import { generatePlaceholder } from '~/utils/formatter'
+import { selectcurrentActiveBoard, updatecurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { addListAPI } from '~/apis'
+import { useSelector, useDispatch } from 'react-redux'
 
-function ColumnLists({ lists, createNewList, createNewCard, deleteList }) {
+function ColumnLists({ lists }) {
+  const dispatch = useDispatch()
+  const board = useSelector(selectcurrentActiveBoard)
+
   const [openNewListForm, setOpenNewListForm] = useState(false)
   const toggleOpenNewListForm = () => setOpenNewListForm(!openNewListForm)
-
   const [newListTitle, setNewListTitle] = useState('')
 
   const addNewList = async () => {
@@ -18,7 +25,20 @@ function ColumnLists({ lists, createNewList, createNewCard, deleteList }) {
     const newListDto = {
       title: newListTitle.trim()
     }
-    await createNewList(newListDto)
+    const createdList = await addListAPI({
+      ...newListDto,
+      boardId: board.id
+    })
+
+    createdList.cards = [generatePlaceholder(createdList)]
+    createdList.cardOrderIds = [generatePlaceholder(createdList).id]
+
+    // const newBoard = { ...board }
+    const newBoard = cloneDeep(board)
+    // console.log(createdList)
+    newBoard.lists.push(createdList)
+    newBoard.listOrderIds.push(createdList.id)
+    dispatch(updatecurrentActiveBoard(newBoard))
     setNewListTitle('')
     toggleOpenNewListForm()
   }
@@ -38,7 +58,7 @@ function ColumnLists({ lists, createNewList, createNewCard, deleteList }) {
         }}
       >
         {lists?.map(list =>
-          <List key={list.id} list={list} createNewCard={createNewCard} deleteList= {deleteList} /> )}
+          <List key={list.id} list={list} /> )}
 
         {/* Add New List Button or Form */}
         {!openNewListForm ? (
