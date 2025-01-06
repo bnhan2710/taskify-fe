@@ -21,12 +21,9 @@ const ACTIVE_DRAG_ITEM_TYPE = {
 
 function BoardContent({
   board,
-  createNewList,
-  createNewCard,
   moveList,
   moveCardInTheSameList,
-  moveCardToAnotherList,
-  deleteList
+  moveCardToAnotherList
 }) {
   const moveCardBetweenDiffList = (
     overList,
@@ -242,9 +239,6 @@ function BoardContent({
         }}>
         <ColumnLists
           lists = {orderedLists}
-          createNewList = {createNewList}
-          createNewCard = {createNewCard}
-          deleteList = {deleteList}
         />
         <DragOverlay dropAnimation={ dropAnimation }>
           {!activeDragItemType && null}

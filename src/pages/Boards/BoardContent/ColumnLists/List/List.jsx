@@ -22,8 +22,16 @@ import ListCard from './ListCards/ListCard'
 import { useSortable } from '@dnd-kit/sortable'
 import { useConfirm } from 'material-ui-confirm'
 import { CSS } from '@dnd-kit/utilities'
+import { addCardAPI, removeListAPI, updateBoard } from '~/apis'
+import { cloneDeep } from 'lodash'
+import { selectcurrentActiveBoard, updatecurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
 
-function List({ list, createNewCard, deleteList }) {
+function List({ list }) {
+  const dispatch = useDispatch()
+  const board = useSelector(selectcurrentActiveBoard)
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging
   } = useSortable({ id: list.id, data: { ...list } })
 
@@ -51,15 +59,39 @@ function List({ list, createNewCard, deleteList }) {
 
   const [newCardTitle, setNewCardTitle] = useState('')
 
-  const addNewCard = () => {
+  const addNewCard = async () => {
     if (!newCardTitle.trim()) return
     const newCardDto = {
       title: newCardTitle.trim(),
       listId: list.id
     }
-    createNewCard(newCardDto)
+    const createdCard = await addCardAPI(newCardDto)
+    const newBoard = cloneDeep(board)
+    const listUpdated = newBoard.lists.find(list => list.id === newCardDto.listId)
+    if (listUpdated) {
+      if (listUpdated.cards.some(card => card.FE_placeholder)) {
+        listUpdated.cards = [createdCard]
+        listUpdated.cardOrderIds = [createdCard.id]
+      } else {
+        listUpdated.cards.push(createdCard)
+        listUpdated.cardOrderIds.push(createdCard.id)
+      }
+    }
+    dispatch(updatecurrentActiveBoard(newBoard))
     toggleOpenNewCardForm()
     setNewCardTitle('')
+  }
+  const deleteList = async(listId) => {
+    // update board state
+    const newBoard = cloneDeep(board)
+    newBoard.lists = newBoard.lists.filter(list => list.id !== listId)
+    newBoard.listOrderIds = newBoard.listOrderIds.filter(id => id !== listId)
+    dispatch(updatecurrentActiveBoard(newBoard))
+    // call api delete list
+    removeListAPI(listId).then(res => {
+      toast.success(`${res.message}`)
+    })
+    await updateBoard(board.id, { listOrderIds: newBoard.listOrderIds })
   }
 
   //handle delete list
