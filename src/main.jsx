@@ -1,14 +1,15 @@
-import React from 'react'
 import CssBaseline from '@mui/material/CssBaseline'
 import { createRoot } from 'react-dom/client'
 import App from '~/App.jsx'
 import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material/styles'
 import theme from '~/themes'
 import { ConfirmProvider } from 'material-ui-confirm'
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify'
+import { Provider } from 'react-redux'
+import { store } from './redux/store'
 
 createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  <Provider store={store}>
     <CssVarsProvider theme = {theme}>
       <ConfirmProvider>
         <CssBaseline />
@@ -16,5 +17,5 @@ createRoot(document.getElementById('root')).render(
         <ToastContainer position='bottom-left' theme='colored' />
       </ConfirmProvider>
     </CssVarsProvider>
-  </React.StrictMode>
+  </Provider>
 )
