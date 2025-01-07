@@ -18,14 +18,18 @@ import {
 } from '~/apis'
 import { useDispatch, useSelector } from 'react-redux'
 import { cloneDeep } from 'lodash'
+import { useParams } from 'react-router-dom'
+
 
 function Board() {
   const dispatch = useDispatch()
   const board = useSelector(selectcurrentActiveBoard)
+  const { boardId } = useParams()
   useEffect(() => {
-    const boardId = '26603603-4019-4b87-856e-acb515a20cc2'
+    // const boardId = '26603603-4019-4b87-856e-acb515a20cc2'
+
     dispatch(fetchBoardDetailAPI(boardId))
-  }, [dispatch])
+  }, [dispatch, boardId])
 
 
   const moveList = async (dndOrderedLists) => {
