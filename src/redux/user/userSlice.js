@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import authorziedAxiosInstance from '~/utils/authorizeAxios'
 import { API_URL } from '~/utils/constants'
-
+import { toast } from 'react-toastify'
 const initialState = {
   currentUser: null
 }
@@ -10,6 +10,17 @@ export const loginUserAPI = createAsyncThunk(
   'user/loginUserAPI',
   async (loginDto) => {
     const response = await authorziedAxiosInstance.post(`${API_URL}/auth/login`, loginDto)
+    if (response.data.status === 'OK') {
+      toast.success(response.data.data.message)
+    }
+    return response.data
+  }
+)
+
+export const logoutUserAPI = createAsyncThunk(
+  'user/logoutUserAPI',
+  async () => {
+    const response = await authorziedAxiosInstance.delete(`${API_URL}/auth/logout`)
     return response.data
   }
 )
@@ -24,9 +35,14 @@ export const userSlice = createSlice({
     builder
       .addCase(loginUserAPI.fulfilled, (state, action) => {
         const user = action.payload
-        // const accessToken = action.payload.data.accessToken
-        // localStorage.setItem('accessToken', accessToken)
-        state.currentUser = user
+        const accessToken = action.payload.data.accessToken
+        localStorage.setItem('accessToken', accessToken)
+        state.currentUser = user.data
+      })
+    builder
+      .addCase(logoutUserAPI.fulfilled, (state, action) => {
+        localStorage.removeItem('accessToken')
+        state.currentUser = null
       })
   }
 })

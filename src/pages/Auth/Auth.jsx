@@ -1,4 +1,4 @@
-import { useLocation,Navigate } from 'react-router-dom'
+import { useLocation, Navigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
@@ -15,9 +15,8 @@ function Auth() {
 
   const currentUser = useSelector(selectCurrentUser)
   if (currentUser) {
-    return <Navigate to='/h' replace={true}/>
+    return <Navigate to='/' replace={true}/>
   }
-  
   return (
     <Box sx={{
       display: 'flex',

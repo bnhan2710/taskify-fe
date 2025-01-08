@@ -1,50 +1,82 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { interceptorLoadingElements } from '~/utils/formatter'
-//init Axios instance (authorziedAxiosInstance) using for custom and default config
-const authorziedAxiosInstance = axios.create()
+import { refreshTokenAPI } from '~/apis'
 
-//Time limit for request: 10 minutes
-authorziedAxiosInstance.defaults.timeout = 600000
+const authorziedAxiosInstance = axios.create({
+  timeout: 600000, // 10 minutes
+  withCredentials: true
+})
 
-//withCredentials: true - to send cookies and other data with request
-authorziedAxiosInstance.defaults.withCredentials = true
-// Add a request interceptor
+let isRefreshing = false
+let subscribers = []
 
-authorziedAxiosInstance.interceptors.request.use(function (config) {
-  // assign token to header
-  // const accessToken = localStorage.getItem('accessToken')
-  // if (accessToken) {
-  //   config.headers.Authorization = `Bearer ${accessToken}`
-  // }
-  //block spam click
+// Function to notify all waiting requests after refresh
+function onTokenRefreshed(newToken) {
+  subscribers.forEach(callback => callback(newToken))
+  subscribers = []
+}
+
+// Function to add requests waiting for a new token
+function addSubscriber(callback) {
+  subscribers.push(callback)
+}
+
+authorziedAxiosInstance.interceptors.request.use(config => {
+  const accessToken = localStorage.getItem('accessToken')
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`
+  }
   interceptorLoadingElements(true)
   return config
-}, function (error) {
-  // Do something with request error
+}, error => {
+  interceptorLoadingElements(false)
   return Promise.reject(error)
 })
 
-// Add a response interceptor
-authorziedAxiosInstance.interceptors.response.use(function (response) {
-  interceptorLoadingElements(false)
-  return response
-}, function (error) {
-  interceptorLoadingElements(false)
-  // Any status codes that falls outside the range of 2xx cause this function to trigger
-  // Do something with response error
-  //all http status without 200-299 will be handled here
-  console.log('error', error)
-  let errMessage = error?.message
-  if (error.response?.data?.message) {
-    errMessage = error.response?.data?.message
-  }
+authorziedAxiosInstance.interceptors.response.use(
+  response => {
+    interceptorLoadingElements(false)
+    return response
+  },
+  async error => {
+    interceptorLoadingElements(false)
+    const originalRequest = error.config
 
-  if (error.response?.status !== 410) {
-    toast.error(errMessage)
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true
+
+      if (!isRefreshing) {
+        isRefreshing = true
+        try {
+          const refreshToken = localStorage.getItem('refreshToken')
+          const { data } = await refreshTokenAPI(refreshToken)
+          const newAccessToken = data.accessToken
+
+          localStorage.setItem('accessToken', newAccessToken)
+          isRefreshing = false
+          onTokenRefreshed(newAccessToken)
+        } catch (refreshError) {
+          isRefreshing = false
+          toast.error('Session expired. Please log in again.')
+          return Promise.reject(refreshError)
+        }
+      }
+
+      return new Promise(resolve => {
+        addSubscriber(newToken => {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`
+          resolve(axios(originalRequest))
+        })
+      })
+    }
+
+    const errMessage = error.response?.data?.message || error.message || 'An error occurred'
+    if (error.response?.status !== 410) {
+      toast.error(errMessage)
+    }
+    return Promise.reject(error)
   }
-  return Promise.reject(error)
-})
+)
 
 export default authorziedAxiosInstance
-

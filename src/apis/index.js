@@ -50,3 +50,8 @@ export const registerAPI = async (registerDto) => {
   const response = await authorziedAxiosInstance.post(`${API_URL}/auth/register`, registerDto)
   return response.data
 }
+
+export const refreshTokenAPI = async () => {
+  const response = await authorziedAxiosInstance.get(`${API_URL}/auth/refresh_token`)
+  return response.data.data
+}
