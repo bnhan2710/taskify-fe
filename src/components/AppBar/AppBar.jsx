@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography'
 import Workspaces from './Menus/Workspaces'
 import Recent from './Menus/Recent'
 import Starred from './Menus/Starred'
+import AppsIcon from '@mui/icons-material/Apps'
 import Templates from './Menus/Templates'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
@@ -19,6 +20,8 @@ import AddToPhotosIcon from '@mui/icons-material/AddToPhotos'
 import InputAdornment from '@mui/material/InputAdornment'
 import SearchIcon from '@mui/icons-material/Search'
 import CloseIcon from '@mui/icons-material/Close'
+import { Link } from 'react-router-dom'
+
 function AppBar() {
   const [searchValue, setSearchValue] = useState('')
   return (
@@ -35,11 +38,21 @@ function AppBar() {
       bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#1D2125' : '#0b3e76' )
     }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap : 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap : 1 }} >
-          <SvgIcon component={MainIcon} inheritViewBox sx={{ color: '#9EACBA' }}/>
-          <Typography variant ='span' sx={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#9EACBA' }}>
+        <Tooltip title="Board List">
+          <Link to={'/boards'} style={{ textDecoration: 'none' }}>
+            <AppsIcon sx={{ color: '#9EACBA', verticalAlign: 'middle' }}/>
+          </Link>
+        </Tooltip>
+
+        <Tooltip title="Home">
+          <Link to={'/'} style={{ textDecoration: 'none' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap : 1 }} >
+              <SvgIcon component={MainIcon} inheritViewBox sx={{ color: '#9EACBA' }}/>
+              <Typography variant ='span' sx={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#9EACBA' }}>
             Taskify</Typography>
-        </Box>
+            </Box>
+          </Link>
+        </Tooltip>
         <Box sx ={{ display: { xs:'none', md: 'flex', gap: 1 } }}>
           <Workspaces/>
           <Recent/>

@@ -4,7 +4,9 @@ import NotFound from '~/pages/404/NotFound'
 import Auth from '~/pages/Auth/Auth'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
-import Settings from '~pages/Settings/Settings'
+import Settings from '~/pages/Settings/Settings'
+import Boards from '~/pages/Boards'
+
 const ProtectedRoute = ({ user }) => {
   if (!user) {
     return <Navigate to='/login' replace={true}/>
@@ -21,13 +23,13 @@ function App() {
       {/* Outlet of react-route-dom will  */}
       {/* protected route */}
       <Route element= {<ProtectedRoute user={currentUser} />}>
-        <Route path='/boards/:boardId' element={ <Board/> } replace = {true} />
+        <Route path='/boards/:boardId' element={ <Board/> } />
+        <Route path='/boards' element={<Boards/>}/>
         {/* User Setting */}
         <Route path='/settings/account' element = {<Settings/>}/>
         <Route path='/settings/security' element = {<Settings/>}/>
       </Route>
       {/* 404 NotFound Page */}
-
       {/* Authentication */}
       <Route path='login' element = {<Auth/>} />
       <Route path='register' element = {<Auth/>}/>

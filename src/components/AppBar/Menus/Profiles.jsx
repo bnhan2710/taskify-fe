@@ -76,7 +76,7 @@ function Profiles() {
           'aria-labelledby': 'basic-button-profiles'
         }}
       >
-        <Link to ="settings/account" style={{ textDecoration: 'none' }}>
+        <Link to ="/settings/account" style={{ textDecoration: 'none' }}>
           <MenuItem sx={{
             '&:hover': {
               color: 'success.light'

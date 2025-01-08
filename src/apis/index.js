@@ -55,3 +55,8 @@ export const refreshTokenAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_URL}/auth/refresh_token`)
   return response.data.data
 }
+
+export const getMyBoardsAPI = async (qs) => {
+  const response = await authorizedAxiosInstance.get(`${API_URL}/boards/${qs}`)
+  return response.data.data
+}
