@@ -7,21 +7,26 @@ import { ConfirmProvider } from 'material-ui-confirm'
 import { ToastContainer } from 'react-toastify'
 import { Provider } from 'react-redux'
 import { store } from './redux/store'
-
-
+import { persistStore } from 'redux-persist'
+import { PersistGate } from 'redux-persist/integration/react'
 //config react-router-dom with BrowserRouter
 import { BrowserRouter } from 'react-router-dom'
+
+const persistor = persistStore(store)
+
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <Provider store={store}>
-      <CssVarsProvider theme = {theme}>
-        <ConfirmProvider>
-          <CssBaseline />
-          <App />
-          <ToastContainer position='bottom-left' theme='colored' />
-        </ConfirmProvider>
-      </CssVarsProvider>
+      <PersistGate persistor={persistor}>
+        <CssVarsProvider theme = {theme}>
+          <ConfirmProvider>
+            <CssBaseline />
+            <App />
+            <ToastContainer position='bottom-left' theme='colored' />
+          </ConfirmProvider>
+        </CssVarsProvider>
+      </PersistGate>
     </Provider>
   </BrowserRouter>
 )

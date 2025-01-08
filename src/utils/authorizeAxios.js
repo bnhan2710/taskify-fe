@@ -9,9 +9,14 @@ authorziedAxiosInstance.defaults.timeout = 600000
 
 //withCredentials: true - to send cookies and other data with request
 authorziedAxiosInstance.defaults.withCredentials = true
-
 // Add a request interceptor
+
 authorziedAxiosInstance.interceptors.request.use(function (config) {
+  // assign token to header
+  // const accessToken = localStorage.getItem('accessToken')
+  // if (accessToken) {
+  //   config.headers.Authorization = `Bearer ${accessToken}`
+  // }
   //block spam click
   interceptorLoadingElements(true)
   return config
@@ -35,7 +40,7 @@ authorziedAxiosInstance.interceptors.response.use(function (response) {
     errMessage = error.response?.data?.message
   }
 
-  if (error.response?.status !== 401) {
+  if (error.response?.status !== 410) {
     toast.error(errMessage)
   }
   return Promise.reject(error)

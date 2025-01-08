@@ -9,8 +9,11 @@ import { ReactComponent as TrelloIcon } from '~/assets/main-logo.svg'
 import CardActions from '@mui/material/CardActions'
 import TextField from '@mui/material/TextField'
 import Zoom from '@mui/material/Zoom'
-import Alert from '@mui/material/Alert'
 import { useForm } from 'react-hook-form'
+import { useSearchParams, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { useDispatch } from 'react-redux'
+import { loginUserAPI } from '~/redux/user/userSlice'
 import {
   EMAIL_RULE,
   PASSWORD_RULE,
@@ -21,10 +24,24 @@ import {
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 
 function LoginForm() {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { register, handleSubmit, formState: { errors } } = useForm()
   const submitLogIn = (data) => {
-    const usernameFormEmail = data.email.split('@')[0]
-    console.log(`Login with email: ${data.email} and password: ${data.password}`)
+    const { email, password } = data
+    const loginDto = {
+      email,
+      password
+    }
+    toast.promise(dispatch(loginUserAPI(loginDto)),
+      {
+        pending: 'Login in progress...'
+      }).then(res => {
+      if (!res.error) {
+        toast.success('Login successful!')
+        navigate('/')
+      }
+    })
   }
 
   return (
