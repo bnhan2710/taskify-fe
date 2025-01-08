@@ -1,9 +1,9 @@
-import axios from 'axios'
+import authorziedAxiosInstance from '~/utils/authorizeAxios'
 import { API_URL } from '~/utils/constants'
 
 // export const FetchBoardDetailsAPI = async (boardId) => {
 
-//   const response = await axios.get(`${API_URL}/boards/${boardId}`)
+//   const response = await authorziedAxiosInstance.get(`${API_URL}/boards/${boardId}`)
 //   let board = response.data.data
 //   board.lists = board.lists.map(list => ({ ...list, boardId: board.id }))
 //   for (let list of board.lists) {
@@ -14,34 +14,44 @@ import { API_URL } from '~/utils/constants'
 
 export const addListAPI = async (newListDto) => {
 
-  const response = await axios.post(`${API_URL}/lists`, newListDto)
+  const response = await authorziedAxiosInstance.post(`${API_URL}/lists`, newListDto)
   return response.data.data
 
 }
 
 export const addCardAPI = async (newCardDto) => {
 
-  const response = await axios.post(`${API_URL}/cards`, newCardDto)
+  const response = await authorziedAxiosInstance.post(`${API_URL}/cards`, newCardDto)
   return response.data.data
 
 }
 
 export const updateBoard = async (boardId, updateBoardDto) => {
-  const response = await axios.put(`${API_URL}/boards/${boardId}`, updateBoardDto)
+  const response = await authorziedAxiosInstance.put(`${API_URL}/boards/${boardId}`, updateBoardDto)
   return response.data.data
 }
 
 export const updateList = async (listId, updateListDto) => {
-  const response = await axios.put(`${API_URL}/lists/${listId}`, updateListDto)
+  const response = await authorziedAxiosInstance.put(`${API_URL}/lists/${listId}`, updateListDto)
   return response.data.data
 }
 
 export const updateCard = async (cardId, updateCardDto) => {
-  const response = await axios.put(`${API_URL}/cards/${cardId}`, updateCardDto)
+  const response = await authorziedAxiosInstance.put(`${API_URL}/cards/${cardId}`, updateCardDto)
   return response.data.data
 }
 
 export const removeListAPI = async (listId) => {
-  const response = await axios.delete(`${API_URL}/lists/${listId}`)
+  const response = await authorziedAxiosInstance.delete(`${API_URL}/lists/${listId}`)
   return response.data
+}
+
+export const registerAPI = async (registerDto) => {
+  const response = await authorziedAxiosInstance.post(`${API_URL}/auth/register`, registerDto)
+  return response.data
+}
+
+export const refreshTokenAPI = async () => {
+  const response = await authorziedAxiosInstance.get(`${API_URL}/auth/refresh_token`)
+  return response.data.data
 }
