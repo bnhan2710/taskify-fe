@@ -3,7 +3,7 @@ import { toast } from 'react-toastify'
 import { interceptorLoadingElements } from '~/utils/formatter'
 import { refreshTokenAPI } from '~/apis'
 
-const authorziedAxiosInstance = axios.create({
+const authorizedAxiosInstance = axios.create({
   timeout: 600000, // 10 minutes
   withCredentials: true
 })
@@ -22,7 +22,7 @@ function addSubscriber(callback) {
   subscribers.push(callback)
 }
 
-authorziedAxiosInstance.interceptors.request.use(config => {
+authorizedAxiosInstance.interceptors.request.use(config => {
   const accessToken = localStorage.getItem('accessToken')
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`
@@ -34,7 +34,7 @@ authorziedAxiosInstance.interceptors.request.use(config => {
   return Promise.reject(error)
 })
 
-authorziedAxiosInstance.interceptors.response.use(
+authorizedAxiosInstance.interceptors.response.use(
   response => {
     interceptorLoadingElements(false)
     return response
@@ -66,7 +66,7 @@ authorziedAxiosInstance.interceptors.response.use(
       return new Promise(resolve => {
         addSubscriber(newToken => {
           originalRequest.headers.Authorization = `Bearer ${newToken}`
-          resolve(axios(originalRequest))
+          resolve(authorizedAxiosInstance(originalRequest))
         })
       })
     }
@@ -79,4 +79,4 @@ authorziedAxiosInstance.interceptors.response.use(
   }
 )
 
-export default authorziedAxiosInstance
+export default authorizedAxiosInstance
