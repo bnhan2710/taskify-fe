@@ -316,6 +316,7 @@ function List({ list }) {
                 }}
               >
                 <Button
+                  className='interceptor-loading'
                   variant="contained"
                   color="primary"
                   onClick={addNewCard}

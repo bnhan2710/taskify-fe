@@ -23,7 +23,8 @@ import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 function LoginForm() {
   const { register, handleSubmit, formState: { errors } } = useForm()
   const submitLogIn = (data) => {
-    console.log('data', data)
+    const usernameFormEmail = data.email.split('@')[0]
+    console.log(`Login with email: ${data.email} and password: ${data.password}`)
   }
 
   return (
@@ -41,18 +42,6 @@ function LoginForm() {
           </Box>
           <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', color: theme => theme.palette.grey[500] }}>
             <Typography variant="h5">Login</Typography>
-          </Box>
-          <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', flexDirection: 'column', padding: '0 1em' }}>
-            <Alert severity="success" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
-              Your email&nbsp;
-              <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>baonhannice@gmail.com</Typography>
-              &nbsp;has been verified.<br />Now you can login to enjoy our services! Have a good day!
-            </Alert>
-            <Alert severity="info" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
-              An email has been sent to&nbsp;
-              <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>baonhannice@gmail.com</Typography>
-              <br />Please check and verify your account before logging in!
-            </Alert>
           </Box>
           <Box sx={{ padding: '0 1em 1em 1em' }}>
             <Box sx={{ marginTop: '1em' }}>

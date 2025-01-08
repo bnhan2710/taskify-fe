@@ -1,11 +1,9 @@
 import Container from '@mui/material/Container'
-import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
-import Typography from '@mui/material/Typography'
 import AppBar from '~/components/AppBar/AppBar'
 import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
 import { useEffect } from 'react'
+import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import {
   fetchBoardDetailAPI,
   updatecurrentActiveBoard,
@@ -20,13 +18,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { cloneDeep } from 'lodash'
 import { useParams } from 'react-router-dom'
 
-
 function Board() {
   const dispatch = useDispatch()
   const board = useSelector(selectcurrentActiveBoard)
   const { boardId } = useParams()
   useEffect(() => {
-    // const boardId = '26603603-4019-4b87-856e-acb515a20cc2'
 
     dispatch(fetchBoardDetailAPI(boardId))
   }, [dispatch, boardId])
@@ -72,11 +68,7 @@ function Board() {
 
   if (!board) {
     return (
-      <Box sx = {{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', gap: 2, width:' 100vw' }}>
-        <CircularProgress/>
-        <Typography variant = 'h6'>Loading...</Typography>
-      </Box>
-
+      <PageLoadingSpinner/>
     )
   }
 

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link,useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
@@ -10,6 +10,7 @@ import CardActions from '@mui/material/CardActions'
 import TextField from '@mui/material/TextField'
 import Zoom from '@mui/material/Zoom'
 import { useForm } from 'react-hook-form'
+import { registerAPI } from '~/apis'
 import {
   EMAIL_RULE,
   PASSWORD_RULE,
@@ -18,12 +19,29 @@ import {
   EMAIL_RULE_MESSAGE
 } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
-
+import { toast } from 'react-toastify'
 
 function RegisterForm() {
   const { register, handleSubmit, formState: { errors }, watch } = useForm()
+  const navigate = useNavigate()
   const submitRegister = (data) => {
-    console.log('dataSubmit', data)
+    const { email, password } = data
+    const usernameFormEmail = data.email.split('@')[0]
+    const registerDto = {
+      email,
+      password,
+      username: usernameFormEmail
+    }
+    toast.promise(registerAPI(registerDto),
+      {
+        pending: 'Registation in progress...'
+      }).then(() => {
+      toast.success('Registration successful! Now you can log in.')
+      navigate('/login')
+    }).catch((error) => {
+      toast.error(error)
+    }
+    )
   }
 
   return (
