@@ -1,17 +1,6 @@
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
 import { API_URL } from '~/utils/constants'
 
-// export const FetchBoardDetailsAPI = async (boardId) => {
-
-//   const response = await authorziedAxiosInstance.get(`${API_URL}/boards/${boardId}`)
-//   let board = response.data.data
-//   board.lists = board.lists.map(list => ({ ...list, boardId: board.id }))
-//   for (let list of board.lists) {
-//     list.cards = list.cards.map(card => ({ ...card, listId: list.id }))
-//   }
-//   return board
-// }
-
 export const addListAPI = async (newListDto) => {
 
   const response = await authorizedAxiosInstance.post(`${API_URL}/lists`, newListDto)
@@ -63,5 +52,10 @@ export const getMyBoardsAPI = async (qs) => {
 
 export const createBoardAPI = async (createBoardDto) => {
   const response = await authorizedAxiosInstance.post(`${API_URL}/boards`, createBoardDto)
+  return response.data.data
+}
+
+export const updateCardAPI = async (cardId, updateCardDto) => {
+  const response = await authorizedAxiosInstance.put(`${API_URL}/cards/${cardId}`, updateCardDto)
   return response.data.data
 }
