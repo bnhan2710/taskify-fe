@@ -5,13 +5,11 @@ import VpnLockIcon from '@mui/icons-material/VpnLock'
 import AddToDriveIcon from '@mui/icons-material/AddToDrive'
 import BoltIcon from '@mui/icons-material/Bolt'
 import FilterListIcon from '@mui/icons-material/FilterList'
-import Avatar from '@mui/material/Avatar'
-import AvatarGroup from '@mui/material/AvatarGroup'
-import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { capitalizeFirstLetter } from '~/utils/formatter'
+import BoardUserGroup from './BoardUserGroup'
 // import { capitalizeFirstLetter } from '~/utils/formatter'
 
 const MENU_STYLES ={
@@ -79,57 +77,8 @@ function BoardBar({ board }) {
           label="Filter"
           clickable
         />
-        <AvatarGroup
-          max={5}
-          sx = {{
-            '& .MuiAvatar-root':{
-              width:34,
-              height:34,
-              fontSize:16,
-              border: 'none',
-              color:'white',
-              cursor:'pointer',
-              '&:first-of-type':{ color:'#a4b0be' }
-            }
-          }}
-        >
-          <Tooltip title ="Bao Nhan">
-            <Avatar
-              alt="Remy Sharp"
-              src="https://avatars.githubusercontent.com/u/130585782?v=4" />
-          </Tooltip>
-          <Tooltip title ="Bao Nhan">
-            <Avatar
-              alt="Remy Sharp"
-              src="https://avatars.githubusercontent.com/u/130585782?v=4" />
-          </Tooltip>
-          <Tooltip title ="Bao Nhan">
-            <Avatar
-              alt="Remy Sharp"
-              src="https://avatars.githubusercontent.com/u/130585782?v=4" />
-          </Tooltip>
-          <Tooltip title ="Bao Nhan">
-            <Avatar
-              alt="Remy Sharp"
-              src="https://avatars.githubusercontent.com/u/130585782?v=4" />
-          </Tooltip>
-          <Tooltip title ="Bao Nhan">
-            <Avatar
-              alt="Remy Sharp"
-              src="https://avatars.githubusercontent.com/u/130585782?v=4" />
-          </Tooltip>
-          <Tooltip title ="Bao Nhan">
-            <Avatar
-              alt="Remy Sharp"
-              src="https://avatars.githubusercontent.com/u/130585782?v=4" />
-          </Tooltip>
-          <Tooltip title ="Bao Nhan">
-            <Avatar
-              alt="Remy Sharp"
-              src="https://avatars.githubusercontent.com/u/130585782?v=4" />
-          </Tooltip>
-        </AvatarGroup>
         <Button sx={{ display:'flex', gap:0.5, color:'white', borderColor:'white', '&:hover':{ borderColor:'white' } }} variant="outlined"><PersonAddAltIcon size="small" />Share</Button>
+        <BoardUserGroup/>
         <MoreHorizIcon/>
       </Box>
     </Box>

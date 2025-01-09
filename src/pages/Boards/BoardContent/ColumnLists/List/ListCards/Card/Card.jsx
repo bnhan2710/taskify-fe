@@ -9,8 +9,13 @@ import AttachmentIcon from '@mui/icons-material/Attachment'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { useDispatch } from 'react-redux'
+import { updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
+import { fetchCardDetailAPI } from '~/redux/activeCard/activeCardSlice'
 
 function Card({ card }) {
+
+  const dispatch = useDispatch()
   const { attributes, listeners, setNodeRef, transform, transition, isDragging
   } = useSortable({ id: card.id, data: { ...card } })
   const dndkitCardStyles = {
@@ -24,8 +29,15 @@ function Card({ card }) {
     return !!card.comments?.length || !!card.attachments?.length || !!card.checklist?.length
   }
 
+  const setActiveCard = () => {
+    //update current active card
+    dispatch(fetchCardDetailAPI(card.id))
+  }
+
   return (
-    <MuiCard ref={setNodeRef} style = {dndkitCardStyles} {...attributes} {...listeners}
+    <MuiCard
+      onClick={setActiveCard}
+      ref={setNodeRef} style = {dndkitCardStyles} {...attributes} {...listeners}
       sx={{
 
         cursor: 'pointer',

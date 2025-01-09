@@ -32,9 +32,19 @@ export const activeBoardSlice = createSlice({
       const board = action.payload
       //update data currentActiveBoard
       state.currentActiveBoard = board
+    },
+    updateCardInBoard: (state, action) => {
+      const updatedCard = action.payload
+      const { currentActiveBoard } = state
+      const { lists } = currentActiveBoard
+      for (let list of lists) {
+        const cardIndex = list.cards.findIndex(card => card.id === updatedCard.id)
+        if (cardIndex > -1) {
+          list.cards[cardIndex] = updatedCard
+          break
+        }
+      }
     }
-    //hanlde data needed for the board
-
   },
 
   //extraReducer for handling async actions
@@ -58,7 +68,7 @@ export const activeBoardSlice = createSlice({
   }
 })
 // action creator for the reducer, dispatch the action to the reducer
-export const { updatecurrentActiveBoard } = activeBoardSlice.actions
+export const { updatecurrentActiveBoard, updateCardInBoard } = activeBoardSlice.actions
 // selector for the reducer, get data from the reducer
 export const selectcurrentActiveBoard = (state) => state.activeBoard.currentActiveBoard
 
