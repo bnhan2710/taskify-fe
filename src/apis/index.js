@@ -60,3 +60,8 @@ export const getMyBoardsAPI = async (qs) => {
   const response = await authorizedAxiosInstance.get(`${API_URL}/boards/${qs}`)
   return response.data.data
 }
+
+export const createBoardAPI = async (createBoardDto) => {
+  const response = await authorizedAxiosInstance.post(`${API_URL}/boards`, createBoardDto)
+  return response.data.data
+}

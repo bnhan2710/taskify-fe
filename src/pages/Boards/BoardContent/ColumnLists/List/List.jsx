@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -19,6 +18,7 @@ import DragHandleIcon from '@mui/icons-material/DragHandle'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import ListCard from './ListCards/ListCard'
+import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import { useSortable } from '@dnd-kit/sortable'
 import { useConfirm } from 'material-ui-confirm'
 import { CSS } from '@dnd-kit/utilities'
@@ -27,6 +27,7 @@ import { cloneDeep } from 'lodash'
 import { selectcurrentActiveBoard, updatecurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
+import { updateList } from '~/apis'
 
 function List({ list }) {
   const dispatch = useDispatch()
@@ -117,6 +118,20 @@ function List({ list }) {
     }
     ).catch(() => {})
   }
+
+  const onUpdateListTitle = (newTitle) => {
+    //call api update list
+    updateList(list.id, { title: newTitle }).then(() => {
+      //update board state
+      const newBoard = cloneDeep(board)
+      const listUpdated = newBoard.lists.find(list => list.id === list.id)
+      if (listUpdated) {
+        listUpdated.title = newTitle
+      }
+      dispatch(updatecurrentActiveBoard(newBoard))
+    })
+  }
+
   const orderedCards = list.cards
   return (
     <div ref={setNodeRef} style = {dndkitListStyles} {...attributes} >
@@ -142,15 +157,11 @@ function List({ list }) {
             justifyContent: 'space-between'
           }}
         >
-          <Typography variant="h6" sx={{
-            fontSize: '1rem',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            color: (theme) => (theme.palette.mode === 'dark' ? '#B6C2CF' : '#B6C2CF')
-          }}>
-
-            {list?.title}
-          </Typography>
+          <ToggleFocusInput
+            value = {list.title}
+            onChangedValue={onUpdateListTitle}
+            data-no-dnd = "true"
+          />
           <Box>
             <Tooltip title= "More options">
               <KeyboardArrowDownIcon
