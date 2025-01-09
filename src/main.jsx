@@ -16,9 +16,9 @@ const persistor = persistStore(store)
 
 
 createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
+  <Provider store={store}>
+    <PersistGate persistor={persistor}>
+      <BrowserRouter basename='/'>
         <CssVarsProvider theme = {theme}>
           <ConfirmProvider>
             <CssBaseline />
@@ -26,7 +26,7 @@ createRoot(document.getElementById('root')).render(
             <ToastContainer position='bottom-left' theme='colored' />
           </ConfirmProvider>
         </CssVarsProvider>
-      </PersistGate>
-    </Provider>
-  </BrowserRouter>
+      </BrowserRouter>
+    </PersistGate>
+  </Provider>
 )

@@ -18,7 +18,7 @@ function App() {
   const currentUser = useSelector(selectCurrentUser)
   return (
     <Routes>
-      <Route path='/' element={ <Navigate to='/boards/26603603-4019-4b87-856e-acb515a20cc2'/> }/>
+      <Route path='/' element={ <Navigate to='/boards' replace={ true } /> }/>
 
       {/* Outlet of react-route-dom will  */}
       {/* protected route */}

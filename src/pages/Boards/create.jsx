@@ -15,6 +15,8 @@ import Button from '@mui/material/Button'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import { createBoardAPI } from '~/apis'
+import { toast } from 'react-toastify'
 
 import { styled } from '@mui/material/styles'
 const SidebarItem = styled(Box)(({ theme }) => ({
@@ -39,7 +41,7 @@ const BOARD_TYPES = {
   PRIVATE: 'private'
 }
 
-function SidebarCreateBoardModal() {
+function SidebarCreateBoardModal({ afterCreateBoard }) {
   const { control, register, handleSubmit, reset, formState: { errors } } = useForm()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -52,10 +54,24 @@ function SidebarCreateBoardModal() {
 
   const submitCreateNewBoard = (data) => {
     const { title, description, type } = data
-    console.log('Board title: ', title)
-    console.log('Board description: ', description)
-    console.log('Board type: ', type)
+    const workspaceId = 'a693e862-6dd3-4f7c-b32a-f72d22a94840'
+    const createBoardDto = { title, description, type, workspaceId }
+    // Call API...
+    createBoardAPI(createBoardDto)
+      .then(res => {
+        if (res.error) {
+          toast.error(res.error)
+          return
+        }
+        toast.success('Create new board successfully!')
+        handleCloseModal()
+        afterCreateBoard()
+      })
+      .catch(error => {
+        toast.error(error)
+      })
   }
+
 
   return (
     <>
@@ -66,7 +82,7 @@ function SidebarCreateBoardModal() {
 
       <Modal
         open={isOpen}
-        // onClose={handleCloseModal} // 
+        onClose={handleCloseModal}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
