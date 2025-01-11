@@ -17,9 +17,9 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
+import { updateUserAPI } from '~/apis'
+import { useDispatch } from 'react-redux'
 
-// Xử lý custom đẹp cái input file ở đây: https://mui.com/material-ui/react-button/#file-upload
-// Ngoài ra note thêm lib này từ docs của MUI nó recommend nếu cần dùng: https://github.com/viclafouch/mui-file-input
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -33,25 +33,20 @@ const VisuallyHiddenInput = styled('input')({
 })
 
 function AccountTab() {
+  const dispatch = useDispatch()
   const currentUser = useSelector(selectCurrentUser)
-
-  // Những thông tin của user để init vào form (key tương ứng với register phía dưới Field)
   const initialGeneralForm = {
-    displayName: currentUser?.username
+    displayName: currentUser?.displayName
   }
-  // Sử dụng defaultValues để set giá trị mặc định cho các field cần thiết
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: initialGeneralForm
   })
 
   const submitChangeGeneralInformation = (data) => {
     const { displayName } = data
-    console.log('displayName: ', displayName)
 
-    // Nếu không có sự thay đổi gì về displayname thì không làm gì cả
-    if (displayName === currentUser?.username) return
-
-    // Gọi API...
+    if (displayName === currentUser?.displayName) return
+    updateUserAPI({ displayName }, currentUser.id)
   }
 
   const uploadAvatar = (e) => {
@@ -62,17 +57,13 @@ function AccountTab() {
       toast.error(error)
       return
     }
-
-    // Sử dụng FormData để xử lý dữ liệu liên quan tới file khi gọi API
     let reqData = new FormData()
     reqData.append('avatar', e.target?.files[0])
-    // Cách để log được dữ liệu thông qua FormData
     console.log('reqData: ', reqData)
     for (const value of reqData.values()) {
       console.log('reqData Value: ', value)
     }
 
-    // Gọi API...
   }
 
   return (

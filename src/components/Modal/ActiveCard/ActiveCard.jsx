@@ -35,13 +35,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   clearCurrentActiveCard,
   selectCurrentActiveCard,
-  updateCurrentActiveCard 
+  updateCurrentActiveCard
 } from '~/redux/activeCard/activeCardSlice'
 import { updateCardAPI } from '~/apis'
-
 import { styled } from '@mui/material/styles'
-import { update } from 'lodash'
 import { updateCardInBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { commentCardAPI } from '~/apis'
+
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -78,6 +78,11 @@ function ActiveCard() {
     callAPIupdateCard({ title: newTitle.trim() })
   }
 
+  const onUpdateCardDescription = (newDescription) => {
+    if (newDescription === activeCard.description) return
+    callAPIupdateCard({ description: newDescription })
+  }
+
   const callAPIupdateCard = (updateCardDto) => {
     const updateDto = { ...updateCardDto, listId:activeCard.listId }
     updateCardAPI(activeCard.id, updateDto)
@@ -95,6 +100,20 @@ function ActiveCard() {
     let reqData = new FormData()
     reqData.append('cardCover', event.target?.files[0])
 
+  }
+
+  const onAddCardComment = async (commentToAdd) => {
+    const commentDto = {
+      ...commentToAdd,
+      cardId: activeCard.id
+    }
+    const newComment = await commentCardAPI(commentDto)
+    dispatch(updateCurrentActiveCard({
+      ...activeCard,
+      comments: [...activeCard.comments, newComment]
+    }))
+  }
+  const onUpdateCardMembers = (incommingMemberInfo) => { 
   }
 
   return (
@@ -150,9 +169,11 @@ function ActiveCard() {
               <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Members</Typography>
 
               {/* Feature 02: Xử lý các thành viên của Card */}
-              <CardUserGroup />
+              <CardUserGroup
+                memberIds={activeCard?.members}
+                onUpdateCardMembers={onUpdateCardMembers}
+              />
             </Box>
-
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <SubjectRoundedIcon />
@@ -160,7 +181,10 @@ function ActiveCard() {
               </Box>
 
               {/* Feature 03: Xử lý mô tả của Card */}
-              <CardDescriptionMdEditor />
+              <CardDescriptionMdEditor
+                cardDescriptionProp={activeCard?.description}
+                handleUpdateCardDescription={onUpdateCardDescription}
+              />
             </Box>
 
             <Box sx={{ mb: 3 }}>
@@ -170,7 +194,10 @@ function ActiveCard() {
               </Box>
 
               {/* Feature 04: Xử lý các hành động, ví dụ comment vào Card */}
-              <CardActivitySection />
+              <CardActivitySection
+                cardComments={activeCard?.comments}
+                onAddCardComment = {onAddCardComment}
+              />
             </Box>
           </Grid>
 
