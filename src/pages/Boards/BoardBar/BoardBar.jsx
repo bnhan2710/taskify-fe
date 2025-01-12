@@ -10,6 +10,7 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { capitalizeFirstLetter } from '~/utils/formatter'
 import BoardUserGroup from './BoardUserGroup'
+import InviteBoardUser from './InviteBoardUser'
 // import { capitalizeFirstLetter } from '~/utils/formatter'
 
 const MENU_STYLES ={
@@ -77,8 +78,9 @@ function BoardBar({ board }) {
           label="Filter"
           clickable
         />
-        <Button sx={{ display:'flex', gap:0.5, color:'white', borderColor:'white', '&:hover':{ borderColor:'white' } }} variant="outlined"><PersonAddAltIcon size="small" />Share</Button>
-        <BoardUserGroup/>
+        {/* handle invite board user */}
+        <InviteBoardUser boardId = {board.id}/>
+        <BoardUserGroup boardUsers={board?.boardUsers}/>
         <MoreHorizIcon/>
       </Box>
     </Box>

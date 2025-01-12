@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify'
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
 import { API_URL } from '~/utils/constants'
 
@@ -57,5 +58,26 @@ export const createBoardAPI = async (createBoardDto) => {
 
 export const updateCardAPI = async (cardId, updateCardDto) => {
   const response = await authorizedAxiosInstance.put(`${API_URL}/cards/${cardId}`, updateCardDto)
+  return response.data.data
+}
+
+export const updateUserAPI = async (updateUserDto, userId) => {
+  const response = await authorizedAxiosInstance.put(`${API_URL}/users/${userId}`, updateUserDto)
+  return response.data.data
+}
+
+export const commentCardAPI = async (commentDto) => {
+  const response = await authorizedAxiosInstance.post(`${API_URL}/comments`, commentDto)
+  return response.data.data
+}
+
+export const inviteUserToBoardAPI = async (email, boardId) => {
+  const response = await authorizedAxiosInstance.post(`${API_URL}/boards/${boardId}/add`, email)
+  toast.success('Invite user successfully!')
+  return response.data.data
+}
+
+export const addCardMemberAPI = async (cardId, memberId) => {
+  const response = await authorizedAxiosInstance.post(`${API_URL}/cards/${cardId}/member/add`, memberId)
   return response.data.data
 }

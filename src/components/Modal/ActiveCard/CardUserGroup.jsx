@@ -6,12 +6,13 @@ import Popover from '@mui/material/Popover'
 import AddIcon from '@mui/icons-material/Add'
 import Badge from '@mui/material/Badge'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import { useSelector } from 'react-redux'
+import { selectcurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 
-function CardUserGroup({ cardMemberIds = [] }) {
-  /**
-   * Xử lý Popover để ẩn hoặc hiện toàn bộ user trên một cái popup, tương tự docs để tham khảo ở đây:
-   * https://mui.com/material-ui/react-popover/
-   */
+function CardUserGroup({ memberIds = [], onUpdateCardMembers }) {
+  const board = useSelector(selectcurrentActiveBoard)
+  const boardUsers = board?.boardUsers || []
+  const FE_CardMembers = boardUsers.filter(user => memberIds.includes(user.id))
   const [anchorPopoverElement, setAnchorPopoverElement] = useState(null)
   const isOpenPopover = Boolean(anchorPopoverElement)
   const popoverId = isOpenPopover ? 'card-all-users-popover' : undefined
@@ -19,22 +20,27 @@ function CardUserGroup({ cardMemberIds = [] }) {
     if (!anchorPopoverElement) setAnchorPopoverElement(event.currentTarget)
     else setAnchorPopoverElement(null)
   }
+  const handleUpdateCardMembers = (user) => {
+    const incommingMemberInfo ={
+      userId: user.id,
+      action: memberIds.includes(user.id) ? 'remove' : 'add'
+    }
+    onUpdateCardMembers(incommingMemberInfo)
+  }
 
-  // Lưu ý ở đây chúng ta không dùng Component AvatarGroup của MUI bởi nó không hỗ trợ tốt trong việc chúng ta cần custom & trigger xử lý phần tử tính toán cuối, đơn giản là cứ dùng Box và CSS - Style đám Avatar cho chuẩn kết hợp tính toán một chút thôi.
   return (
     <Box sx={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
       {/* Hiển thị các user là thành viên của card */}
-      {[...Array(8)].map((_, index) =>
-        <Tooltip title="baonhan" key={index}>
+      {FE_CardMembers.map((user, index) =>
+        <Tooltip title={user?.displayName} key={index}>
           <Avatar
             sx={{ width: 34, height: 34, cursor: 'pointer' }}
-            alt="baonhan"
-            src="https://avatars.githubusercontent.com/u/130585782?v=4"
+            alt={user?.displayName}
+            src={user?.avatar}
           />
         </Tooltip>
       )}
 
-      {/* Nút này để mở popover thêm member */}
       <Tooltip title="Add new member">
         <Box
           aria-describedby={popoverId}
@@ -60,8 +66,6 @@ function CardUserGroup({ cardMemberIds = [] }) {
           <AddIcon fontSize="small" />
         </Box>
       </Tooltip>
-
-      {/* Khi Click vào + ở trên thì sẽ mở popover hiện toàn bộ users trong board để người dùng Click chọn thêm vào card  */}
       <Popover
         id={popoverId}
         open={isOpenPopover}
@@ -70,19 +74,23 @@ function CardUserGroup({ cardMemberIds = [] }) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Box sx={{ p: 2, maxWidth: '260px', display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
-          {[...Array(16)].map((_, index) =>
-            <Tooltip title="baonhan" key={index}>
-              {/* Cách làm Avatar kèm badge icon: https://mui.com/material-ui/react-avatar/#with-badge */}
+          {boardUsers.map((user, index) =>
+            <Tooltip title={user?.displayName} key={index}>
               <Badge
                 sx={{ cursor: 'pointer' }}
                 overlap="rectangular"
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                badgeContent={<CheckCircleIcon fontSize="small" sx={{ color: '#27ae60' }} />}
+                badgeContent={
+                  memberIds.includes(user.id)
+                    ? <CheckCircleIcon fontSize="small" sx={{ color: '#27ae60' }} />
+                    : null
+                }
+                onClick={() => handleUpdateCardMembers(user)}
               >
                 <Avatar
                   sx={{ width: 34, height: 34 }}
-                  alt="baonhan"
-                  src="https://avatars.githubusercontent.com/u/130585782?v=4"
+                  alt={user?.displayName}
+                  src={user?.avatar}
                 />
               </Badge>
             </Tooltip>

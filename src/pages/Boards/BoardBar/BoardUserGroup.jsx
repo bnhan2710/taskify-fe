@@ -12,24 +12,23 @@ function BoardUserGroup({ boardUsers = [], limit = 5 }) {
     if (!anchorPopoverElement) setAnchorPopoverElement(event.currentTarget)
     else setAnchorPopoverElement(null)
   }
-
   return (
     <Box sx={{ display: 'flex', gap: '4px' }}>
-      {[...Array(16)].map((_, index) => {
+      {boardUsers.map((user, index) => {
         if (index < limit) {
           return (
-            <Tooltip title="baonhan" key={index}>
+            <Tooltip title={user.displayName} key={index}>
               <Avatar
                 sx={{ width: 34, height: 34, cursor: 'pointer' }}
-                alt="baonhan"
-                src="https://avatars.githubusercontent.com/u/130585782?v=4"
+                alt={user.displayName}
+                src={user?.avatar}
               />
             </Tooltip>
           )
         }
       })}
 
-      {[...Array(16)].length > limit &&
+      {boardUsers.length > limit &&
         <Tooltip title="Show more">
           <Box
             aria-describedby={popoverId}
@@ -48,7 +47,7 @@ function BoardUserGroup({ boardUsers = [], limit = 5 }) {
               backgroundColor: '#a4b0be'
             }}
           >
-            +{[...Array(16)].length - limit}
+            +{boardUsers.length - limit}
           </Box>
         </Tooltip>
       }
@@ -61,12 +60,12 @@ function BoardUserGroup({ boardUsers = [], limit = 5 }) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Box sx={{ p: 2, maxWidth: '235px', display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          {[...Array(16)].map((_, index) =>
-            <Tooltip title="baonhan" key={index}>
+          {boardUsers.map((user, index) =>
+            <Tooltip title={user.displayName} key={index}>
               <Avatar
                 sx={{ width: 34, height: 34, cursor: 'pointer' }}
-                alt="baonhan"
-                src="https://avatars.githubusercontent.com/u/130585782?v=4"
+                alt={user.displayName}
+                src={user?.avatar}
               />
             </Tooltip>
           )}

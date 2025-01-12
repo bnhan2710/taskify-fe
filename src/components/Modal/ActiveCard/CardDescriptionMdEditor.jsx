@@ -9,8 +9,6 @@ import { updateCardAPI } from '~/apis'
 
 
 const markdownValueExample = `
-  *\`Markdown Content Example:\`*
-
   **Hello world | Huynh Nhu Bao Nhan**
   [![](https://avatars.githubusercontent.com/u/130585782?v=4)](https://avatars.githubusercontent.com/u/130585782?v=4)
   \`\`\`javascript
@@ -19,22 +17,16 @@ const markdownValueExample = `
   import MDEditor from '@uiw/react-md-editor'
   \`\`\`
 `
-/**
- * Vài ví dụ Markdown từ lib
- * https://codesandbox.io/embed/markdown-editor-for-react-izdd6?fontsize=14&hidenavigation=1&theme=dark
- */
-function CardDescriptionMdEditor() {
+
+function CardDescriptionMdEditor({ cardDescriptionProp, handleUpdateCardDescription }) {
   const { mode } = useColorScheme()
 
-  // State xử lý chế độ Edit và chế độ View
   const [markdownEditMode, setMarkdownEditMode] = useState(false)
-  // State xử lý giá trị markdown khi chỉnh sửa
-  const [cardDescription, setCardDescription] = useState(markdownValueExample)
+  const [cardDescription, setCardDescription] = useState(cardDescriptionProp || markdownValueExample)
 
   const updateCardDescription = () => {
     setMarkdownEditMode(false)
-    console.log('cardDescription: ', cardDescription)
-    // Gọi API update card description
+    handleUpdateCardDescription(cardDescription)
   }
 
   return (
@@ -45,10 +37,9 @@ function CardDescriptionMdEditor() {
             <MDEditor
               value={cardDescription}
               onChange={setCardDescription}
-              previewOptions={{ rehypePlugins: [[rehypeSanitize]] }} // https://www.npmjs.com/package/@uiw/react-md-editor#security
+              previewOptions={{ rehypePlugins: [[rehypeSanitize]] }}
               height={400}
-              preview="edit" // Có 3 giá trị để set tùy nhu cầu ['edit', 'live', 'preview']
-              // hideToolbar={true}
+              preview="edit"
             />
           </Box>
           <Button

@@ -18,6 +18,8 @@ export const fetchBoardDetailAPI = createAsyncThunk(
     for (let list of board.lists) {
       list.cards = list.cards.map(card => ({ ...card, listId: list.id }))
     }
+    //board User
+
     return board
   }
 )
