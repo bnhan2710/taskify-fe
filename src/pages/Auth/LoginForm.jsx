@@ -1,11 +1,8 @@
 import { Link } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Avatar from '@mui/material/Avatar'
-import LockIcon from '@mui/icons-material/Lock'
 import Typography from '@mui/material/Typography'
 import { Card as MuiCard } from '@mui/material'
-import { ReactComponent as TrelloIcon } from '~/assets/main-logo.svg'
 import CardActions from '@mui/material/CardActions'
 import TextField from '@mui/material/TextField'
 import Zoom from '@mui/material/Zoom'
@@ -14,6 +11,13 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
 import { loginUserAPI } from '~/redux/user/userSlice'
+import GoogleIcon from '@mui/icons-material/Google';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import Divider from '@mui/material/Divider';
+import Chip from '@mui/material/Chip';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import {Link as MuiLink} from '@mui/material';
 import {
   EMAIL_RULE,
   PASSWORD_RULE,
@@ -47,20 +51,66 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit(submitLogIn)}>
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
-        <MuiCard sx={{ minWidth: 380, maxWidth: 380, marginTop: '6em' }}>
+        <MuiCard sx={{ 
+          minWidth: 550, 
+          maxWidth: 580, 
+          marginTop: '3em', 
+          minHeight : 640,
+          maxHeight : 640,
+          position : 'absolute', 
+          right : '50px'
+        }}>
           <Box sx={{
             margin: '1em',
             display: 'flex',
-            justifyContent: 'center',
+            justifyContent: 'start',
             gap: 1
           }}>
-            <Avatar sx={{ bgcolor: 'primary.main' }}><LockIcon /></Avatar>
-            <Avatar sx={{ bgcolor: 'primary.main' }}><TrelloIcon /></Avatar>
           </Box>
-          <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', color: theme => theme.palette.grey[500] }}>
-            <Typography variant="h5">Login</Typography>
+          <Box sx={{ marginTop: '1em', marginLeft: '2em', display: 'flex', justifyContent: 'start'}}>
+            <Typography variant='h5'> Welcome to </Typography>
           </Box>
-          <Box sx={{ padding: '0 1em 1em 1em' }}>
+          <Box sx={{ marginLeft: '2em', display: 'flex', justifyContent: 'start', color: '#6d73ff' }}>
+            <Typography variant='h4' sx ={{ fontWeight: 'bold'}}> Taskify </Typography>
+          </Box>
+          <CardActions sx={{ padding: '20px 2em 1em 2em' }}>
+            <Button
+              // type="submit"
+              variant="contained"
+              // color="primary"
+              size="large"
+              fullWidth
+              startIcon={<GoogleIcon sx={{ color: '#e74c3c' }}/>}
+              sx={{
+                backgroundColor: 'white',
+                color: 'black',
+                '&:hover': { backgroundColor : '#f26464', color : 'white', '& .MuiSvgIcon-root': { color: 'white' } } 
+              }}
+            >
+              Login with Google
+            </Button>
+          </CardActions>
+          <CardActions sx={{ padding: '0 2em 1em 2em' }}>
+            <Button
+              // type="submit"
+              variant="contained"
+              color="primary"
+              size="large"
+              fullWidth
+              startIcon={<FacebookIcon sx={{ color: '#6d73ff' }}/>}
+              sx={{
+                backgroundColor: 'white',
+                color: 'black',
+                '&:hover': { backgroundColor : '#585ee3', color : 'white', '& .MuiSvgIcon-root': { color: 'white' } } 
+              }}
+            >
+              Login with Facebook
+            </Button>
+          </CardActions>
+          <Divider sx={{ padding: '5px 2em 5px 2em' }}>
+            <Chip label="OR" size="small" />
+          </Divider>
+          <Box sx={{ padding: '0 2em 5px 2em' }}>
             <Box sx={{ marginTop: '1em' }}>
               <TextField
                 // autoComplete="nope"
@@ -94,13 +144,25 @@ function LoginForm() {
               <FieldErrorAlert errors={errors} fieldName={'password'} />
             </Box>
           </Box>
-          <CardActions sx={{ padding: '0 1em 1em 1em' }}>
+          <Box sx={{ padding: '0 2em 5px 2em', display: 'flex', justifyContent: 'space-between', alignItems: "center" }}>
+            <FormControlLabel
+              control={<Checkbox />}
+              label="Remember me"
+            />
+            <MuiLink href="#" underline="none" sx={{ '&:hover': { color: '#ffbb39' }, color : '#6d73ff' }}>
+              {'Forgot Password?'}
+            </MuiLink>
+          </Box>
+          <CardActions sx={{ padding: '0 2em 1em 2em' }}>
             <Button
               type="submit"
               variant="contained"
               color="primary"
               size="large"
               fullWidth
+              sx={{
+                backgroundColor : '#6d73ff'
+              }}
             >
               Login
             </Button>
@@ -108,7 +170,7 @@ function LoginForm() {
           <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
             <Typography>New to using Taskify?</Typography>
             <Link to="/register" style={{ textDecoration: 'none' }}>
-              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Create account!</Typography>
+              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' }, color : '#6d73ff' }}>Create account!</Typography>
             </Link>
           </Box>
         </MuiCard>
