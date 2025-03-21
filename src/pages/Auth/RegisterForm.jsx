@@ -47,20 +47,29 @@ function RegisterForm() {
   return (
     <form onSubmit={handleSubmit(submitRegister)}>
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
-        <MuiCard sx={{ minWidth: 380, maxWidth: 380, marginTop: '6em' }}>
+        <MuiCard sx={{
+          minWidth: 550, 
+          maxWidth: 580, 
+          marginTop: '3em', 
+          minHeight : 640,
+          maxHeight : 640,
+          position : 'absolute', 
+          right : '50px'
+        }}>
           <Box sx={{
             margin: '1em',
             display: 'flex',
-            justifyContent: 'center',
+            justifyContent: 'start',
             gap: 1
           }}>
-            <Avatar sx={{ bgcolor: 'primary.main' }}><LockIcon /></Avatar>
-            <Avatar sx={{ bgcolor: 'primary.main' }}><TrelloIcon /></Avatar>
           </Box>
-          <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', color: theme => theme.palette.grey[500] }}>
-            <Typography variant="h5">Register</Typography>
+          <Box sx={{ marginTop: '1em', marginLeft: '2em', display: 'flex', justifyContent: 'start'}}>
+            <Typography variant='h5'> Welcome to </Typography>
           </Box>
-          <Box sx={{ padding: '0 1em 1em 1em' }}>
+          <Box sx={{ marginLeft: '2em', display: 'flex', justifyContent: 'start', color: '#6d73ff' }}>
+            <Typography variant='h4' sx ={{ fontWeight: 'bold'}}> Verified </Typography>
+          </Box>
+          <Box sx={{ padding: '0 2em 1em 2em' }}>
             <Box sx={{ marginTop: '1em' }}>
               <TextField
                 // autoComplete="nope"
@@ -113,13 +122,19 @@ function RegisterForm() {
               <FieldErrorAlert errors={errors} fieldName={'password_confirmation'} />
             </Box>
           </Box>
-          <CardActions sx={{ padding: '0 1em 1em 1em' }}>
+          <Box sx={{ marginLeft: '2em', display: 'none', justifyContent: 'center' }}>
+            <Typography variant='h7'>  </Typography>
+          </Box>
+          <CardActions sx={{ padding: '0 2em 1em 2em' }}>
             <Button
               type="submit"
               variant="contained"
               color="primary"
               size="large"
               fullWidth
+              sx={{
+                backgroundColor : '#6d73ff'
+              }}
             >
               Register
             </Button>
@@ -127,7 +142,7 @@ function RegisterForm() {
           <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
             <Typography>Already have an account?</Typography>
             <Link to="/login" style={{ textDecoration: 'none' }}>
-              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Log in!</Typography>
+              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' }, color : '#6d73ff' }}>Log in!</Typography>
             </Link>
           </Box>
         </MuiCard>
