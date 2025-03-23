@@ -21,7 +21,7 @@ import randomColor from 'randomcolor'
 import SidebarCreateBoardModal from './create'
 import { getMyBoardsAPI } from '~/apis'
 import { styled } from '@mui/material/styles'
-// Styles của mấy cái Sidebar item menu, anh gom lại ra đây cho gọn.
+
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',

@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import authorziedAxiosInstance from '~/utils/authorizeAxios'
 import { API_URL } from '~/utils/constants'
-import { toast } from 'react-toastify'
 const initialState = {
   currentUser: null
 }
@@ -10,9 +9,6 @@ export const loginUserAPI = createAsyncThunk(
   'user/loginUserAPI',
   async (loginDto) => {
     const response = await authorziedAxiosInstance.post(`${API_URL}/auth/login`, loginDto)
-    if (response.data.status === 'OK') {
-      toast.success(response.data.data.message)
-    }
     return response.data
   }
 )

@@ -1,11 +1,8 @@
-import { Link,useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Avatar from '@mui/material/Avatar'
-import LockIcon from '@mui/icons-material/Lock'
 import Typography from '@mui/material/Typography'
 import { Card as MuiCard } from '@mui/material'
-import { ReactComponent as TrelloIcon } from '~/assets/main-logo.svg'
 import CardActions from '@mui/material/CardActions'
 import TextField from '@mui/material/TextField'
 import Zoom from '@mui/material/Zoom'
@@ -39,7 +36,7 @@ function RegisterForm() {
       toast.success('Registration successful! Now you can log in.')
       navigate('/login')
     }).catch((error) => {
-      toast.error(error)
+      toast.error(error.response.data.message)
     }
     )
   }
@@ -48,12 +45,12 @@ function RegisterForm() {
     <form onSubmit={handleSubmit(submitRegister)}>
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
         <MuiCard sx={{
-          minWidth: 550, 
-          maxWidth: 580, 
-          marginTop: '3em', 
+          minWidth: 550,
+          maxWidth: 580,
+          marginTop: '3em',
           minHeight : 640,
           maxHeight : 640,
-          position : 'absolute', 
+          position : 'absolute',
           right : '50px'
         }}>
           <Box sx={{
@@ -63,11 +60,11 @@ function RegisterForm() {
             gap: 1
           }}>
           </Box>
-          <Box sx={{ marginTop: '1em', marginLeft: '2em', display: 'flex', justifyContent: 'start'}}>
+          <Box sx={{ marginTop: '1em', marginLeft: '2em', display: 'flex', justifyContent: 'start' }}>
             <Typography variant='h5'> Welcome to </Typography>
           </Box>
           <Box sx={{ marginLeft: '2em', display: 'flex', justifyContent: 'start', color: '#6d73ff' }}>
-            <Typography variant='h4' sx ={{ fontWeight: 'bold'}}> Verified </Typography>
+            <Typography variant='h4' sx ={{ fontWeight: 'bold' }}> Verified </Typography>
           </Box>
           <Box sx={{ padding: '0 2em 1em 2em' }}>
             <Box sx={{ marginTop: '1em' }}>

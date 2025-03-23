@@ -23,6 +23,7 @@ function Auth() {
       width: '100vw',
       height: '100vh',
       background: 'rgb(2,0,36)',
+      // eslint-disable-next-line no-dupe-keys
       background: 'linear-gradient(45deg, rgba(2,0,36,1) 23%, rgba(11,63,125,1) 60%, rgba(68,0,102,1) 95%)',
       color: 'white'
     }}>
@@ -52,7 +53,7 @@ function Auth() {
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
           width: '40%',
-          height: '40%',
+          height: '40%'
         }}>
         </Box>
         <Box sx={{
@@ -73,7 +74,7 @@ function Auth() {
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
           width: '10%',
-          height: '10%',
+          height: '10%'
         }}>
         </Box>
         <Box sx={{
@@ -91,7 +92,7 @@ function Auth() {
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
           width: '5%',
-          height: '5%',
+          height: '5%'
         }}>
         </Box>
         <Box sx={{
@@ -109,7 +110,7 @@ function Auth() {
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
           width: '5%',
-          height: '5%',
+          height: '5%'
         }}>
         </Box>
         <Box sx={{
@@ -127,7 +128,7 @@ function Auth() {
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
           width: '5%',
-          height: '5%',
+          height: '5%'
         }}>
         </Box>
         {isLogin && <LoginForm />}

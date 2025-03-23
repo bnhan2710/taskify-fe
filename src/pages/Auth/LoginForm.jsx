@@ -11,13 +11,13 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
 import { loginUserAPI } from '~/redux/user/userSlice'
-import GoogleIcon from '@mui/icons-material/Google';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import Divider from '@mui/material/Divider';
-import Chip from '@mui/material/Chip';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import {Link as MuiLink} from '@mui/material';
+import GoogleIcon from '@mui/icons-material/Google'
+import FacebookIcon from '@mui/icons-material/Facebook'
+import Divider from '@mui/material/Divider'
+import Chip from '@mui/material/Chip'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import { Link as MuiLink } from '@mui/material'
 import {
   EMAIL_RULE,
   PASSWORD_RULE,
@@ -40,24 +40,28 @@ function LoginForm() {
     toast.promise(dispatch(loginUserAPI(loginDto)),
       {
         pending: 'Login in progress...'
-      }).then(res => {
+      }).then((res) => {
       if (!res.error) {
         toast.success('Login successful!')
         navigate('/')
       }
-    })
+      else {
+        toast.error('Username or password is incorrect!')
+      }
+    }
+    )
   }
 
   return (
     <form onSubmit={handleSubmit(submitLogIn)}>
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
-        <MuiCard sx={{ 
-          minWidth: 550, 
-          maxWidth: 580, 
-          marginTop: '3em', 
+        <MuiCard sx={{
+          minWidth: 550,
+          maxWidth: 580,
+          marginTop: '3em',
           minHeight : 640,
           maxHeight : 640,
-          position : 'absolute', 
+          position : 'absolute',
           right : '50px'
         }}>
           <Box sx={{
@@ -67,11 +71,11 @@ function LoginForm() {
             gap: 1
           }}>
           </Box>
-          <Box sx={{ marginTop: '1em', marginLeft: '2em', display: 'flex', justifyContent: 'start'}}>
+          <Box sx={{ marginTop: '1em', marginLeft: '2em', display: 'flex', justifyContent: 'start' }}>
             <Typography variant='h5'> Welcome to </Typography>
           </Box>
           <Box sx={{ marginLeft: '2em', display: 'flex', justifyContent: 'start', color: '#6d73ff' }}>
-            <Typography variant='h4' sx ={{ fontWeight: 'bold'}}> Taskify </Typography>
+            <Typography variant='h4' sx ={{ fontWeight: 'bold' }}> Taskify </Typography>
           </Box>
           <CardActions sx={{ padding: '20px 2em 1em 2em' }}>
             <Button
@@ -84,7 +88,7 @@ function LoginForm() {
               sx={{
                 backgroundColor: 'white',
                 color: 'black',
-                '&:hover': { backgroundColor : '#f26464', color : 'white', '& .MuiSvgIcon-root': { color: 'white' } } 
+                '&:hover': { backgroundColor : '#f26464', color : 'white', '& .MuiSvgIcon-root': { color: 'white' } }
               }}
             >
               Login with Google
@@ -101,7 +105,7 @@ function LoginForm() {
               sx={{
                 backgroundColor: 'white',
                 color: 'black',
-                '&:hover': { backgroundColor : '#585ee3', color : 'white', '& .MuiSvgIcon-root': { color: 'white' } } 
+                '&:hover': { backgroundColor : '#585ee3', color : 'white', '& .MuiSvgIcon-root': { color: 'white' } }
               }}
             >
               Login with Facebook
@@ -144,7 +148,7 @@ function LoginForm() {
               <FieldErrorAlert errors={errors} fieldName={'password'} />
             </Box>
           </Box>
-          <Box sx={{ padding: '0 2em 5px 2em', display: 'flex', justifyContent: 'space-between', alignItems: "center" }}>
+          <Box sx={{ padding: '0 2em 5px 2em', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <FormControlLabel
               control={<Checkbox />}
               label="Remember me"

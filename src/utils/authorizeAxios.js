@@ -4,7 +4,7 @@ import { interceptorLoadingElements } from '~/utils/formatter'
 import { refreshTokenAPI } from '~/apis'
 
 const authorizedAxiosInstance = axios.create({
-  timeout: 600000, // 10 minutes
+  timeout: 600000,
   withCredentials: true
 })
 
@@ -23,6 +23,11 @@ function addSubscriber(callback) {
 }
 
 authorizedAxiosInstance.interceptors.request.use(config => {
+
+  if (config.url.includes('/login') || config.url.includes('/auth/login')) {
+    return config
+  }
+
   const accessToken = localStorage.getItem('accessToken')
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`
@@ -42,16 +47,15 @@ authorizedAxiosInstance.interceptors.response.use(
   async error => {
     interceptorLoadingElements(false)
     const originalRequest = error.config
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry && error.response?.data.status === 'TokenExpired') {
       originalRequest._retry = true
 
       if (!isRefreshing) {
         isRefreshing = true
         try {
           const refreshToken = localStorage.getItem('refreshToken')
-          const { data } = await refreshTokenAPI(refreshToken)
-          const newAccessToken = data.accessToken
+          const { accessToken } = await refreshTokenAPI(refreshToken)
+          const newAccessToken = accessToken
 
           localStorage.setItem('accessToken', newAccessToken)
           isRefreshing = false
@@ -59,6 +63,8 @@ authorizedAxiosInstance.interceptors.response.use(
         } catch (refreshError) {
           isRefreshing = false
           toast.error('Session expired. Please log in again.')
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('refreshToken')
           return Promise.reject(refreshError)
         }
       }
@@ -70,11 +76,15 @@ authorizedAxiosInstance.interceptors.response.use(
         })
       })
     }
+    //handle token notfound error
+    if (error.response?.status === 401 && error.response?.data.status === 'Unauthorized') {
+      toast.error('Session expired. Please log in again.')
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('persist:root')
+      window.location.href = '/login'
 
-    const errMessage = error.response?.data?.message || error.message || 'An error occurred'
-    if (error.response?.status !== 410) {
-      toast.error(errMessage)
     }
+
     return Promise.reject(error)
   }
 )
