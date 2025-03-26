@@ -64,7 +64,7 @@ function RegisterForm() {
             <Typography variant='h5'> Welcome to </Typography>
           </Box>
           <Box sx={{ marginLeft: '2em', display: 'flex', justifyContent: 'start', color: '#6d73ff' }}>
-            <Typography variant='h4' sx ={{ fontWeight: 'bold' }}> Verified </Typography>
+            <Typography variant='h4' sx ={{ fontWeight: 'bold' }}> Register </Typography>
           </Box>
           <Box sx={{ padding: '0 2em 1em 2em' }}>
             <Box sx={{ marginTop: '1em' }}>

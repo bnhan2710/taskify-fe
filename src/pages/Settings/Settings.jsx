@@ -11,8 +11,6 @@ import PersonIcon from '@mui/icons-material/Person'
 import { Link, useLocation } from 'react-router-dom'
 import AccountTab from './AccountTab'
 import SecurityTab from './SecurityTab'
-
-// Khai báo đống tabs ra biến const để dùng lại cho gọn
 const TABS = {
   ACCOUNT: 'account',
   SECURITY: 'security'
@@ -20,15 +18,12 @@ const TABS = {
 
 function Settings() {
   const location = useLocation()
-  // Function đơn giản có nhiệm vụ lấy ra cái tab mặc định dựa theo url.
   const getDefaultTab = () => {
     if (location.pathname.includes(TABS.SECURITY)) return TABS.SECURITY
     return TABS.ACCOUNT
   }
-  // State lưu trữ giá trị tab nào đang active
   const [activeTab, setActiveTab] = useState(getDefaultTab())
 
-  // https://mui.com/material-ui/react-tabs
   const handleChangeTab = (event, selectedTab) => { setActiveTab(selectedTab) }
 
   return (

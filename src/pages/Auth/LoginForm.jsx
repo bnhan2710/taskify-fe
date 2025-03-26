@@ -41,15 +41,15 @@ function LoginForm() {
       {
         pending: 'Login in progress...'
       }).then((res) => {
+        console.log('res: ', res)
       if (!res.error) {
         toast.success('Login successful!')
         navigate('/')
       }
       else {
-        toast.error('Username or password is incorrect!')
+        toast.error(res.payload)
       }
-    }
-    )
+    })
   }
 
   return (

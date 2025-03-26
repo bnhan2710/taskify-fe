@@ -4,8 +4,6 @@ import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
-import { Image } from '@mui/icons-material'
-
 
 function Auth() {
   const location = useLocation()
@@ -42,7 +40,7 @@ function Auth() {
         boxShadow: 'inset 0 0 0 2000px rgba(0, 0, 0, 0.2)',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
+        alignItems: 'center'
       }}>
         <Box sx={{
           position : 'absolute',

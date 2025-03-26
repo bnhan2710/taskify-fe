@@ -45,6 +45,10 @@ authorizedAxiosInstance.interceptors.response.use(
     return response
   },
   async error => {
+    const config = error.config
+    if (config.url.includes('/login') || config.url.includes('/auth/login')) {
+      return config
+    }
     interceptorLoadingElements(false)
     const originalRequest = error.config
     if (error.response?.status === 401 && !originalRequest._retry && error.response?.data.status === 'TokenExpired') {
@@ -60,6 +64,7 @@ authorizedAxiosInstance.interceptors.response.use(
           localStorage.setItem('accessToken', newAccessToken)
           isRefreshing = false
           onTokenRefreshed(newAccessToken)
+          return authorizedAxiosInstance(originalRequest)
         } catch (refreshError) {
           isRefreshing = false
           toast.error('Session expired. Please log in again.')

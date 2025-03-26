@@ -12,16 +12,12 @@ import { FIELD_REQUIRED_MESSAGE, PASSWORD_RULE, PASSWORD_RULE_MESSAGE } from '~/
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import { useForm } from 'react-hook-form'
 import { useConfirm } from 'material-ui-confirm'
-import { toast } from 'react-toastify'
 
 function SecurityTab() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm()
-
-  // Ôn lại: https://www.npmjs.com/package/material-ui-confirm
   const confirmChangePassword = useConfirm()
   const submitChangePassword = (data) => {
     confirmChangePassword({
-      // Title, Description, Content...vv của gói material-ui-confirm đều có type là ReactNode nên có thể thoải sử dụng MUI components, rất tiện lợi khi cần custom styles
       title: <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <LogoutIcon sx={{ color: 'warning.dark' }} /> Change Password
       </Box>,
@@ -33,8 +29,6 @@ function SecurityTab() {
       console.log('current_password: ', current_password)
       console.log('new_password: ', new_password)
       console.log('new_password_confirmation: ', new_password_confirmation)
-
-      // Gọi API...
     }).catch(() => {})
   }
 

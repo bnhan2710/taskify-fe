@@ -6,18 +6,23 @@ import Tooltip from '@mui/material/Tooltip'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 import Button from '@mui/material/Button'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import InputLabel from '@mui/material/InputLabel'
+import FormControl from '@mui/material/FormControl'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import MailIcon from '@mui/icons-material/Mail'
 import AccountBoxIcon from '@mui/icons-material/AccountBox'
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd'
-
+import CakeIcon from '@mui/icons-material/Cake'
+import TransgenderIcon from '@mui/icons-material/Transgender'
 import { FIELD_REQUIRED_MESSAGE, singleFileValidator } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import { updateUserAPI } from '~/apis'
+import { updateUserAPI } from '~/redux/user/userSlice'
 import { useDispatch } from 'react-redux'
 
 const VisuallyHiddenInput = styled('input')({
@@ -36,21 +41,45 @@ function AccountTab() {
   const dispatch = useDispatch()
   const currentUser = useSelector(selectCurrentUser)
   const initialGeneralForm = {
-    displayName: currentUser?.displayName
+    displayName: currentUser?.displayName || '',
+    age: currentUser?.age || '',
+    gender: currentUser?.gender || ''
   }
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, formState: { errors } } = useForm({
     defaultValues: initialGeneralForm
   })
 
   const submitChangeGeneralInformation = (data) => {
-    const { displayName } = data
+    const { displayName, age, gender } = data
 
-    if (displayName === currentUser?.displayName) return
-    updateUserAPI({ displayName }, currentUser.id)
+    const updateUserDto = {
+      displayName,
+      age,
+      gender,
+      userId: currentUser?.id
+    }
+    // Check if any field has changed
+    const hasChanges =
+      displayName !== currentUser?.displayName ||
+      age !== currentUser?.age ||
+      gender !== currentUser?.gender
+
+    if (!hasChanges) return
+
+    toast.promise(dispatch(updateUserAPI(updateUserDto)),
+      {
+        pending: 'Updating in progress...'
+      }).then(res => {
+      toast.success('Update successful')
+    }).catch((error) => {
+      console.log('error: ', error)
+      toast.error('Update failed')
+    })
   }
 
+
   const uploadAvatar = (e) => {
-    // Lấy file thông qua e.target?.files[0] và validate nó trước khi xử lý
+    //validate before handling
     console.log('e.target?.files[0]: ', e.target?.files[0])
     const error = singleFileValidator(e.target?.files[0])
     if (error) {
@@ -63,7 +92,6 @@ function AccountTab() {
     for (const value of reqData.values()) {
       console.log('reqData Value: ', value)
     }
-
   }
 
   return (
@@ -163,6 +191,71 @@ function AccountTab() {
                 error={!!errors['displayName']}
               />
               <FieldErrorAlert errors={errors} fieldName={'displayName'} />
+            </Box>
+
+            <Box>
+              <TextField
+                fullWidth
+                label="Your Age"
+                type="number"
+                variant="outlined"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CakeIcon fontSize="small" />
+                    </InputAdornment>
+                  ),
+                  inputProps: {
+                    min: 0,
+                    max: 120
+                  }
+                }}
+                {...register('age', {
+                  required: FIELD_REQUIRED_MESSAGE,
+                  min: {
+                    value: 0,
+                    message: 'Age must be a positive number'
+                  },
+                  max: {
+                    value: 120,
+                    message: 'Age must be less than or equal to 120'
+                  }
+                })}
+                error={!!errors['age']}
+              />
+              <FieldErrorAlert errors={errors} fieldName={'age'} />
+            </Box>
+
+            <Box>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Gender</InputLabel>
+                <Controller
+                  name="gender"
+                  control={control}
+                  rules={{ required: FIELD_REQUIRED_MESSAGE }}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      label="Gender"
+                      startAdornment={
+                        <InputAdornment position="start">
+                          <TransgenderIcon fontSize="small" />
+                        </InputAdornment>
+                      }
+                      error={!!errors['gender']}
+                    >
+                      <MenuItem value="Male">Male</MenuItem>
+                      <MenuItem value="Female">Female</MenuItem>
+                    </Select>
+                  )}
+                />
+              </FormControl>
+              {errors.gender && (
+                <FieldErrorAlert
+                  errors={errors}
+                  fieldName={'gender'}
+                />
+              )}
             </Box>
 
             <Box>
