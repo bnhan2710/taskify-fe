@@ -22,7 +22,7 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import { updateUserAPI } from '~/redux/user/userSlice'
+import { updateUserAPI, uploadAvatarAPI } from '~/redux/user/userSlice'
 import { useDispatch } from 'react-redux'
 
 const VisuallyHiddenInput = styled('input')({
@@ -80,18 +80,26 @@ function AccountTab() {
 
   const uploadAvatar = (e) => {
     //validate before handling
-    console.log('e.target?.files[0]: ', e.target?.files[0])
-    const error = singleFileValidator(e.target?.files[0])
+    const file = e.target?.files[0]
+    if (!file) return
+    
+    const error = singleFileValidator(file)
     if (error) {
       toast.error(error)
       return
     }
-    let reqData = new FormData()
-    reqData.append('avatar', e.target?.files[0])
-    console.log('reqData: ', reqData)
-    for (const value of reqData.values()) {
-      console.log('reqData Value: ', value)
-    }
+    
+    let formData = new FormData()
+    formData.append('file', file)
+    
+    toast.promise(
+      dispatch(uploadAvatarAPI(formData)),
+      {
+        pending: 'Uploading avatar...',
+        success: 'Avatar uploaded successfully',
+        error: 'Failed to upload avatar'
+      }
+    )
   }
 
   return (

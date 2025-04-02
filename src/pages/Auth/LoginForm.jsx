@@ -79,6 +79,7 @@ function LoginForm() {
           </Box>
           <CardActions sx={{ padding: '20px 2em 1em 2em' }}>
             <Button
+              onClick = {() => { console.log('Google login') }}
               // type="submit"
               variant="contained"
               // color="primary"

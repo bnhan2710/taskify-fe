@@ -81,3 +81,18 @@ export const addCardMemberAPI = async (cardId, memberId) => {
   const response = await authorizedAxiosInstance.post(`${API_URL}/cards/${cardId}/member/add`, memberId)
   return response.data.data
 }
+
+export const channgePasswordAPI = async ( changePassword ) => {
+  const response = await authorizedAxiosInstance.put(`${API_URL}/auth/change-password`, changePassword)
+  return response.data.data
+}
+
+export const uploadAvatarAPI = async (formData) => {
+  const response = await authorizedAxiosInstance.post(`${API_URL}/attachments/upload/avatar`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  return response.data
+}
+
