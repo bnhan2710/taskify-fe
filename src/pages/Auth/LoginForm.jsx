@@ -41,13 +41,12 @@ function LoginForm() {
       {
         pending: 'Login in progress...'
       }).then((res) => {
-        console.log('res: ', res)
       if (!res.error) {
         toast.success('Login successful!')
         navigate('/')
       }
       else {
-        toast.error(res.payload)
+        toast.error('Username or password is incorrect')
       }
     })
   }
@@ -175,7 +174,7 @@ function LoginForm() {
           <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
             <Typography>New to using Taskify?</Typography>
             <Link to="/register" style={{ textDecoration: 'none' }}>
-              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' }, color : '#6d73ff' }}>Create account!</Typography>
+              <Typography sx={{ '&:hover': { color: '#ffbb39' }, color: '#6d73ff' }}>Create account!</Typography>
             </Link>
           </Box>
         </MuiCard>

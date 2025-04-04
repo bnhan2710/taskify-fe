@@ -113,7 +113,7 @@ function ActiveCard() {
       comments: [...activeCard.comments, newComment]
     }))
   }
-  const onUpdateCardMembers = (incommingMemberInfo) => { 
+  const onUpdateCardMembers = (incommingMemberInfo) => {
   }
 
   return (

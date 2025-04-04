@@ -3,7 +3,7 @@ import { activeBoardReducer } from './activeBoard/activeBoardSlice'
 import { userReducer } from './user/userSlice'
 import { combineReducers } from 'redux'
 import { persistReducer } from 'redux-persist'
-import { activeCardReducer }  from './activeCard/activeCardSlice'
+import { activeCardReducer } from './activeCard/activeCardSlice'
 
 import storage from 'redux-persist/lib/storage'
 

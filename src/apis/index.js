@@ -88,7 +88,7 @@ export const channgePasswordAPI = async ( changePassword ) => {
 }
 
 export const uploadAvatarAPI = async (formData) => {
-  const response = await authorizedAxiosInstance.post(`${API_URL}/attachments/upload/avatar`, formData, {
+  const response = await authorizedAxiosInstance.post(`${API_URL}/upload/avatar`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }

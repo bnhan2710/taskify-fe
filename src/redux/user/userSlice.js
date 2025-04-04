@@ -47,6 +47,22 @@ export const updateUserAPI = createAsyncThunk(
   }
 )
 
+export const uploadAvatarAPI = createAsyncThunk(
+  'user/uploadAvatarAPI',
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await authorziedAxiosInstance.post(`${API_URL}/upload/avatar`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Avatar upload failed')
+    }
+  }
+)
+
 export const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -74,6 +90,14 @@ export const userSlice = createSlice({
         state.currentUser.displayName = displayName
         state.currentUser.age = age
         state.currentUser.gender = gender
+      })
+    // Upload avatar cases
+    builder
+      .addCase(uploadAvatarAPI.fulfilled, (state, action) => {
+        // Update the avatar URL in the state if it's returned in the response
+        if (action.payload.data && action.payload.data.avatar) {
+          state.currentUser.avatar = action.payload.data.avatar
+        }
       })
   }
 })
