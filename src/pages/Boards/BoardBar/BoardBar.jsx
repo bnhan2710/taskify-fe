@@ -3,10 +3,7 @@ import Chip from '@mui/material/Chip'
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
 import VpnLockIcon from '@mui/icons-material/VpnLock'
 import AddToDriveIcon from '@mui/icons-material/AddToDrive'
-import BoltIcon from '@mui/icons-material/Bolt'
-import FilterListIcon from '@mui/icons-material/FilterList'
-import Button from '@mui/material/Button'
-import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
+
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { capitalizeFirstLetter } from '~/utils/formatter'
 import BoardUserGroup from './BoardUserGroup'
@@ -66,18 +63,6 @@ function BoardBar({ board }) {
         />
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap:2 }}>
-        <Chip
-          sx={MENU_STYLES}
-          icon={<BoltIcon />}
-          label="Automation"
-          clickable
-        />
-        <Chip
-          sx={MENU_STYLES}
-          icon={<FilterListIcon />}
-          label="Filter"
-          clickable
-        />
         {/* handle invite board user */}
         <InviteBoardUser boardId = {board.id}/>
         <BoardUserGroup boardUsers={board?.boardUsers}/>

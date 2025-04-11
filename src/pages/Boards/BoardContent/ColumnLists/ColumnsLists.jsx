@@ -37,6 +37,9 @@ function ColumnLists({ lists }) {
     const newBoard = cloneDeep(board)
     // console.log(createdList)
     newBoard.lists.push(createdList)
+    if (!newBoard.listOrderIds) {
+      newBoard.listOrderIds = []
+    }
     newBoard.listOrderIds.push(createdList.id)
     dispatch(updatecurrentActiveBoard(newBoard))
     setNewListTitle('')

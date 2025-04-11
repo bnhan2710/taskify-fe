@@ -8,7 +8,6 @@ import Workspaces from './Menus/Workspaces'
 import Recent from './Menus/Recent'
 import Starred from './Menus/Starred'
 import AppsIcon from '@mui/icons-material/Apps'
-import Templates from './Menus/Templates'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Badge from '@mui/material/Badge'
@@ -25,6 +24,7 @@ import { Link } from 'react-router-dom'
 
 function AppBar() {
   const [searchValue, setSearchValue] = useState('')
+
   return (
     <Box sx={{
       width: '100%',
@@ -124,7 +124,6 @@ function AppBar() {
           <Workspaces />
           <Recent />
           <Starred />
-          <Templates />
           <Button
             variant="contained"
             startIcon={<AddToPhotosIcon />}

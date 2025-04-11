@@ -8,8 +8,6 @@ import ListItemText from '@mui/material/ListItemText'
 import Avatar from '@mui/material/Avatar'
 import Tooltip from '@mui/material/Tooltip'
 import IconButton from '@mui/material/IconButton'
-import PersonAdd from '@mui/icons-material/PersonAdd'
-import Settings from '@mui/icons-material/Settings'
 import Logout from '@mui/icons-material/Logout'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import { useSelector, useDispatch } from 'react-redux'
@@ -147,22 +145,6 @@ function Profiles() {
             <ListItemText primary="My Profile" />
           </MenuItem>
         </Link>
-
-        <MenuItem sx={{
-          py: 1.2,
-          borderRadius: 1,
-          mx: 1,
-          '&:hover': {
-            color: 'primary.main',
-            backgroundColor: 'rgba(25, 118, 210, 0.08)'
-          }
-        }}>
-          <ListItemIcon>
-            <Settings sx={{ color: 'action.active' }} />
-          </ListItemIcon>
-          <ListItemText primary="Settings" />
-        </MenuItem>
-
         <Divider sx={{ my: 1 }} />
 
         <MenuItem

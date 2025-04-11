@@ -20,7 +20,8 @@ import PaginationItem from '@mui/material/PaginationItem'
 import { Link, useLocation } from 'react-router-dom'
 import randomColor from 'randomcolor'
 import SidebarCreateBoardModal from './create'
-import { getMyBoardsAPI } from '~/apis'
+import BoardToggle from '~/components/SelectMode/BoardToggle'
+import { getMyBoardsAPI, getPublicBoardsAPI } from '~/apis'
 import { styled } from '@mui/material/styles'
 
 const SidebarItem = styled(Box)(({ theme }) => ({
@@ -48,11 +49,10 @@ const SidebarItem = styled(Box)(({ theme }) => ({
 function Boards() {
   const [boards, setBoards] = useState(null)
   const [totalBoards, setTotalBoards] = useState(null)
-
   const location = useLocation()
   const query = new URLSearchParams(location.search)
-
   const page = parseInt(query.get('page') || '1', 10)
+  const isPublic = query.get('public') === 'true'
 
   const updateStateData = (res) => {
     setBoards(res.boards || [])
@@ -60,15 +60,20 @@ function Boards() {
   }
 
   useEffect(() => {
-    setBoards([...Array(16)].map((_, i) => i))
-    setTotalBoards(100)
-
-    getMyBoardsAPI(location.search).then(updateStateData)
-  }, [location.search])
+    if (isPublic) {
+      getPublicBoardsAPI(location.search).then(updateStateData)
+    } else {
+      getMyBoardsAPI(location.search).then(updateStateData)
+    }
+  }, [location.search, isPublic])
 
   const afterCreateBoard = () => {
     //fetch board again
-    getMyBoardsAPI(location.search).then(updateStateData)
+    if (isPublic) {
+      getPublicBoardsAPI(location.search).then(updateStateData)
+    } else {
+      getMyBoardsAPI(location.search).then(updateStateData)
+    }
   }
 
   if (!boards) {
@@ -80,7 +85,7 @@ function Boards() {
       <AppBar />
       <Box sx={{ paddingX: { xs: 2, md: 4 }, paddingY: 4 }}>
         <Grid container spacing={3}>
-          <Grid xs={12} sm={3} sx={{ mb: { xs: 3, sm: 0 } }}>
+          <Grid xs={10} sm={3} sx={{ mb: { xs: 3, sm: 0 } }}>
             <Stack
               direction="column"
               spacing={1.5}
@@ -109,8 +114,7 @@ function Boards() {
               <SidebarCreateBoardModal afterCreateBoard={afterCreateBoard} />
             </Stack>
           </Grid>
-
-          <Grid xs={12} sm={9}>
+          <Grid xs={10} sm={9}>
             <Box
               sx={{
                 p: 3,
@@ -123,7 +127,7 @@ function Boards() {
                 variant="h4"
                 sx={{
                   fontWeight: 'bold',
-                  mb: 1,
+                  mb: 3,
                   textAlign: { xs: 'center', sm: 'left' },
                   position: 'relative',
                   '&:after': {
@@ -137,10 +141,11 @@ function Boards() {
                   }
                 }}
               >
-                Your boards
+                {isPublic ? 'Public Boards' : 'Your Boards'}
               </Typography>
-            </Box>
 
+              <BoardToggle />
+            </Box>
             {boards?.length === 0 &&
               <Box
                 sx={{
@@ -151,15 +156,16 @@ function Boards() {
                 }}
               >
                 <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#666' }}>
-                  No result found!
+                  {isPublic
+                    ? 'No public boards available.'
+                    : 'You don\'t have any boards yet. Create one to get started!'}
                 </Typography>
               </Box>
             }
-
             {boards?.length > 0 &&
               <Grid container spacing={3}>
                 {boards.map(b =>
-                  <Grid xs={12} sm={6} md={4} key={b}>
+                  <Grid xs={10} sm={6} md={4} key={b.id || b}>
                     <Card
                       sx={{
                         width: '100%',
@@ -180,7 +186,6 @@ function Boards() {
                           backgroundColor: randomColor()
                         }}
                       />
-
                       <CardContent sx={{ p: 3 }}>
                         <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'bold', mb: 1 }}>
                           {b.title || `Board ${b}`}
@@ -230,7 +235,6 @@ function Boards() {
                 )}
               </Grid>
             }
-
             {(totalBoards > 0) &&
               <Box sx={{
                 mt: 4,
@@ -249,15 +253,26 @@ function Boards() {
                   color="secondary"
                   showFirstButton
                   showLastButton
-                  count={Math.ceil(totalBoards / 12)}
+                  count={Math.ceil(totalBoards / 10)}
                   page={page}
-                  renderItem={(item) => (
-                    <PaginationItem
-                      component={Link}
-                      to={`/boards${item.page === 1 ? '' : `?page=${item.page}`}`}
-                      {...item}
-                    />
-                  )}
+                  renderItem={(item) => {
+                    // Preserve the public parameter when paginating
+                    const query = new URLSearchParams()
+                    if (isPublic) {
+                      query.set('public', 'true')
+                    }
+                    if (item.page !== 1) {
+                      query.set('page', item.page)
+                    }
+                    const queryString = query.toString()
+                    return (
+                      <PaginationItem
+                        component={Link}
+                        to={`/boards${queryString ? `?${queryString}` : ''}`}
+                        {...item}
+                      />
+                    )
+                  }}
                 />
               </Box>
             }

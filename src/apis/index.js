@@ -3,17 +3,13 @@ import authorizedAxiosInstance from '~/utils/authorizeAxios'
 import { API_URL } from '~/utils/constants'
 
 export const addListAPI = async (newListDto) => {
-
   const response = await authorizedAxiosInstance.post(`${API_URL}/lists`, newListDto)
   return response.data.data
-
 }
 
 export const addCardAPI = async (newCardDto) => {
-
   const response = await authorizedAxiosInstance.post(`${API_URL}/cards`, newCardDto)
   return response.data.data
-
 }
 
 export const updateBoard = async (boardId, updateBoardDto) => {
@@ -48,6 +44,11 @@ export const refreshTokenAPI = async () => {
 
 export const getMyBoardsAPI = async (qs) => {
   const response = await authorizedAxiosInstance.get(`${API_URL}/boards/${qs}`)
+  return response.data.data
+}
+
+export const getPublicBoardsAPI = async (qs) => {
+  const response = await authorizedAxiosInstance.get(`${API_URL}/boards/public${qs}`)
   return response.data.data
 }
 

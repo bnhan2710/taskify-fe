@@ -82,16 +82,16 @@ function AccountTab() {
     //validate before handling
     const file = e.target?.files[0]
     if (!file) return
-    
+
     const error = singleFileValidator(file)
     if (error) {
       toast.error(error)
       return
     }
-    
+
     let formData = new FormData()
     formData.append('file', file)
-    
+
     toast.promise(
       dispatch(uploadAvatarAPI(formData)),
       {
