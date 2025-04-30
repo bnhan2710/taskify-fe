@@ -74,7 +74,9 @@ export const commentCardAPI = async (commentDto) => {
 
 export const inviteUserToBoardAPI = async (email, boardId) => {
   const response = await authorizedAxiosInstance.post(`${API_URL}/boards/${boardId}/add`, email)
-  toast.success('Invite user successfully!')
+  if(response.data.statusCode === 200) {
+    toast.success('Invite user successfully!')
+  }
   return response.data.data
 }
 
@@ -94,6 +96,20 @@ export const uploadAvatarAPI = async (formData) => {
       'Content-Type': 'multipart/form-data'
     }
   })
+  return response.data
+}
+
+export const uploadCardcoverAPI = async (formData, cardId) => {
+  const response = await authorizedAxiosInstance.post(`${API_URL}/upload/card-cover/${cardId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  return response.data
+}
+
+export const removeCardCoverAPI = async (cardId) => {
+  const response = await authorizedAxiosInstance.delete(`${API_URL}/upload/card-cover/${cardId}`)
   return response.data
 }
 

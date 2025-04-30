@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form'
 import { EMAIL_RULE, FIELD_REQUIRED_MESSAGE, EMAIL_RULE_MESSAGE } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import { inviteUserToBoardAPI } from '~/apis'
+import { toast } from 'react-toastify'
 
 function InviteBoardUser({ boardId }) {
 
@@ -28,9 +29,11 @@ function InviteBoardUser({ boardId }) {
     inviteUserToBoardAPI({ email: inviteeEmail }, boardId).then(() => {
       setValue('inviteeEmail', null)
       setAnchorPopoverElement(null)
-
+      // show message response
       //real time message here
 
+    }).catch((error) => {
+      toast.error(error?.response?.data?.message || 'Error inviting user to board')
     })
   }
 

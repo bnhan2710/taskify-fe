@@ -24,6 +24,9 @@ import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import SubjectRoundedIcon from '@mui/icons-material/SubjectRounded'
 import DvrOutlinedIcon from '@mui/icons-material/DvrOutlined'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import Tooltip from '@mui/material/Tooltip'
+import Button from '@mui/material/Button'
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
 import { singleFileValidator } from '~/utils/validators'
@@ -37,10 +40,14 @@ import {
   selectCurrentActiveCard,
   updateCurrentActiveCard
 } from '~/redux/activeCard/activeCardSlice'
-import { updateCardAPI } from '~/apis'
+import { removeCardCoverAPI, updateCardAPI } from '~/apis'
 import { styled } from '@mui/material/styles'
-import { updateCardInBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { updateCardInBoard, updatecurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { commentCardAPI } from '~/apis'
+import { uploadCardcoverAPI } from '~/apis'
+import { addCardMemberAPI } from '~/apis'
+import { selectcurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { cloneDeep } from 'lodash'
 
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -66,6 +73,7 @@ const SidebarItem = styled(Box)(({ theme }) => ({
 function ActiveCard() {
   const dispatch = useDispatch()
   const activeCard = useSelector(selectCurrentActiveCard)
+  const board = useSelector(selectcurrentActiveBoard)
   // const [isOpen, setIsOpen] = useState(true)
   // const handleOpenModal = () => setIsOpen(true)
   const handleCloseModal = () => {
@@ -91,15 +99,65 @@ function ActiveCard() {
   }
 
   const onUploadCardCover = (event) => {
-    console.log(event.target?.files[0])
-    const error = singleFileValidator(event.target?.files[0])
+    const file = event.target?.files[0]
+    if (!file) return
+    const error = singleFileValidator(file)
     if (error) {
       toast.error(error)
       return
     }
     let reqData = new FormData()
-    reqData.append('cardCover', event.target?.files[0])
+    reqData.append('cardCover', file)
+    toast.promise(
+      uploadCardcoverAPI(reqData, activeCard.id),
+      {
+        pending: 'Uploading cover image...',
+        success: 'Cover image uploaded successfully',
+        error: 'Failed to upload cover image'
+      }
+    ).then(response => {
+      const coverUrl = response.data.cover
+      dispatch(updateCurrentActiveCard({
+        ...activeCard,
+        cover: coverUrl
+      }))
+      updateCardInBoardState(coverUrl)
+    }).catch(error => {
+      console.error('Error uploading card cover:', error)
+    })
+  }
+  const updateCardInBoardState = (coverUrl) => {
+    const newBoard = cloneDeep(board)
+    const listContainingCard = newBoard.lists.find(list => 
+      list.cards.some(card => card.id === activeCard.id)
+    )
+    if (listContainingCard) {
+      const cardToUpdate = listContainingCard.cards.find(card => card.id === activeCard.id)
+      if (cardToUpdate) {
+        cardToUpdate.cover = coverUrl
+        dispatch(updatecurrentActiveBoard(newBoard))
+      }
+    }
+  }
+  const onRemoveCardCover = () => {
+    if (!activeCard?.cover) return
 
+    toast.promise(
+      removeCardCoverAPI(activeCard.id),
+      {
+        pending: 'Removing cover image...',
+        success: 'Cover image removed successfully',
+        error: 'Failed to remove cover image'
+      }
+    ).then(() => {
+      dispatch(updateCurrentActiveCard({
+        ...activeCard,
+        cover: null
+      }))
+      updateCardInBoardState(null)
+    }).catch(error => {
+      console.error('Error removing card cover:', error)
+    })
   }
 
   const onAddCardComment = async (commentToAdd) => {
@@ -113,7 +171,51 @@ function ActiveCard() {
       comments: [...activeCard.comments, newComment]
     }))
   }
-  const onUpdateCardMembers = (incommingMemberInfo) => {
+  
+  const onUpdateCardMembers = async (incommingMemberInfo) => {
+    try {
+      const { userId, action } = incommingMemberInfo
+      
+      // Call API to add/remove member
+      await addCardMemberAPI(activeCard.id, { userId, action })
+      
+      // Update the active card state based on action
+      let updatedMembers = [...(activeCard.members || [])]
+      
+      if (action === 'add') {
+        // Add the member if not already present
+        if (!updatedMembers.includes(userId)) {
+          updatedMembers.push(userId)
+        }
+      } else if (action === 'remove') {
+        // Remove the member
+        updatedMembers = updatedMembers.filter(id => id !== userId)
+      }
+      
+      // Update active card in Redux
+      dispatch(updateCurrentActiveCard({
+        ...activeCard,
+        members: updatedMembers
+      }))
+      
+      // Update the card in the board state
+      const newBoard = cloneDeep(board)
+      const listContainingCard = newBoard.lists.find(list => 
+        list.cards.some(card => card.id === activeCard.id)
+      )
+      
+      if (listContainingCard) {
+        const cardToUpdate = listContainingCard.cards.find(card => card.id === activeCard.id)
+        if (cardToUpdate) {
+          cardToUpdate.members = updatedMembers
+          // Dispatch the updated board state
+          dispatch(updatecurrentActiveBoard(newBoard))
+        }
+      }
+    } catch (error) {
+      console.error('Error updating card members:', error)
+      toast.error('Failed to update card member')
+    }
   }
 
   return (
@@ -144,12 +246,30 @@ function ActiveCard() {
           <CancelIcon color="error" sx={{ '&:hover': { color: 'error.light' } }} onClick={handleCloseModal} />
         </Box>
         {activeCard?.cover &&
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ position: 'relative', mb: 4 }}>
           <img
             style={{ width: '100%', height: '320px', borderRadius: '6px', objectFit: 'cover' }}
             src={activeCard?.cover}
             alt="card-cover"
           />
+          <Tooltip title="Remove cover">
+            <Button
+              variant="contained"
+              color="error"
+              size="small"
+              startIcon={<DeleteOutlineIcon />}
+              onClick={onRemoveCardCover}
+              sx={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                opacity: 0.8,
+                '&:hover': { opacity: 1 }
+              }}
+            >
+              Remove
+            </Button>
+          </Tooltip>
         </Box>
         }
         <Box sx={{ mb: 1, mt: -3, pr: 2.5, display: 'flex', alignItems: 'center', gap: 1 }}>

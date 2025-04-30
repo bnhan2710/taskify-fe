@@ -12,9 +12,9 @@ const markdownValueExample = `
   **Hello world | Huynh Nhu Bao Nhan**
   [![](https://avatars.githubusercontent.com/u/130585782?v=4)](https://avatars.githubusercontent.com/u/130585782?v=4)
   \`\`\`javascript
-  import React from "react"
-  import ReactDOM from "react-dom"
-  import MDEditor from '@uiw/react-md-editor'
+  const a = 1
+  const b = 2
+  const c = a + b
   \`\`\`
 `
 
@@ -23,6 +23,8 @@ function CardDescriptionMdEditor({ cardDescriptionProp, handleUpdateCardDescript
 
   const [markdownEditMode, setMarkdownEditMode] = useState(false)
   const [cardDescription, setCardDescription] = useState(cardDescriptionProp || markdownValueExample)
+  // const [cardDescription, setCardDescription] = useState(cardDescriptionProp)
+
 
   const updateCardDescription = () => {
     setMarkdownEditMode(false)

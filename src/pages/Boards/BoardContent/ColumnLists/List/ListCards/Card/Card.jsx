@@ -9,13 +9,31 @@ import AttachmentIcon from '@mui/icons-material/Attachment'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
 import { fetchCardDetailAPI } from '~/redux/activeCard/activeCardSlice'
+import { selectCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
+import { useEffect, useState } from 'react'
 
 function Card({ card }) {
-
   const dispatch = useDispatch()
+  const activeCard = useSelector(selectCurrentActiveCard)
+  const [cardState, setCardState] = useState(card)
+  useEffect(() => {
+    if (activeCard && activeCard.id === card.id) {
+      setCardState({
+        ...card,
+        cover: activeCard.cover || card.cover,
+        members: activeCard.members || card.members,
+        comments: activeCard.comments || card.comments,
+        attachments: activeCard.attachments || card.attachments,
+        checklist: activeCard.checklist || card.checklist
+      })
+    } else {
+      setCardState(card)
+    }
+  }, [activeCard, card])
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging
   } = useSortable({ id: card.id, data: { ...card } })
   const dndkitCardStyles = {
@@ -26,7 +44,7 @@ function Card({ card }) {
   }
 
   const shouldShowCardActtions = () => {
-    return !!card.comments?.length || !!card.attachments?.length || !!card.checklist?.length
+    return !!cardState.comments?.length || !!cardState.attachments?.length || !!cardState.checklist?.length
   }
 
   const setActiveCard = () => {
@@ -39,34 +57,31 @@ function Card({ card }) {
       onClick={setActiveCard}
       ref={setNodeRef} style = {dndkitCardStyles} {...attributes} {...listeners}
       sx={{
-
         cursor: 'pointer',
         boxShadow: '0px 1px 1px rgba(0,0,0,0.2)',
         borderRadius: '12px',
         overflow: 'unset',
-        opacity: card.FE_Placeholder ? '0' : '1',
-        minWidth: card.FE_Placeholder ? '280px' : 'unset',
-        pointerEvents: card.FE_Placeholder ? 'none' : 'unset',
-        position: card.FE_Placeholder ? 'fixed' : 'unset',
+        opacity: cardState.FE_Placeholder ? '0' : '1',
+        minWidth: cardState.FE_Placeholder ? '280px' : 'unset',
+        pointerEvents: cardState.FE_Placeholder ? 'none' : 'unset',
+        position: cardState.FE_Placeholder ? 'fixed' : 'unset',
         border: '1px solid transparent',
         '&:hover':  { borderColor: (theme) => theme.palette.primary.main }
-
       }}>
-      {card?.cover && <CardMedia sx={{ height: 140 }} image={card.cover}/>}
+      {cardState?.cover && <CardMedia sx={{ height: 140 }} image={cardState.cover}/>}
 
       <CardContent sx={{ p:1.5, '&:last-child':{ p:1.5 } }}>
-        <Typography>{card?.title}</Typography>
+        <Typography>{cardState?.title}</Typography>
       </CardContent>
       {shouldShowCardActtions() && <CardActions sx={{ p: '0 4px 8px 4px' }} >
         {/* if !card.length return null else return Button */}
-        {!!card.comments?.length
-          && <Button size="small" startIcon={<CommentIcon/>}>{card.comments.length}</Button>}
-        {!!card.attachments?.length
-          && <Button size="small" startIcon={<AttachmentIcon/>}>{card.attachments.length}</Button>}
-        {!!card.checklist?.length
-          && <Button size="small" startIcon={<CheckCircleOutlineIcon/>}>{card.checklist.length}</Button>}
+        {!!cardState.comments?.length
+          && <Button size="small" startIcon={<CommentIcon/>}>{cardState.comments.length}</Button>}
+        {!!cardState.attachments?.length
+          && <Button size="small" startIcon={<AttachmentIcon/>}>{cardState.attachments.length}</Button>}
+        {!!cardState.checklist?.length
+          && <Button size="small" startIcon={<CheckCircleOutlineIcon/>}>{cardState.checklist.length}</Button>}
       </CardActions> }
-
     </MuiCard>
   )
 }

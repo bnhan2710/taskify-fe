@@ -90,7 +90,7 @@ function AccountTab() {
     }
 
     let formData = new FormData()
-    formData.append('file', file)
+    formData.append('avatar', file)
 
     toast.promise(
       dispatch(uploadAvatarAPI(formData)),

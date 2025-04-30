@@ -16,10 +16,10 @@ export const fetchBoardDetailAPI = createAsyncThunk(
     let board = response.data.data
     board.lists = board.lists.map(list => ({ ...list, boardId: board.id }))
     for (let list of board.lists) {
+      const cardData = await authorziedAxiosInstance.get(`${API_URL}/cards/list/${list.id}`)
+      list.cards = cardData.data.data
       list.cards = list.cards.map(card => ({ ...card, listId: list.id }))
     }
-    //board User
-
     return board
   }
 )
