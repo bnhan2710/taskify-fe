@@ -128,7 +128,7 @@ function ActiveCard() {
   }
   const updateCardInBoardState = (coverUrl) => {
     const newBoard = cloneDeep(board)
-    const listContainingCard = newBoard.lists.find(list => 
+    const listContainingCard = newBoard.lists.find(list =>
       list.cards.some(card => card.id === activeCard.id)
     )
     if (listContainingCard) {
@@ -171,17 +171,17 @@ function ActiveCard() {
       comments: [...activeCard.comments, newComment]
     }))
   }
-  
+
   const onUpdateCardMembers = async (incommingMemberInfo) => {
     try {
       const { userId, action } = incommingMemberInfo
-      
+
       // Call API to add/remove member
       await addCardMemberAPI(activeCard.id, { userId, action })
-      
+
       // Update the active card state based on action
       let updatedMembers = [...(activeCard.members || [])]
-      
+
       if (action === 'add') {
         // Add the member if not already present
         if (!updatedMembers.includes(userId)) {
@@ -191,19 +191,19 @@ function ActiveCard() {
         // Remove the member
         updatedMembers = updatedMembers.filter(id => id !== userId)
       }
-      
+
       // Update active card in Redux
       dispatch(updateCurrentActiveCard({
         ...activeCard,
         members: updatedMembers
       }))
-      
+
       // Update the card in the board state
       const newBoard = cloneDeep(board)
-      const listContainingCard = newBoard.lists.find(list => 
+      const listContainingCard = newBoard.lists.find(list =>
         list.cards.some(card => card.id === activeCard.id)
       )
-      
+
       if (listContainingCard) {
         const cardToUpdate = listContainingCard.cards.find(card => card.id === activeCard.id)
         if (cardToUpdate) {

@@ -63,8 +63,7 @@ function BoardBar({ board }) {
         />
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap:2 }}>
-        {/* handle invite board user */}
-        <InviteBoardUser boardId = {board.id}/>
+        <InviteBoardUser boardId={board.id} boardUsers={board?.boardUsers}/>
         <BoardUserGroup boardUsers={board?.boardUsers}/>
         <MoreHorizIcon/>
       </Box>

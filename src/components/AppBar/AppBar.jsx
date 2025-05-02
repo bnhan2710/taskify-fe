@@ -20,6 +20,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import SearchIcon from '@mui/icons-material/Search'
 import CloseIcon from '@mui/icons-material/Close'
 import { Link } from 'react-router-dom'
+import Notifications from './Notifications/Notifications'
 
 
 function AppBar() {
@@ -216,34 +217,8 @@ function AppBar() {
 
         <SelectMode />
 
-        <Tooltip title="Notifications" arrow>
-          <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 36,
-            height: 36,
-            borderRadius: '8px',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            '&:hover': {
-              backgroundColor: 'rgba(255,255,255,0.1)'
-            }
-          }}>
-            <Badge
-              color="error"
-              variant="dot"
-              sx={{
-                '& .MuiBadge-badge': {
-                  top: 5,
-                  right: 5
-                }
-              }}
-            >
-              <NotificationsIcon sx={{ color: '#FFF', fontSize: 22 }} />
-            </Badge>
-          </Box>
-        </Tooltip>
+        {/* Using the Notifications component instead of just the icon */}
+        <Notifications />
 
         <Tooltip title="Help & Information" arrow>
           <Box sx={{

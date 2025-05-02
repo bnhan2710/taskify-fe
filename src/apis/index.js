@@ -74,7 +74,7 @@ export const commentCardAPI = async (commentDto) => {
 
 export const inviteUserToBoardAPI = async (email, boardId) => {
   const response = await authorizedAxiosInstance.post(`${API_URL}/boards/${boardId}/add`, email)
-  if(response.data.statusCode === 200) {
+  if (response.data.statusCode === 200) {
     toast.success('Invite user successfully!')
   }
   return response.data.data
@@ -113,3 +113,17 @@ export const removeCardCoverAPI = async (cardId) => {
   return response.data
 }
 
+export const getNotificationsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_URL}/notifications/me`)
+  return response.data.data
+}
+
+export const updateNotificationAPI = async (notificationId, status) => {
+  const response = await authorizedAxiosInstance.put(`${API_URL}/notifications/${notificationId}`, { status })
+  return response.data.data
+}
+
+export const removeUserFromBoardAPI = async (boardId, userId) => {
+  const response = await authorizedAxiosInstance.delete(`${API_URL}/boards/${boardId}/member/`, { userId })
+  return response.data
+}

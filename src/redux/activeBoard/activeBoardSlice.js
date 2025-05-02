@@ -12,17 +12,26 @@ const initialState = {
 export const fetchBoardDetailAPI = createAsyncThunk(
   'activeBoard/fetchBoardDetailAPI',
   async (boardId) => {
-    const response = await authorziedAxiosInstance.get(`${API_URL}/boards/${boardId}`)
-    let board = response.data.data
-    board.lists = board.lists.map(list => ({ ...list, boardId: board.id }))
-    for (let list of board.lists) {
-      const cardData = await authorziedAxiosInstance.get(`${API_URL}/cards/list/${list.id}`)
-      list.cards = cardData.data.data
-      list.cards = list.cards.map(card => ({ ...card, listId: list.id }))
+    try {
+      const response = await authorziedAxiosInstance.get(`${API_URL}/boards/${boardId}`)
+      let board = response.data.data
+      board.lists = board.lists.map(list => ({ ...list, boardId: board.id }))
+      for (let list of board.lists) {
+        const cardData = await authorziedAxiosInstance.get(`${API_URL}/cards/list/${list.id}`)
+        list.cards = cardData.data.data
+        list.cards = list.cards.map(card => ({ ...card, listId: list.id }))
+      }
+      return board
+    } catch (error) {
+      if (error.response.status === 403) {
+        //redirect to not found page
+        window.location.href = '/not-found'
+      }
+      throw error
     }
-    return board
   }
 )
+
 
 export const activeBoardSlice = createSlice({
   name: 'activeBoard',

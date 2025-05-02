@@ -76,11 +76,11 @@ function Card({ card }) {
       {shouldShowCardActtions() && <CardActions sx={{ p: '0 4px 8px 4px' }} >
         {/* if !card.length return null else return Button */}
         {!!cardState.comments?.length
-          && <Button size="small" startIcon={<CommentIcon/>}>{cardState.comments.length}</Button>}
+          && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<CommentIcon/>}>{cardState.comments.length}</Button>}
         {!!cardState.attachments?.length
-          && <Button size="small" startIcon={<AttachmentIcon/>}>{cardState.attachments.length}</Button>}
+          && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<AttachmentIcon/>}>{cardState.attachments.length}</Button>}
         {!!cardState.checklist?.length
-          && <Button size="small" startIcon={<CheckCircleOutlineIcon/>}>{cardState.checklist.length}</Button>}
+          && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<CheckCircleOutlineIcon/>}>{cardState.checklist.length}</Button>}
       </CardActions> }
     </MuiCard>
   )
