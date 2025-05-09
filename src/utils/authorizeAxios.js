@@ -57,10 +57,8 @@ authorizedAxiosInstance.interceptors.response.use(
       if (!isRefreshing) {
         isRefreshing = true
         try {
-          const refreshToken = localStorage.getItem('refreshToken')
-          const { accessToken } = await refreshTokenAPI(refreshToken)
+          const { accessToken } = await refreshTokenAPI()
           const newAccessToken = accessToken
-
           localStorage.setItem('accessToken', newAccessToken)
           isRefreshing = false
           onTokenRefreshed(newAccessToken)
@@ -69,7 +67,6 @@ authorizedAxiosInstance.interceptors.response.use(
           isRefreshing = false
           toast.error('Session expired. Please log in again.')
           localStorage.removeItem('accessToken')
-          localStorage.removeItem('refreshToken')
           return Promise.reject(refreshError)
         }
       }

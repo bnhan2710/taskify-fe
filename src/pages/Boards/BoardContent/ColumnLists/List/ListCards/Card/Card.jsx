@@ -5,7 +5,7 @@ import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import CommentIcon from '@mui/icons-material/Comment'
-import AttachmentIcon from '@mui/icons-material/Attachment'
+import PeopleIcon from '@mui/icons-material/People';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -74,11 +74,10 @@ function Card({ card }) {
         <Typography>{cardState?.title}</Typography>
       </CardContent>
       {shouldShowCardActtions() && <CardActions sx={{ p: '0 4px 8px 4px' }} >
-        {/* if !card.length return null else return Button */}
         {!!cardState.comments?.length
           && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<CommentIcon/>}>{cardState.comments.length}</Button>}
-        {!!cardState.attachments?.length
-          && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<AttachmentIcon/>}>{cardState.attachments.length}</Button>}
+        {!!cardState.members?.length
+          && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<PeopleIcon/>}>{cardState.members.length}</Button>}
         {!!cardState.checklist?.length
           && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<CheckCircleOutlineIcon/>}>{cardState.checklist.length}</Button>}
       </CardActions> }

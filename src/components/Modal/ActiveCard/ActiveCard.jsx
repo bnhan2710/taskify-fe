@@ -45,7 +45,7 @@ import { styled } from '@mui/material/styles'
 import { updateCardInBoard, updatecurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { commentCardAPI } from '~/apis'
 import { uploadCardcoverAPI } from '~/apis'
-import { addCardMemberAPI } from '~/apis'
+import { cardMemberAPI } from '~/apis'
 import { selectcurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { cloneDeep } from 'lodash'
 
@@ -175,24 +175,20 @@ function ActiveCard() {
   const onUpdateCardMembers = async (incommingMemberInfo) => {
     try {
       const { userId, action } = incommingMemberInfo
+      console.log('userId', userId)
+      console.log('action', action)
+      await cardMemberAPI(activeCard.id, { userId, action })
 
-      // Call API to add/remove member
-      await addCardMemberAPI(activeCard.id, { userId, action })
-
-      // Update the active card state based on action
       let updatedMembers = [...(activeCard.members || [])]
 
       if (action === 'add') {
-        // Add the member if not already present
         if (!updatedMembers.includes(userId)) {
           updatedMembers.push(userId)
         }
       } else if (action === 'remove') {
-        // Remove the member
         updatedMembers = updatedMembers.filter(id => id !== userId)
       }
 
-      // Update active card in Redux
       dispatch(updateCurrentActiveCard({
         ...activeCard,
         members: updatedMembers
@@ -274,8 +270,6 @@ function ActiveCard() {
         }
         <Box sx={{ mb: 1, mt: -3, pr: 2.5, display: 'flex', alignItems: 'center', gap: 1 }}>
           <CreditCardIcon />
-
-          {/* Feature 01: Xử lý tiêu đề của Card */}
           <ToggleFocusInput
             inputFontSize='22px'
             value={activeCard?.title}
@@ -283,12 +277,9 @@ function ActiveCard() {
         </Box>
 
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          {/* Left side */}
           <Grid xs={12} sm={9}>
             <Box sx={{ mb: 3 }}>
               <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Members</Typography>
-
-              {/* Feature 02: Xử lý các thành viên của Card */}
               <CardUserGroup
                 memberIds={activeCard?.members}
                 onUpdateCardMembers={onUpdateCardMembers}
@@ -299,8 +290,6 @@ function ActiveCard() {
                 <SubjectRoundedIcon />
                 <Typography variant="span" sx={{ fontWeight: '600', fontSize: '20px' }}>Description</Typography>
               </Box>
-
-              {/* Feature 03: Xử lý mô tả của Card */}
               <CardDescriptionMdEditor
                 cardDescriptionProp={activeCard?.description}
                 handleUpdateCardDescription={onUpdateCardDescription}
@@ -312,8 +301,6 @@ function ActiveCard() {
                 <DvrOutlinedIcon />
                 <Typography variant="span" sx={{ fontWeight: '600', fontSize: '20px' }}>Activity</Typography>
               </Box>
-
-              {/* Feature 04: Xử lý các hành động, ví dụ comment vào Card */}
               <CardActivitySection
                 cardComments={activeCard?.comments}
                 onAddCardComment = {onAddCardComment}
@@ -325,12 +312,10 @@ function ActiveCard() {
           <Grid xs={12} sm={3}>
             <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Add To Card</Typography>
             <Stack direction="column" spacing={1}>
-              {/* Feature 05: Xử lý hành động bản thân user tự join vào card */}
               <SidebarItem className="active">
                 <PersonOutlineOutlinedIcon fontSize="small" />
                 Join
               </SidebarItem>
-              {/* Feature 06: Xử lý hành động cập nhật ảnh Cover của Card */}
               <SidebarItem className="active" component="label">
                 <ImageOutlinedIcon fontSize="small" />
                 Cover

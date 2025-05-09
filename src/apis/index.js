@@ -85,8 +85,8 @@ export const inviteUserToBoardAPI = async (email, boardId) => {
   return response.data.data
 }
 
-export const addCardMemberAPI = async (cardId, memberId) => {
-  const response = await authorizedAxiosInstance.post(`${API_URL}/cards/${cardId}/member/add`, memberId)
+export const cardMemberAPI = async (cardId, memberDto) => {
+  const response = await authorizedAxiosInstance.post(`${API_URL}/cards/${cardId}/member/`, memberDto)
   return response.data.data
 }
 

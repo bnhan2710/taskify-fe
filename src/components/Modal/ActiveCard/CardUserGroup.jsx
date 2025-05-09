@@ -6,6 +6,8 @@ import Popover from '@mui/material/Popover'
 import AddIcon from '@mui/icons-material/Add'
 import Badge from '@mui/material/Badge'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import CloseIcon from '@mui/icons-material/Close'
+import IconButton from '@mui/material/IconButton'
 import { useSelector } from 'react-redux'
 import { selectcurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 
@@ -30,16 +32,50 @@ function CardUserGroup({ memberIds = [], onUpdateCardMembers }) {
 
   return (
     <Box sx={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-      {/* Hiển thị các user là thành viên của card */}
-      {FE_CardMembers.map((user, index) =>
-        <Tooltip title={user?.displayName} key={index}>
-          <Avatar
-            sx={{ width: 34, height: 34, cursor: 'pointer' }}
-            alt={user?.displayName}
-            src={user?.avatar}
-          />
-        </Tooltip>
-      )}
+
+      {FE_CardMembers.map((user, index) => (
+        <Box key={index} sx={{ position: 'relative' }}>
+          <Tooltip title={user?.displayName}>
+            <Avatar
+              sx={{
+                width: 34,
+                height: 34,
+                cursor: 'pointer',
+                '&:hover + .remove-button': {
+                  opacity: 1
+                }
+              }}
+              alt={user?.displayName}
+              src={user?.avatar}
+            />
+          </Tooltip>
+          <IconButton
+            className="remove-button"
+            onClick={() => handleUpdateCardMembers(user)}
+            size="small"
+            sx={{
+              position: 'absolute',
+              top: -5,
+              right: -5,
+              width: 18,
+              height: 18,
+              opacity: 0,
+              transition: 'opacity 0.2s',
+              bgcolor: 'rgba(255, 0, 0, 0.8)',
+              color: 'white',
+              '&:hover': {
+                bgcolor: 'rgba(255, 0, 0, 1)',
+                opacity: 1
+              },
+              '& .MuiSvgIcon-root': {
+                fontSize: 12
+              }
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
+      ))}
 
       <Tooltip title="Add new member">
         <Box
