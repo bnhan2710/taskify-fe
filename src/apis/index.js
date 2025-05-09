@@ -19,7 +19,22 @@ export const updateBoard = async (boardId, updateBoardDto) => {
 
 export const removeBoardAPI = async (boardId) => {
   const response = await authorizedAxiosInstance.delete(`${API_URL}/boards/${boardId}`)
+  return response.data.data
+}
+
+export const getClosedBoardsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_URL}/boards/closed`)
   return response.data
+}
+
+export const closeBoardAPI = async (boardId) => {
+  const response = await authorizedAxiosInstance.put(`${API_URL}/boards/${boardId}/close`)
+  return response.data.data
+}
+
+export const reopenBoardAPI = async (boardId) => {
+  const response = await authorizedAxiosInstance.put(`${API_URL}/boards/${boardId}/reopen`)
+  return response.data.data
 }
 
 export const updateList = async (listId, updateListDto) => {

@@ -20,6 +20,7 @@ import PaginationItem from '@mui/material/PaginationItem'
 import { Link, useLocation } from 'react-router-dom'
 import randomColor from 'randomcolor'
 import SidebarCreateBoardModal from './create'
+import SidebarViewClosedBoardsModal from './close'
 import BoardToggle from '~/components/SelectMode/BoardToggle'
 import { getMyBoardsAPI, getPublicBoardsAPI } from '~/apis'
 import { styled } from '@mui/material/styles'
@@ -112,6 +113,7 @@ function Boards() {
               </SidebarItem>
               <Divider sx={{ my: 1 }} />
               <SidebarCreateBoardModal afterCreateBoard={afterCreateBoard} />
+              <SidebarViewClosedBoardsModal board={boards} afterReopenBoard={afterCreateBoard} />
             </Stack>
           </Grid>
           <Grid xs={10} sm={9}>

@@ -21,12 +21,12 @@ import FileCopyIcon from '@mui/icons-material/FileCopy'
 import EmailIcon from '@mui/icons-material/Email'
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
-import { removeBoardAPI, getMyBoardsAPI, getPublicBoardsAPI } from '~/apis'
+import { closeBoardAPI } from '~/apis'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { updatecurrentActiveBoard, selectcurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { useConfirm } from 'material-ui-confirm'
-
+import InviteBoardUser from './InviteBoardUser'
 const drawerItems = [
   { icon: <PersonAddAltIcon />, label: 'Share' },
   { icon: <SettingsIcon />, label: 'Setting' },
@@ -40,16 +40,17 @@ const drawerItems = [
   { icon: <CloseFullscreenIcon />, label: 'Close this board' }
 ]
 
-export default function BoardSideBar ({ open, onClose }) {
+export default function BoardSideBar ({ open, onClose, board }) {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const currentBoard = useSelector(selectcurrentActiveBoard)
-
+  const [isInviteUserOpen, setInviteUserOpen] = useState(false)
+  const [openInvite, setOpenInvite] = useState(false)
   const confirmDelete = useConfirm()
   const handleDeleteBoard = () => {
     confirmDelete({
-      title: 'Delete this List?',
-      description: 'This action will permanently delete this list and all the cards in it. Please input the list title to confirm.',
+      title: 'Close this board?',
+      description: 'You can find and reopen closed boards at the bottom of your boards page .',
       confirmationText: 'Yes, delete it',
       confirmationButtonProps: {
         variant: 'contained',
@@ -59,12 +60,17 @@ export default function BoardSideBar ({ open, onClose }) {
       cancellationButtonProps: {
         variant: 'contained',
         color: 'primary'
-      },
-      confirmationKeyword: `${currentBoard.title}`
+      }
     }).then(() => {
-      toast.success(`Board deleted: ${currentBoard.title}`)
-      dispatch(updatecurrentActiveBoard(null))
-      navigate('/boards')
+      closeBoardAPI(currentBoard.id)
+        .then(() => {
+          toast.success(`Board deleted: ${currentBoard.title}`)
+          dispatch(updatecurrentActiveBoard(null))
+          navigate('/boards')
+        })
+        .catch(() => {
+          toast.error('Failed to delete board')
+        })
     }).catch(() => {
     })
   }
@@ -76,6 +82,8 @@ export default function BoardSideBar ({ open, onClose }) {
       break
     case 'Share':
       // handleShare()
+      setInviteUserOpen(true)
+      setOpenInvite(true)
       break
     default:
       // handle other actions
@@ -96,6 +104,12 @@ export default function BoardSideBar ({ open, onClose }) {
         }
       }}
     >
+      {isInviteUserOpen && (
+        <InviteBoardUser 
+          isSelected={!isInviteUserOpen} openModal={openInvite} 
+          handleOpenModal={() => setOpenInvite(true)} handleCloseModal={() => setOpenInvite(false)}
+          boardId={board.id} boardUsers={board?.boardUsers}/>
+      )}
       <Box
         sx={{
           display: 'flex',
@@ -111,7 +125,6 @@ export default function BoardSideBar ({ open, onClose }) {
           <CloseIcon />
         </IconButton>
       </Box>
-
       <List sx={{ overflowY: 'auto', flex: 1 }}>
         {drawerItems.map((item, index) => (
           <ListItem button key={index} onClick={() => handleAction(item.label)}>
