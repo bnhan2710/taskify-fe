@@ -17,6 +17,11 @@ export const updateBoard = async (boardId, updateBoardDto) => {
   return response.data.data
 }
 
+export const removeBoardAPI = async (boardId) => {
+  const response = await authorizedAxiosInstance.delete(`${API_URL}/boards/${boardId}`)
+  return response.data
+}
+
 export const updateList = async (listId, updateListDto) => {
   const response = await authorizedAxiosInstance.put(`${API_URL}/lists/${listId}`, updateListDto)
   return response.data.data

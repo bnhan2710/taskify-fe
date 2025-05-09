@@ -79,10 +79,8 @@ export const activeBoardSlice = createSlice({
   }
 })
 // action creator for the reducer, dispatch the action to the reducer
-export const { updatecurrentActiveBoard, updateCardInBoard } = activeBoardSlice.actions
+export const { updatecurrentActiveBoard, markcurrentActiveBoardAsDeleted, updateCardInBoard } = activeBoardSlice.actions
 // selector for the reducer, get data from the reducer
 export const selectcurrentActiveBoard = (state) => state.activeBoard.currentActiveBoard
-
-
 // export default activeBoardSlice.reducer
 export const activeBoardReducer = activeBoardSlice.reducer
