@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Drawer,
@@ -25,28 +25,42 @@ import { closeBoardAPI } from '~/apis'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { updatecurrentActiveBoard, selectcurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { selectCurrentUser } from '~/redux/user/userSlice'
 import { useConfirm } from 'material-ui-confirm'
 import InviteBoardUser from './InviteBoardUser'
-const drawerItems = [
-  { icon: <PersonAddAltIcon />, label: 'Share' },
-  { icon: <SettingsIcon />, label: 'Setting' },
-  { icon: <WallpaperIcon />, label: 'Change wallpaper' },
-  { icon: <LabelIcon />, label: 'Label' },
-  { icon: <HistoryIcon />, label: 'Work' },
-  { icon: <ArchiveIcon />, label: 'Archived items' },
-  { icon: <VisibilityIcon />, label: 'Monitor' },
-  { icon: <FileCopyIcon />, label: 'Copy information table' },
-  { icon: <EmailIcon />, label: 'Email to board setup' },
-  { icon: <CloseFullscreenIcon />, label: 'Close this board' }
-]
 
 export default function BoardSideBar ({ open, onClose, board }) {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const currentBoard = useSelector(selectcurrentActiveBoard)
+  const currentUser = useSelector(selectCurrentUser)
+  const role = currentBoard?.boardUsers?.find((user) => user.id === currentUser.id)?.role
   const [isInviteUserOpen, setInviteUserOpen] = useState(false)
   const [openInvite, setOpenInvite] = useState(false)
   const confirmDelete = useConfirm()
+
+  const drawerItems = [
+    { icon: <PersonAddAltIcon />, label: 'Share' },
+    { icon: <SettingsIcon />, label: 'Setting' },
+    { icon: <WallpaperIcon />, label: 'Change wallpaper' },
+    { icon: <LabelIcon />, label: 'Label' },
+    { icon: <HistoryIcon />, label: 'Work' },
+    { icon: <ArchiveIcon />, label: 'Archived items' },
+    { icon: <VisibilityIcon />, label: 'Monitor' },
+    { icon: <FileCopyIcon />, label: 'Copy information table' },
+    { icon: <EmailIcon />, label: 'Email to board setup' },
+    {
+      icon: <CloseFullscreenIcon />,
+      label: role === 'Owner' ? 'Close this board' : 'Quit this board'
+    }
+  ]
+  const filteredDrawerItems = drawerItems.filter((item) => {
+    if (role !== 'Owner' &&
+       (item.label === 'Share' || item.label === 'Quit this board' || item.label === 'Change wallpaper' )) {
+      return false
+    }
+    return true
+  })
   const handleDeleteBoard = () => {
     confirmDelete({
       title: 'Close this board?',
@@ -126,7 +140,7 @@ export default function BoardSideBar ({ open, onClose, board }) {
         </IconButton>
       </Box>
       <List sx={{ overflowY: 'auto', flex: 1 }}>
-        {drawerItems.map((item, index) => (
+        {filteredDrawerItems.map((item, index) => (
           <ListItem button key={index} onClick={() => handleAction(item.label)}>
             <ListItemIcon sx={{ color: '#bbb' }}>{item.icon}</ListItemIcon>
             <ListItemText primary={item.label} />
