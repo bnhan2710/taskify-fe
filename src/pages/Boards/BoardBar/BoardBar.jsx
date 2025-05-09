@@ -3,13 +3,16 @@ import Chip from '@mui/material/Chip'
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
 import VpnLockIcon from '@mui/icons-material/VpnLock'
 import AddToDriveIcon from '@mui/icons-material/AddToDrive'
-
+import { useState } from 'react'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { capitalizeFirstLetter } from '~/utils/formatter'
 import BoardUserGroup from './BoardUserGroup'
 import InviteBoardUser from './InviteBoardUser'
 // import { capitalizeFirstLetter } from '~/utils/formatter'
-
+import BoardSideBar from './BoardSideBar'
+import { Button } from '@mui/material'
+import Alert from '@mui/material/Alert'
+import Stack from '@mui/material/Stack'
 const MENU_STYLES ={
   color: 'white',
   bgcolor: 'transparent',
@@ -25,6 +28,7 @@ const MENU_STYLES ={
 }
 
 function BoardBar({ board }) {
+  const [open, setOpen] = useState(false)
 
   return (
     <Box
@@ -65,7 +69,10 @@ function BoardBar({ board }) {
       <Box sx={{ display: 'flex', alignItems: 'center', gap:2 }}>
         <InviteBoardUser boardId={board.id} boardUsers={board?.boardUsers}/>
         <BoardUserGroup boardUsers={board?.boardUsers}/>
-        <MoreHorizIcon/>
+        <Button sx={MENU_STYLES} onClick={() => {setOpen(true)}}>
+          <MoreHorizIcon />
+        </Button>
+        <BoardSideBar open={open} onClose={() => setOpen(false)} />
       </Box>
     </Box>
   )
