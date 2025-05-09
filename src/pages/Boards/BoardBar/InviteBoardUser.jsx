@@ -26,8 +26,7 @@ import { selectCurrentUser } from '~/redux/user/userSlice'
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import IconButton from '@mui/material/IconButton'
 
-function InviteBoardUser({ boardId, boardUsers = [] }) {
-  const [openModal, setOpenModal] = useState(false)
+function InviteBoardUser({ isSelected, openModal, handleOpenModal, handleCloseModal, boardId, boardUsers = [] }) {
   const [tabValue, setTabValue] = useState('email')
   const [role, setRole] = useState('Member')
   const [isInviting, setIsInviting] = useState(false)
@@ -38,8 +37,6 @@ function InviteBoardUser({ boardId, boardUsers = [] }) {
     setCurrentBoardUsers(boardUsers)
   }, [boardUsers])
 
-  const handleOpenModal = () => setOpenModal(true)
-  const handleCloseModal = () => setOpenModal(false)
   const handleChangeTab = (event, newValue) => setTabValue(newValue)
   const handleRoleChange = (event) => setRole(event.target.value)
   const currentUser = useSelector(selectCurrentUser)
@@ -81,7 +78,7 @@ function InviteBoardUser({ boardId, boardUsers = [] }) {
   }
   return (
     <Box>
-      <Tooltip title="Share board">
+      {isSelected && (<Tooltip title="Share board">
         <Button
           onClick={handleOpenModal}
           variant="outlined"
@@ -90,7 +87,7 @@ function InviteBoardUser({ boardId, boardUsers = [] }) {
         >
           Share
         </Button>
-      </Tooltip>
+      </Tooltip>)}
 
       <Modal
         open={openModal}

@@ -9,10 +9,11 @@ import { capitalizeFirstLetter } from '~/utils/formatter'
 import BoardUserGroup from './BoardUserGroup'
 import InviteBoardUser from './InviteBoardUser'
 // import { capitalizeFirstLetter } from '~/utils/formatter'
+import { useSelector } from 'react-redux'
+import { selectcurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { selectCurrentUser } from '~/redux/user/userSlice'
 import BoardSideBar from './BoardSideBar'
 import { Button } from '@mui/material'
-import Alert from '@mui/material/Alert'
-import Stack from '@mui/material/Stack'
 const MENU_STYLES ={
   color: 'white',
   bgcolor: 'transparent',
@@ -29,7 +30,10 @@ const MENU_STYLES ={
 
 function BoardBar({ board }) {
   const [open, setOpen] = useState(false)
-
+  const [openInvite, setOpenInvite] = useState(false)
+  const currentBoard = useSelector(selectcurrentActiveBoard)
+  const currentUser = useSelector(selectCurrentUser)
+  const role = currentBoard?.boardUsers?.find((user) => user.id === currentUser.id)?.role
   return (
     <Box
       sx={{
@@ -67,12 +71,16 @@ function BoardBar({ board }) {
         />
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap:2 }}>
-        <InviteBoardUser boardId={board.id} boardUsers={board?.boardUsers}/>
+        { role === 'Owner' &&
+        (<InviteBoardUser
+          isSelected={true} openModal={openInvite} 
+          handleOpenModal={() => setOpenInvite(true)} handleCloseModal={() => setOpenInvite(false)}
+          boardId={board.id} boardUsers={board?.boardUsers}/> )}
         <BoardUserGroup boardUsers={board?.boardUsers}/>
         <Button sx={MENU_STYLES} onClick={() => {setOpen(true)}}>
           <MoreHorizIcon />
         </Button>
-        <BoardSideBar open={open} onClose={() => setOpen(false)} />
+        <BoardSideBar open={open} onClose={() => setOpen(false)} board={board}/>
       </Box>
     </Box>
   )
