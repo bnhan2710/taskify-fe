@@ -7,19 +7,34 @@ import TextField from '@mui/material/TextField'
 import AddIcon from '@mui/icons-material/Add'
 import LinearProgress from '@mui/material/LinearProgress'
 
-function CardChecklist({ checklist, onUpdateChecklist }) {
+function CardChecklist({ checklist, onUpdateChecklist, onAddChecklist, onDeleteChecklist }) {
   const [showAddForm, setShowAddForm] = useState(false)
   const [newItemText, setNewItemText] = useState('')
-
-  // Calculate progress
-  const items = checklist?.items || []
+  const items = checklist || []
+  
   const totalItems = items.length
   const completedItems = items.filter(item => item.isDone)?.length || 0
   const progress = totalItems > 0 ? (completedItems / totalItems) * 100 : 0
 
+    const handleToggleItem = (index) => {
+    const updatedItems = [...items];
+    
+    updatedItems[index] = {
+        index: index,
+        ...items[index],
+        isDone: !items[index].isDone
+    };
+    
+    console.log("Toggle item at index:", index);
+    console.log("Updated items:", updatedItems);
+    
+    onUpdateChecklist({
+        items: updatedItems[index]
+    });
+    }
+
   return (
     <Box sx={{ mt: 2 }}>
-      {/* Progress bar */}
       <Box sx={{ mb: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
           <Typography variant="body2">
@@ -42,52 +57,62 @@ function CardChecklist({ checklist, onUpdateChecklist }) {
         />
       </Box>
 
-      {/* Checklist items */}
-      {items.map((item, index) => (
+        {items.map((item, index) => (
         <Box
-          key={index}
-          sx={{
+            key={index}
+            sx={{
             display: 'flex',
             alignItems: 'center',
             gap: 1,
             mb: 1,
+            p: 0.5,
+            borderRadius: '4px',
             '&:hover': {
-              backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                backgroundColor: 'rgba(9, 30, 66, 0.04)',
+                '& .delete-button': {
+                visibility: 'visible'
+                }
             }
-          }}
+            }}
         >
-          <Checkbox
+            <Checkbox
             checked={item.isDone}
-            onChange={() => {
-              const updatedItems = [...items]
-              updatedItems[index] = {
-                ...item,
-                isDone: !item.isDone
-              }
-              onUpdateChecklist({
-                ...checklist,
-                items: updatedItems
-              })
-            }}
-            sx={{ 
-              '&.Mui-checked': {
-                color: '#0C66E4'
-              }
-            }}
-          />
-          <Typography 
+            onChange={() => handleToggleItem(index)}
             sx={{
-              flexGrow: 1,
-              fontSize: '14px',
-              textDecoration: item.isDone ? 'line-through' : 'none'
+                color: '#DFE1E6',
+                '&.Mui-checked': {
+                color: '#0C66E4'
+                }
             }}
-          >
+            />
+            <Typography
+            variant="body2"
+            sx={{
+                fontSize: '14px',
+                flexGrow: 1,
+                wordBreak: 'break-word',
+                textDecoration: item.isDone ? 'line-through' : 'none',
+            }}
+            >
             {item.description}
-          </Typography>
+            </Typography>
+            <Button
+            className="delete-button"
+            size="small"
+            onClick={() => {
+                onDeleteChecklist(checklist[index].id);
+            }}
+            sx={{
+                minWidth: '32px',
+                p: '2px 8px',
+                textTransform: 'none',
+            }}
+            >
+            Delete
+            </Button>
         </Box>
-      ))}
+        ))}
 
-      {/* Add item section */}
       {!showAddForm ? (
         <Button
           startIcon={<AddIcon />}
@@ -128,8 +153,8 @@ function CardChecklist({ checklist, onUpdateChecklist }) {
             size="small"
             onClick={() => {
                 if (!newItemText.trim()) return
-                onUpdateChecklist({
-                description: newItemText.trim(),  // chỉ truyền description và isDone
+                onAddChecklist({
+                description: newItemText.trim(),
                 isDone: false
                 })
                 setNewItemText('')

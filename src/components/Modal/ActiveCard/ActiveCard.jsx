@@ -36,7 +36,7 @@ import {
   addChecklistAPI,
   cardMemberAPI,
   commentCardAPI, getChecklistAPI, removeCardCoverAPI, updateCardAPI,
-  updateChecklistAPI,
+  updateChecklistAPI, deleteChecklistAPI,
   uploadCardcoverAPI
 } from '~/apis'
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
@@ -77,9 +77,6 @@ const SidebarItem = styled(Box)(({ theme }) => ({
 function ActiveCard() {  const dispatch = useDispatch()
   const activeCard = useSelector(selectCurrentActiveCard)
   const board = useSelector(selectcurrentActiveBoard)
-  const [checklists, setChecklists] = useState([])
-  const [showChecklistForm, setShowChecklistForm] = useState(false)
-  const [checklistTitle, setChecklistTitle] = useState('')
 
   const handleCloseModal = () => {
     // setIsOpen(false)
@@ -180,8 +177,6 @@ function ActiveCard() {  const dispatch = useDispatch()
   const onUpdateCardMembers = async (incommingMemberInfo) => {
     try {
       const { userId, action } = incommingMemberInfo
-      console.log('userId', userId)
-      console.log('action', action)
       await cardMemberAPI(activeCard.id, { userId, action })
 
       let updatedMembers = [...(activeCard.members || [])]
@@ -216,67 +211,85 @@ function ActiveCard() {  const dispatch = useDispatch()
     } catch (error) {
       console.error('Error updating card members:', error)
       toast.error('Failed to update card member')
-    }  }
+    }  
+  }
 
+  const [checklists, setChecklists] = useState([])
+  const handleUpdateChecklist = async (updatedChecklist) => {
+    try {
+        const existingChecklist = updatedChecklist.items
+        const updateResponse = await updateChecklistAPI(existingChecklist.id, {
+          description: existingChecklist.description,
+          isDone: existingChecklist.isDone
+        })
+        
+        if (updateResponse && updateResponse.data) {
+          setChecklists([updateResponse.data])
+        }
+        const response = await getChecklistAPI(activeCard.id)
+        if (response && response.data) {
+          setChecklists(response.data || [])
+        } else {
+          setChecklists([])
+        }
+    } catch (error) {
+      console.error('Error handling checklist:', error)
+      toast.error('Failed to update checklist')
+    }
+  }
 
-const handleUpdateChecklist = async (updatedChecklist) => {
-  try {
-    if (!checklists.length) {
-      // Create new checklist with first item
+  const handleCreateChecklist = async (data) => {
+    try {
+      const description = data?.description || 'TODO';
+      
       const response = await addChecklistAPI({
         cardId: activeCard.id,
-        description: updatedChecklist.description
+        description: description
       })
-      console.log('Created checklist:', response)
-      setChecklists([response.data])
-    } else {
-      // Update existing checklist
-      const response = await updateChecklistAPI(checklists[0].id, {
-        description: updatedChecklist.description,
-        isDone: updatedChecklist.isDone
-      })
-      console.log('Updated checklist:', response)
-      setChecklists([response.data])
-    }
-  } catch (error) {
-    console.error('Error updating checklist:', error)
-    toast.error('Failed to update checklist')
-  }
-}
-
-const handleCreateChecklist = async (newItem) => {
-  try {
-    if (!checklists.length) {
-      // Create new checklist first
-      await addChecklistAPI({
-        cardId: activeCard.id,
-        description: 'TODO'  // Default title
-      })
-      setChecklists([response.data])
-
-      // Then add the first item
-      if (newItem) {
-        const updatedResponse = await updateChecklistAPI(response.data.id, {
-          description: newItem.description,
-          isDone: newItem.isDone
-        })
-        console.log('Added first item:', updatedResponse)
-        setChecklists([updatedResponse.data])
+      if (response) {
+        setChecklists([response.data]);
+        toast.success('Checklist created successfully');
       }
-    } else {
-      // Update existing checklist
-      const response = await updateChecklistAPI(checklists[0].id, {
-        description: newItem.description,
-        isDone: newItem.isDone
-      })
-      console.log('Updated checklist:', response)
-      setChecklists([response.data])
+      const fetch = await getChecklistAPI(activeCard.id)
+        if (fetch && fetch.data) {
+          setChecklists(fetch.data || [])
+        } else {
+          setChecklists([])
+        }
+    } catch (error) {
+      console.error('Error creating checklist:', error);
+      toast.error('Failed to create checklist');
     }
-  } catch (error) {
-    console.error('Error handling checklist:', error)
-    toast.error('Failed to handle checklist')
   }
-}
+
+  const handleDeleteChecklist = async (checklistId) => {
+  try {
+    await deleteChecklistAPI(checklistId);
+    
+    setChecklists(prevChecklists => prevChecklists.filter(c => c.id !== checklistId));
+    } catch (error) {
+      console.error('Error deleting checklist:', error);
+      toast.error('Failed to delete checklist');
+    }
+  }
+
+  useEffect(() => {
+    const loadChecklists = async () => {
+      if (!activeCard?.id) return
+      try {
+        const response = await getChecklistAPI(activeCard.id)
+        if (response && response.data) {
+          setChecklists(response.data || [])
+        } else {
+          setChecklists([])
+        }
+      } catch (error) {
+        console.error('Error loading checklists:', error)
+        setChecklists([])
+      }
+    }
+    loadChecklists()
+  }, [activeCard?.id])
 
   return (
     <Modal
@@ -358,25 +371,25 @@ const handleCreateChecklist = async (newItem) => {
                 cardDescriptionProp={activeCard?.description}
                 handleUpdateCardDescription={onUpdateCardDescription}
               />
-            </Box> 
+            </Box>            
             
-            {checklists?.length >= 0 && (
+            {checklists.length >= 0 && (
               <Box sx={{ mb: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                  <TaskAltOutlinedIcon sx={{ color: '#5E6C84', fontSize: 20 }} />
-                  <Typography variant="span" sx={{ 
-                    fontWeight: '500',
-                    fontSize: '14px'
-                  }}>
-                    TODO
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <TaskAltOutlinedIcon />
+                  <Typography variant="span" sx={{ fontWeight: '600', fontSize: '20px' }}>
+                    {checklists[0]?.title || 'ToDo'} 
                   </Typography>
                 </Box>
                 <CardChecklist
-                  checklist={checklists[0]}
-                  onUpdateChecklist={handleCreateChecklist}
+                  checklist={checklists}
+                  onUpdateChecklist={handleUpdateChecklist}
+                  onAddChecklist={handleCreateChecklist}
+                  onDeleteChecklist={handleDeleteChecklist}
                 />
               </Box>
             )}
+            
 
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -405,16 +418,8 @@ const handleCreateChecklist = async (newItem) => {
               </SidebarItem>
 
               <SidebarItem><AttachFileOutlinedIcon fontSize="small" />Attachment</SidebarItem>
-              <SidebarItem><LocalOfferOutlinedIcon fontSize="small" />Labels</SidebarItem>              <SidebarItem
-                onClick={() => {
-                  if (checklists.length > 0) {
-                    toast.info('Card already has a checklist')
-                    return
-                  }
-                  setShowChecklistForm(true)
-                }}
-              >
-                <TaskAltOutlinedIcon fontSize="small" />
+              <SidebarItem><LocalOfferOutlinedIcon fontSize="small" />Labels</SidebarItem>              
+              <SidebarItem>
                 Checklist
               </SidebarItem>
               <SidebarItem><WatchLaterOutlinedIcon fontSize="small" />Dates</SidebarItem>

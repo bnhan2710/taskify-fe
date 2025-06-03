@@ -159,9 +159,12 @@ export const updateChecklistAPI = async (checklistId, checklistDto) => {
 }
 
 export const getChecklistAPI = async (cardId) => {
-  const response = await authorizedAxiosInstance.get(`${API_URL}/checklists/${cardId}`)
-  return response.data.data
+  const response = await authorizedAxiosInstance.get(`${API_URL}/checklists`, {
+    params: { cardId }
+  })
+  return response.data
 }
+
 export const deleteChecklistAPI = async (checklistId) => {
   const response = await authorizedAxiosInstance.delete(`${API_URL}/checklists/${checklistId}`)
   return response.data
