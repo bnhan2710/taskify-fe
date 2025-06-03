@@ -1,53 +1,57 @@
-import { useState } from 'react'
-import Box from '@mui/material/Box'
-import Modal from '@mui/material/Modal'
-import Typography from '@mui/material/Typography'
-import CreditCardIcon from '@mui/icons-material/CreditCard'
-import CancelIcon from '@mui/icons-material/Cancel'
-import Grid from '@mui/material/Unstable_Grid2'
-import Stack from '@mui/material/Stack'
-import Divider from '@mui/material/Divider'
-import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined'
-import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'
-import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined'
-import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined'
-import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined'
-import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
-import AutoFixHighOutlinedIcon from '@mui/icons-material/AutoFixHighOutlined'
-import AspectRatioOutlinedIcon from '@mui/icons-material/AspectRatioOutlined'
-import AddToDriveOutlinedIcon from '@mui/icons-material/AddToDriveOutlined'
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
-import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined'
-import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
-import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined'
+import AddToDriveOutlinedIcon from '@mui/icons-material/AddToDriveOutlined'
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
+import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined'
+import AspectRatioOutlinedIcon from '@mui/icons-material/AspectRatioOutlined'
+import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined'
+import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined'
+import AutoFixHighOutlinedIcon from '@mui/icons-material/AutoFixHighOutlined'
+import CancelIcon from '@mui/icons-material/Cancel'
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
+import CreditCardIcon from '@mui/icons-material/CreditCard'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import DvrOutlinedIcon from '@mui/icons-material/DvrOutlined'
+import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
+import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'
+import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import SubjectRoundedIcon from '@mui/icons-material/SubjectRounded'
-import DvrOutlinedIcon from '@mui/icons-material/DvrOutlined'
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import Tooltip from '@mui/material/Tooltip'
+import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined'
+import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
+import Modal from '@mui/material/Modal'
+import Stack from '@mui/material/Stack'
+import { styled } from '@mui/material/styles'
+import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Unstable_Grid2'
+import { cloneDeep } from 'lodash'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
+import {
+  addChecklistAPI,
+  cardMemberAPI,
+  commentCardAPI, getChecklistAPI, removeCardCoverAPI, updateCardAPI,
+  updateChecklistAPI,
+  uploadCardcoverAPI
+} from '~/apis'
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
-import { singleFileValidator } from '~/utils/validators'
-import { toast } from 'react-toastify'
-import CardUserGroup from './CardUserGroup'
-import CardDescriptionMdEditor from './CardDescriptionMdEditor'
-import CardActivitySection from './CardActivitySection'
-import { useDispatch, useSelector } from 'react-redux'
+import { selectcurrentActiveBoard, updateCardInBoard, updatecurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import {
   clearCurrentActiveCard,
   selectCurrentActiveCard,
   updateCurrentActiveCard
 } from '~/redux/activeCard/activeCardSlice'
-import { removeCardCoverAPI, updateCardAPI } from '~/apis'
-import { styled } from '@mui/material/styles'
-import { updateCardInBoard, updatecurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
-import { commentCardAPI } from '~/apis'
-import { uploadCardcoverAPI } from '~/apis'
-import { cardMemberAPI } from '~/apis'
-import { selectcurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
-import { cloneDeep } from 'lodash'
+import { singleFileValidator } from '~/utils/validators'
+import CardActivitySection from './CardActivitySection'
+import CardChecklist from './CardChecklist'
+import CardDescriptionMdEditor from './CardDescriptionMdEditor'
+import CardUserGroup from './CardUserGroup'
 
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -70,12 +74,13 @@ const SidebarItem = styled(Box)(({ theme }) => ({
 }))
 
 
-function ActiveCard() {
-  const dispatch = useDispatch()
+function ActiveCard() {  const dispatch = useDispatch()
   const activeCard = useSelector(selectCurrentActiveCard)
   const board = useSelector(selectcurrentActiveBoard)
-  // const [isOpen, setIsOpen] = useState(true)
-  // const handleOpenModal = () => setIsOpen(true)
+  const [checklists, setChecklists] = useState([])
+  const [showChecklistForm, setShowChecklistForm] = useState(false)
+  const [checklistTitle, setChecklistTitle] = useState('')
+
   const handleCloseModal = () => {
     // setIsOpen(false)
     dispatch(clearCurrentActiveCard())
@@ -211,8 +216,67 @@ function ActiveCard() {
     } catch (error) {
       console.error('Error updating card members:', error)
       toast.error('Failed to update card member')
+    }  }
+
+
+const handleUpdateChecklist = async (updatedChecklist) => {
+  try {
+    if (!checklists.length) {
+      // Create new checklist with first item
+      const response = await addChecklistAPI({
+        cardId: activeCard.id,
+        description: updatedChecklist.description
+      })
+      console.log('Created checklist:', response)
+      setChecklists([response.data])
+    } else {
+      // Update existing checklist
+      const response = await updateChecklistAPI(checklists[0].id, {
+        description: updatedChecklist.description,
+        isDone: updatedChecklist.isDone
+      })
+      console.log('Updated checklist:', response)
+      setChecklists([response.data])
     }
+  } catch (error) {
+    console.error('Error updating checklist:', error)
+    toast.error('Failed to update checklist')
   }
+}
+
+const handleCreateChecklist = async (newItem) => {
+  try {
+    if (!checklists.length) {
+      // Create new checklist first
+      await addChecklistAPI({
+        cardId: activeCard.id,
+        description: 'TODO'  // Default title
+      })
+      setChecklists([response.data])
+
+      // Then add the first item
+      if (newItem) {
+        const updatedResponse = await updateChecklistAPI(response.data.id, {
+          description: newItem.description,
+          isDone: newItem.isDone
+        })
+        console.log('Added first item:', updatedResponse)
+        setChecklists([updatedResponse.data])
+      }
+    } else {
+      // Update existing checklist
+      const response = await updateChecklistAPI(checklists[0].id, {
+        description: newItem.description,
+        isDone: newItem.isDone
+      })
+      console.log('Updated checklist:', response)
+      setChecklists([response.data])
+    }
+  } catch (error) {
+    console.error('Error handling checklist:', error)
+    toast.error('Failed to handle checklist')
+  }
+}
 
   return (
     <Modal
@@ -284,8 +348,8 @@ function ActiveCard() {
                 memberIds={activeCard?.members}
                 onUpdateCardMembers={onUpdateCardMembers}
               />
-            </Box>
-            <Box sx={{ mb: 3 }}>
+            </Box>            
+            <Box sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <SubjectRoundedIcon />
                 <Typography variant="span" sx={{ fontWeight: '600', fontSize: '20px' }}>Description</Typography>
@@ -294,7 +358,25 @@ function ActiveCard() {
                 cardDescriptionProp={activeCard?.description}
                 handleUpdateCardDescription={onUpdateCardDescription}
               />
-            </Box>
+            </Box> 
+            
+            {checklists?.length >= 0 && (
+              <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                  <TaskAltOutlinedIcon sx={{ color: '#5E6C84', fontSize: 20 }} />
+                  <Typography variant="span" sx={{ 
+                    fontWeight: '500',
+                    fontSize: '14px'
+                  }}>
+                    TODO
+                  </Typography>
+                </Box>
+                <CardChecklist
+                  checklist={checklists[0]}
+                  onUpdateChecklist={handleCreateChecklist}
+                />
+              </Box>
+            )}
 
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -323,8 +405,18 @@ function ActiveCard() {
               </SidebarItem>
 
               <SidebarItem><AttachFileOutlinedIcon fontSize="small" />Attachment</SidebarItem>
-              <SidebarItem><LocalOfferOutlinedIcon fontSize="small" />Labels</SidebarItem>
-              <SidebarItem><TaskAltOutlinedIcon fontSize="small" />Checklist</SidebarItem>
+              <SidebarItem><LocalOfferOutlinedIcon fontSize="small" />Labels</SidebarItem>              <SidebarItem
+                onClick={() => {
+                  if (checklists.length > 0) {
+                    toast.info('Card already has a checklist')
+                    return
+                  }
+                  setShowChecklistForm(true)
+                }}
+              >
+                <TaskAltOutlinedIcon fontSize="small" />
+                Checklist
+              </SidebarItem>
               <SidebarItem><WatchLaterOutlinedIcon fontSize="small" />Dates</SidebarItem>
               <SidebarItem><AutoFixHighOutlinedIcon fontSize="small" />Custom Fields</SidebarItem>
             </Stack>
