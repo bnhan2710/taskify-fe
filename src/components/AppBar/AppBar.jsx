@@ -33,7 +33,7 @@ function AppBar() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: 2,
+      padding: '0 16px',
       gap: 2,
       overflowX: 'auto',
       background: (theme) => (
@@ -43,7 +43,7 @@ function AppBar() {
       ),
       boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
       position: 'relative',
-      zIndex: 1100
+      zIndex: 1100,
     }}>
       {/* Left section with logo and navigation */}
       <Box sx={{

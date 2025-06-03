@@ -1,29 +1,29 @@
-import { useState, useEffect } from 'react'
+import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
+import Typography from '@mui/material/Typography'
+import { useEffect, useState } from 'react'
 import AppBar from '~/components/AppBar/AppBar'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
-import Container from '@mui/material/Container'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 // Grid: https://mui.com/material-ui/react-grid2/#whats-changed
-import Grid from '@mui/material/Unstable_Grid2'
-import Stack from '@mui/material/Stack'
-import Divider from '@mui/material/Divider'
-import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
-import ListAltIcon from '@mui/icons-material/ListAlt'
-import HomeIcon from '@mui/icons-material/Home'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
+import HomeIcon from '@mui/icons-material/Home'
+import ListAltIcon from '@mui/icons-material/ListAlt'
+import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
+import Divider from '@mui/material/Divider'
 import Pagination from '@mui/material/Pagination'
 import PaginationItem from '@mui/material/PaginationItem'
-import { Link, useLocation } from 'react-router-dom'
-import randomColor from 'randomcolor'
-import SidebarCreateBoardModal from './create'
-import SidebarViewClosedBoardsModal from './close'
-import BoardToggle from '~/components/SelectMode/BoardToggle'
-import { getMyBoardsAPI, getPublicBoardsAPI } from '~/apis'
+import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
+import Grid from '@mui/material/Unstable_Grid2'
+import randomColor from 'randomcolor'
+import { Link, useLocation } from 'react-router-dom'
+import { getMyBoardsAPI, getPublicBoardsAPI } from '~/apis'
+import BoardToggle from '~/components/SelectMode/BoardToggle'
+import SidebarViewClosedBoardsModal from './close'
+import SidebarCreateBoardModal from './create'
 
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -52,28 +52,34 @@ function Boards() {
   const [totalBoards, setTotalBoards] = useState(null)
   const location = useLocation()
   const query = new URLSearchParams(location.search)
-  const page = parseInt(query.get('page') || '1', 10)
+  const page = parseInt(query.get('page') || '1', 9)
   const isPublic = query.get('public') === 'true'
+  const ITEMS_PER_PAGE = 9;
 
   const updateStateData = (res) => {
-    setBoards(res.boards || [])
+    setBoards(res.boards?.slice(0, ITEMS_PER_PAGE))
     setTotalBoards(res.totalBoards || 0)
   }
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    params.set('limit', ITEMS_PER_PAGE)
+    params.set('offset', (page - 1) * ITEMS_PER_PAGE)
     if (isPublic) {
-      getPublicBoardsAPI(location.search).then(updateStateData)
+      getPublicBoardsAPI(`?${params.toString()}`).then(updateStateData)
     } else {
-      getMyBoardsAPI(location.search).then(updateStateData)
+      getMyBoardsAPI(`?${params.toString()}`).then(updateStateData) 
     }
   }, [location.search, isPublic])
 
   const afterCreateBoard = () => {
-    //fetch board again
+    const params = new URLSearchParams(location.search)
+    params.set('limit', ITEMS_PER_PAGE)
+    params.set('offset', (page - 1) * ITEMS_PER_PAGE)
     if (isPublic) {
-      getPublicBoardsAPI(location.search).then(updateStateData)
+      getPublicBoardsAPI(`?${params.toString()}`).then(updateStateData)
     } else {
-      getMyBoardsAPI(location.search).then(updateStateData)
+      getMyBoardsAPI(`?${params.toString()}`).then(updateStateData) 
     }
   }
 
@@ -165,12 +171,15 @@ function Boards() {
               </Box>
             }
             {boards?.length > 0 &&
+            <>
               <Grid container spacing={3}>
                 {boards.map(b =>
-                  <Grid xs={10} sm={6} md={4} key={b.id || b}>
+                  <Grid item xs={12} sm={6} md={4} key={b.id || b}>
                     <Card
                       sx={{
                         width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
                         overflow: 'hidden',
                         borderRadius: 2,
                         boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
@@ -236,6 +245,7 @@ function Boards() {
                   </Grid>
                 )}
               </Grid>
+            </>
             }
             {(totalBoards > 0) &&
               <Box sx={{
@@ -255,7 +265,7 @@ function Boards() {
                   color="secondary"
                   showFirstButton
                   showLastButton
-                  count={Math.ceil(totalBoards / 10)}
+                  count={Math.ceil(totalBoards / 8)}
                   page={page}
                   renderItem={(item) => {
                     // Preserve the public parameter when paginating
