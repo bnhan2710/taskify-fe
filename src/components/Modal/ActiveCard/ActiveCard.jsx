@@ -79,8 +79,28 @@ function ActiveCard() {  const dispatch = useDispatch()
   const board = useSelector(selectcurrentActiveBoard)
 
   const handleCloseModal = () => {
-    // setIsOpen(false)
+  try {
+    const newBoard = cloneDeep(board)
+    const listContainingCard = newBoard.lists.find(list =>
+      list.cards.some(card => card.id === activeCard.id)
+    )
+
+    if (listContainingCard) {
+      const cardToUpdate = listContainingCard.cards.find(card => card.id === activeCard.id)
+      if (cardToUpdate) {
+        cardToUpdate.checklists = activeCard.checklists
+        cardToUpdate.cover = activeCard.cover
+        cardToUpdate.members = activeCard.members
+        cardToUpdate.comments = activeCard.comments
+        dispatch(updatecurrentActiveBoard(newBoard))
+      }
+    }
+
     dispatch(clearCurrentActiveCard())
+  } catch (error) {
+    console.error('Error closing modal:', error)
+    toast.error('Failed to close card')
+  }
   }
   // BUG
   const onUpdateCardTitle = (newTitle) => {
@@ -226,12 +246,16 @@ function ActiveCard() {  const dispatch = useDispatch()
         if (updateResponse && updateResponse.data) {
           setChecklists([updateResponse.data])
         }
-        const response = await getChecklistAPI(activeCard.id)
-        if (response && response.data) {
-          setChecklists(response.data || [])
+        const fetch = await getChecklistAPI(activeCard.id)
+        if (fetch && fetch.data) {
+          setChecklists(fetch.data || [])
         } else {
           setChecklists([])
         }
+        dispatch(updateCurrentActiveCard({
+          ...activeCard,
+          checklists: [...fetch.data]
+        }));
     } catch (error) {
       console.error('Error handling checklist:', error)
       toast.error('Failed to update checklist')
@@ -256,6 +280,10 @@ function ActiveCard() {  const dispatch = useDispatch()
         } else {
           setChecklists([])
         }
+        dispatch(updateCurrentActiveCard({
+          ...activeCard,
+          checklists: [...fetch.data]
+        }));
     } catch (error) {
       console.error('Error creating checklist:', error);
       toast.error('Failed to create checklist');
@@ -265,8 +293,17 @@ function ActiveCard() {  const dispatch = useDispatch()
   const handleDeleteChecklist = async (checklistId) => {
   try {
     await deleteChecklistAPI(checklistId);
-    
     setChecklists(prevChecklists => prevChecklists.filter(c => c.id !== checklistId));
+    const fetch = await getChecklistAPI(activeCard.id)
+      if (fetch && fetch.data) {
+        setChecklists(fetch.data || [])
+      } else {
+        setChecklists([])
+      }
+      dispatch(updateCurrentActiveCard({
+        ...activeCard,
+        checklists: [...fetch.data]
+      }));
     } catch (error) {
       console.error('Error deleting checklist:', error);
       toast.error('Failed to delete checklist');
@@ -283,6 +320,10 @@ function ActiveCard() {  const dispatch = useDispatch()
         } else {
           setChecklists([])
         }
+        dispatch(updateCurrentActiveCard({
+          ...activeCard,
+          checklists: response.data
+        }));
       } catch (error) {
         console.error('Error loading checklists:', error)
         setChecklists([])

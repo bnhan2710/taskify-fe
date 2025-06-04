@@ -27,7 +27,7 @@ function Card({ card }) {
         members: activeCard.members || card.members,
         comments: activeCard.comments || card.comments,
         attachments: activeCard.attachments || card.attachments,
-        checklist: activeCard.checklist || card.checklist
+        checklists: activeCard.checklists || card.checklists
       })
     } else {
       setCardState(card)
@@ -44,7 +44,7 @@ function Card({ card }) {
   }
 
   const shouldShowCardActtions = () => {
-    return !!cardState.comments?.length || !!cardState.attachments?.length || !!cardState.checklist?.length
+    return !!cardState.comments?.length || !!cardState.attachments?.length || !!cardState.checklists?.length
   }
 
   const setActiveCard = () => {
@@ -78,8 +78,10 @@ function Card({ card }) {
           && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<CommentIcon/>}>{cardState.comments.length}</Button>}
         {!!cardState.members?.length
           && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<PeopleIcon/>}>{cardState.members.length}</Button>}
-        {!!cardState.checklist?.length
-          && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<CheckCircleOutlineIcon/>}>{cardState.checklist.length}</Button>}
+        {!!cardState.checklists?.length
+          && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<CheckCircleOutlineIcon/>}>
+            { cardState.checklists.filter(item => item.isDone).length + "/" + cardState.checklists.length}
+          </Button>}
       </CardActions> }
     </MuiCard>
   )

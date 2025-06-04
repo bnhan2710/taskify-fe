@@ -78,7 +78,7 @@ export default function BoardSideBar ({ open, onClose, board }) {
     }).then(() => {
       closeBoardAPI(currentBoard.id)
         .then(() => {
-          toast.success(`Board deleted: ${currentBoard.title}`)
+          toast.success(`Board closed: ${currentBoard.title}`)
           dispatch(updatecurrentActiveBoard(null))
           navigate('/boards')
         })

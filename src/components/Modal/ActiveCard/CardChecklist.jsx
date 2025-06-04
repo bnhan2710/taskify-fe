@@ -25,9 +25,6 @@ function CardChecklist({ checklist, onUpdateChecklist, onAddChecklist, onDeleteC
         isDone: !items[index].isDone
     };
     
-    console.log("Toggle item at index:", index);
-    console.log("Updated items:", updatedItems);
-    
     onUpdateChecklist({
         items: updatedItems[index]
     });
