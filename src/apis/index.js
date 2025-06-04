@@ -147,3 +147,30 @@ export const removeUserFromBoardAPI = async (boardId, userId) => {
   const response = await authorizedAxiosInstance.delete(`${API_URL}/boards/${boardId}/member/`, { userId })
   return response.data
 }
+
+export const addChecklistAPI = async (checklistDto) => {
+  const response = await authorizedAxiosInstance.post(`${API_URL}/checklists`, checklistDto)
+  return response.data.data
+}
+
+export const updateChecklistAPI = async (checklistId, checklistDto) => {
+  const response = await authorizedAxiosInstance.put(`${API_URL}/checklists/${checklistId}`, checklistDto)
+  return response.data.data
+}
+
+export const getChecklistAPI = async (cardId) => {
+  const response = await authorizedAxiosInstance.get(`${API_URL}/checklists`, {
+    params: { cardId }
+  })
+  return response.data
+}
+
+export const deleteChecklistAPI = async (checklistId) => {
+  const response = await authorizedAxiosInstance.delete(`${API_URL}/checklists/${checklistId}`)
+  return response.data
+}
+
+export const getChecklistByIdAPI = async (checklistId) => {
+  const response = await authorizedAxiosInstance.get(`${API_URL}/checklists/${checklistId}`)
+  return response.data.data
+}
