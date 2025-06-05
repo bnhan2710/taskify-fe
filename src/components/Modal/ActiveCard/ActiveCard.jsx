@@ -47,6 +47,7 @@ import {
   selectCurrentActiveCard,
   updateCurrentActiveCard
 } from '~/redux/activeCard/activeCardSlice'
+import { selectCurrentUser } from '~/redux/user/userSlice'
 import { singleFileValidator } from '~/utils/validators'
 import CardActivitySection from './CardActivitySection'
 import CardChecklist from './CardChecklist'
@@ -77,6 +78,10 @@ const SidebarItem = styled(Box)(({ theme }) => ({
 function ActiveCard() {  const dispatch = useDispatch()
   const activeCard = useSelector(selectCurrentActiveCard)
   const board = useSelector(selectcurrentActiveBoard)
+  const currentUser = useSelector(selectCurrentUser)
+  const isBoardMember = board?.boardUsers?.some(user => user.id === currentUser.id)
+  const isPublicBoard = board?.type === 'public'
+  const isReadOnly = isPublicBoard && !isBoardMember
 
   const handleCloseModal = () => {
   try {
@@ -349,15 +354,42 @@ function ActiveCard() {  const dispatch = useDispatch()
         outline: 0,
         padding: '40px 20px 20px',
         margin: '50px auto',
-        backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : '#fff'
+        backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+        ...(isReadOnly && {
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+            zIndex: 10
+          },
+          '& button:not(.close-button), & input, & textarea, & [role="button"]:not(.close-button-container)': {
+            pointerEvents: 'none',
+            opacity: 0.5
+          },
+          '& *:not(.close-button):not(.close-button-container)': {
+            userSelect: 'none'
+          }
+        })
       }}>
         <Box sx={{
           position: 'absolute',
           top: '12px',
           right: '10px',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          zIndex: 11
         }}>
-          <CancelIcon color="error" sx={{ '&:hover': { color: 'error.light' } }} onClick={handleCloseModal} />
+          <CancelIcon 
+          color="error" 
+          sx={{ 
+            '&:hover': { color: 'error.light' }, 
+            pointerEvents: 'auto', 
+            cursor: 'pointer'  
+            }} 
+          onClick={handleCloseModal} />
         </Box>
         {activeCard?.cover &&
         <Box sx={{ position: 'relative', mb: 4 }}>

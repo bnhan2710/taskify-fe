@@ -21,7 +21,9 @@ import FileCopyIcon from '@mui/icons-material/FileCopy'
 import EmailIcon from '@mui/icons-material/Email'
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
-import { closeBoardAPI } from '~/apis'
+import LockIcon from '@mui/icons-material/Lock'
+import PublicIcon from '@mui/icons-material/Public'
+import { closeBoardAPI, updateBoard } from '~/apis'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { updatecurrentActiveBoard, selectcurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
@@ -38,6 +40,12 @@ export default function BoardSideBar ({ open, onClose, board }) {
   const [isInviteUserOpen, setInviteUserOpen] = useState(false)
   const [openInvite, setOpenInvite] = useState(false)
   const confirmDelete = useConfirm()
+  const confirm = useConfirm()
+
+  const isCurrentlyPublic = board?.type === 'public'
+  const targetType = isCurrentlyPublic ? 'private' : 'public'
+  const targetTypeLabel = isCurrentlyPublic ? 'Private' : 'Public'
+  console.log('BoardType', board?.type, targetType, targetTypeLabel)
 
   const drawerItems = [
     { icon: <PersonAddAltIcon />, label: 'Share' },
@@ -50,13 +58,21 @@ export default function BoardSideBar ({ open, onClose, board }) {
     { icon: <FileCopyIcon />, label: 'Copy information table' },
     { icon: <EmailIcon />, label: 'Email to board setup' },
     {
+      icon: isCurrentlyPublic ? <LockIcon /> : <PublicIcon />,
+      label: `Make ${targetTypeLabel} Board`,
+      boardToggle: true
+    },
+    {
       icon: <CloseFullscreenIcon />,
       label: role === 'Owner' ? 'Close this board' : 'Quit this board'
     }
   ]
   const filteredDrawerItems = drawerItems.filter((item) => {
     if (role !== 'Owner' &&
-       (item.label === 'Share' || item.label === 'Quit this board' || item.label === 'Change wallpaper' )) {
+       (item.label === 'Share' || 
+        item.label === 'Quit this board' || 
+        item.label === 'Change wallpaper' ||
+        item.boardToggle)) { 
       return false
     }
     return true
@@ -89,6 +105,37 @@ export default function BoardSideBar ({ open, onClose, board }) {
     })
   }
 
+  const handleToggleBoardType = () => {
+    confirm({
+      title: `Make ${targetTypeLabel} Board?`,
+      description: `Please type "${board?.title}" to confirm changing this board to ${targetTypeLabel.toLowerCase()}.`,
+      confirmationText: 'Yes, delete it',
+      confirmationKeyword: board?.title,
+      confirmationButtonProps: {
+        variant: 'contained',
+        color: 'primary'
+      },
+      cancellationText: 'Cancel',
+      cancellationButtonProps: {
+        variant: 'outlined',
+        color: 'inherit'
+      }
+    }).then(() => {
+      updateBoard(board.id, { title: targetType })
+        .then(() => {
+          const updatedBoard = { ...currentBoard, type: targetType }
+          dispatch(updatecurrentActiveBoard(updatedBoard))
+          navigate('/boards/' + updatedBoard.id)
+          toast.success(`Board changed to ${targetTypeLabel} successfully!`)
+          onClose()
+        })
+        .catch((error) => {
+          toast.error(error?.response?.data?.message || `Failed to change board to ${targetTypeLabel}`)
+        })
+    }).catch(() => {
+    })
+  }
+
   const handleAction = (label) => {
     switch (label) {
     case 'Close this board':
@@ -98,6 +145,9 @@ export default function BoardSideBar ({ open, onClose, board }) {
       // handleShare()
       setInviteUserOpen(true)
       setOpenInvite(true)
+      break
+    case `Make ${targetTypeLabel} Board`:
+      handleToggleBoardType()
       break
     default:
       // handle other actions

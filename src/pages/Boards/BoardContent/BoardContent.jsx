@@ -14,6 +14,8 @@ import List from './ColumnLists/List/List'
 import Card from './ColumnLists/List/ListCards/Card/Card'
 import { cloneDeep } from 'lodash'
 import { generatePlaceholder } from '~/utils/formatter'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '~/redux/user/userSlice'
 const ACTIVE_DRAG_ITEM_TYPE = {
   LIST: 'ACTIVE_DRAG_ITEM_TYPE_LIST',
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
@@ -92,9 +94,12 @@ function BoardContent({
   const dropAnimation = {
     sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.5' } } })
   }
-
-  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
-  const sensors = useSensors(pointerSensor)
+  const currentUser = useSelector(selectCurrentUser)
+  const isBoardMember = board?.boardUsers?.some(user => user.id === currentUser.id)
+  const isPublicBoard = board?.type === 'public'
+  const isReadOnly = isPublicBoard && !isBoardMember
+  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 }, enabled: !isReadOnly })
+  const sensors = isReadOnly ? useSensors(null) : useSensors(pointerSensor)
 
   const [orderedLists, setOrderedLists] = useState([])
 
@@ -239,6 +244,7 @@ function BoardContent({
         }}>
         <ColumnLists
           lists = {orderedLists}
+          isReadOnly = {isReadOnly}
         />
         <DragOverlay dropAnimation={ dropAnimation }>
           {!activeDragItemType && null}

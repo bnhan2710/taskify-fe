@@ -12,10 +12,9 @@ import { selectcurrentActiveBoard, updatecurrentActiveBoard } from '~/redux/acti
 import { addListAPI } from '~/apis'
 import { useSelector, useDispatch } from 'react-redux'
 
-function ColumnLists({ lists }) {
+function ColumnLists({ lists, isReadOnly }) {
   const dispatch = useDispatch()
   const board = useSelector(selectcurrentActiveBoard)
-
   const [openNewListForm, setOpenNewListForm] = useState(false)
   const toggleOpenNewListForm = () => setOpenNewListForm(!openNewListForm)
   const [newListTitle, setNewListTitle] = useState('')
@@ -61,87 +60,91 @@ function ColumnLists({ lists }) {
         }}
       >
         {lists?.map(list =>
-          <List key={list.id} list={list} /> )}
+          <List key={list.id} list={list} isReadOnly={isReadOnly} /> )}
 
         {/* Add New List Button or Form */}
-        {!openNewListForm ? (
-          <Box
-            onClick={toggleOpenNewListForm}
-            sx={{
-              minWidth: '250px',
-              maxWidth: '300px',
-              mx: 2,
-              borderRadius: '6px',
-              height: 'fit-content',
-              bgcolor: '#ffffff5d'
-            }}
-          >
-            <Button
-              startIcon={<AddIcon />}
+        { !isReadOnly && (
+          <>
+          {!openNewListForm ? (
+            <Box
+              onClick={toggleOpenNewListForm}
               sx={{
-                color: 'white',
-                width: '100%',
-                justifyContent: 'flex-start',
-                pl: 2.5,
-                py: 1
+                minWidth: '250px',
+                maxWidth: '300px',
+                mx: 2,
+                borderRadius: '6px',
+                height: 'fit-content',
+                bgcolor: '#ffffff5d'
               }}
             >
-              Add another list
-            </Button>
-          </Box>
-        ) : (
-          <Box
-            sx={{
-              minWidth: '250px',
-              maxWidth: '300px',
-              mx: 2,
-              p: 1,
-              borderRadius: '6px',
-              height: 'fit-content',
-              bgcolor: '#ffffff5d',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1
-            }}
-          >
-            <TextField
-              id="outlined-search"
-              label="Enter list title..."
-              type="text"
-              size="small"
-              variant="outlined"
-              value={newListTitle}
-              onChange={(e) => setNewListTitle(e.target.value)}
-              autoFocus
-              sx={{
-                '& label': { color: 'white' },
-                '& input': { color: 'white' },
-                '& label.Mui-focused': { color: 'white' },
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': { borderColor: 'white' },
-                  '&:hover fieldset': { borderColor: 'white' },
-                  '&.Mui-focused fieldset': { borderColor: 'white' }
-                }
-              }}
-            />
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Button
-                variant="contained"
-                color="primary"
-                onClick={addNewList}
-                disabled={!newListTitle.trim()}
+                startIcon={<AddIcon />}
+                sx={{
+                  color: 'white',
+                  width: '100%',
+                  justifyContent: 'flex-start',
+                  pl: 2.5,
+                  py: 1
+                }}
               >
-                Add List
-              </Button>
-              <Button
-                startIcon={<CloseIcon />}
-                onClick={toggleOpenNewListForm}
-                sx={{ color: 'white' }}
-              >
-                Cancel
+                Add another list
               </Button>
             </Box>
-          </Box>
+          ) : (
+            <Box
+              sx={{
+                minWidth: '250px',
+                maxWidth: '300px',
+                mx: 2,
+                p: 1,
+                borderRadius: '6px',
+                height: 'fit-content',
+                bgcolor: '#ffffff5d',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1
+              }}
+            >
+              <TextField
+                id="outlined-search"
+                label="Enter list title..."
+                type="text"
+                size="small"
+                variant="outlined"
+                value={newListTitle}
+                onChange={(e) => setNewListTitle(e.target.value)}
+                autoFocus
+                sx={{
+                  '& label': { color: 'white' },
+                  '& input': { color: 'white' },
+                  '& label.Mui-focused': { color: 'white' },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': { borderColor: 'white' },
+                    '&:hover fieldset': { borderColor: 'white' },
+                    '&.Mui-focused fieldset': { borderColor: 'white' }
+                  }
+                }}
+              />
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={addNewList}
+                  disabled={!newListTitle.trim()}
+                >
+                  Add List
+                </Button>
+                <Button
+                  startIcon={<CloseIcon />}
+                  onClick={toggleOpenNewListForm}
+                  sx={{ color: 'white' }}
+                >
+                  Cancel
+                </Button>
+              </Box>
+            </Box>
+          )}
+          </>
         )}
       </Box>
     </SortableContext>
