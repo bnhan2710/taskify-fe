@@ -11,14 +11,7 @@ import {
   Box
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
-import SettingsIcon from '@mui/icons-material/Settings'
 import WallpaperIcon from '@mui/icons-material/Wallpaper'
-import LabelIcon from '@mui/icons-material/Label'
-import HistoryIcon from '@mui/icons-material/History'
-import ArchiveIcon from '@mui/icons-material/Archive'
-import VisibilityIcon from '@mui/icons-material/Visibility'
-import FileCopyIcon from '@mui/icons-material/FileCopy'
-import EmailIcon from '@mui/icons-material/Email'
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import LockIcon from '@mui/icons-material/Lock'
@@ -47,13 +40,12 @@ export default function BoardSideBar ({ open, onClose, board }) {
   const isCurrentlyPublic = board?.type === 'public'
   const targetType = isCurrentlyPublic ? 'private' : 'public'
   const targetTypeLabel = isCurrentlyPublic ? 'Private' : 'Public'
-
   const drawerItems = [
     { icon: <PersonAddAltIcon />, label: 'Share' },
     { icon: <WallpaperIcon />, label: 'Change wallpaper' },
     {
       icon: isCurrentlyPublic ? <LockIcon /> : <PublicIcon />,
-      label: `Make this board to ${targetTypeLabel} `,
+      label: `Make this board to ${targetTypeLabel}`,
       boardToggle: true
     },
     {
@@ -103,16 +95,15 @@ export default function BoardSideBar ({ open, onClose, board }) {
     confirm({
       title: `Make ${targetTypeLabel} Board?`,
       description: `This will change the board type to ${targetTypeLabel}`,
-      confirmationText: 'Yes, delete it',
-      confirmationKeyword: board?.title,
+      confirmationText: 'Yes, change it',
       confirmationButtonProps: {
         variant: 'contained',
-        color: 'primary'
+        color: 'secondary'
       },
       cancellationText: 'Cancel',
       cancellationButtonProps: {
-        variant: 'outlined',
-        color: 'inherit'
+        variant: 'contained',
+        color: 'primary'
       }
     }).then(() => {
       updateBoard(board.id, { type: targetType })
@@ -140,7 +131,7 @@ export default function BoardSideBar ({ open, onClose, board }) {
       setInviteUserOpen(true)
       setOpenInvite(true)
       break
-    case `Make ${targetTypeLabel} Board`:
+    case `Make this board to ${targetTypeLabel}`:
       handleToggleBoardType()
       break
     case 'Change wallpaper':

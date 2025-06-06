@@ -19,6 +19,7 @@ import { cloneDeep } from 'lodash'
 import { useParams } from 'react-router-dom'
 import ActiveCard from '~/components/Modal/ActiveCard/ActiveCard'
 import { selectCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
+import { Box } from '@mui/material'
 
 function Board() {
   const dispatch = useDispatch()
@@ -78,15 +79,20 @@ function Board() {
   return (
     <Container disableGutters maxWidth = {false} sx = {{ height: '100vh', backgroundColor: 'primary.main' }}>
       {activeCard && <ActiveCard/>}
-      {/* <ActiveCard/> */}
       <AppBar/>
-      <BoardBar board = {board}/>
-      <BoardContent
-        board = {board}
-        moveList = {moveList}
-        moveCardInTheSameList = {moveCardInTheSameList}
-        moveCardToAnotherList = {moveCardToAnotherList}
-      />
+      <Box sx={{ 
+        position: 'relative', 
+        height: 'calc(100vh - 58px)',
+        overflow: 'hidden' 
+      }}>
+        <BoardBar board={board}/>
+        <BoardContent
+          board={board}
+          moveList={moveList}
+          moveCardInTheSameList={moveCardInTheSameList}
+          moveCardToAnotherList={moveCardToAnotherList}
+        />
+      </Box>
     </Container>
   )
 }

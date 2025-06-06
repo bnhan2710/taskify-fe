@@ -285,7 +285,12 @@ function List({ list, isReadOnly }) {
                 justifyContent: 'space-between'
               }}>
                 <Button
-                  startIcon={<AddCardIcon/>} onClick={toggleOpenNewCardForm} width="100%" > Add a card </Button>
+                  startIcon={<AddCardIcon/>} 
+                  onClick={toggleOpenNewCardForm} 
+                  width="100%" 
+                > 
+                  Add a card 
+                </Button>
                 <Tooltip title="Drag to move">
                   <DragHandleIcon sx={{ cursor:'pointer' }}/>
                 </Tooltip>
@@ -294,10 +299,9 @@ function List({ list, isReadOnly }) {
                 sx={{
                   height: '100%',
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexDirection: 'column',
-                  gap: 1
+                  alignItems: 'center', // Căn giữa theo chiều dọc
+                  gap: 1,
+                  justifyContent: 'space-between' // Căn đều
                 }}
               >
                 <TextField
@@ -310,6 +314,7 @@ function List({ list, isReadOnly }) {
                   onChange={(e) => setNewCardTitle(e.target.value)}
                   autoFocus
                   sx={{
+                    flex: 1,
                     '& label': {
                       color: 'text.primary'
                     },
@@ -332,29 +337,33 @@ function List({ list, isReadOnly }) {
                     }
                   }}
                 />
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1
-                  }}
-                >
+               <Box sx={{ display: 'flex', gap: 0.5 }}>
                   <Button
                     className='interceptor-loading'
                     variant="contained"
                     color="primary"
                     onClick={addNewCard}
                     disabled={!newCardTitle.trim()}
+                    sx={{
+                      textTransform: 'none',
+                      minWidth: '60px'
+                    }}
                   >
                     Add
                   </Button>
+
                   <Button
-                    startIcon={<CloseIcon />}
+                    size="small"
                     onClick={toggleOpenNewCardForm}
                     sx={{
-                      color: (theme) => theme.palette.grey[500]
+                      minWidth: '40px',
+                      color: (theme) => theme.palette.grey[600],
+                      '&:hover': {
+                        backgroundColor: (theme) => theme.palette.grey[200]
+                      }
                     }}
                   >
+                    <CloseIcon fontSize="small" />
                   </Button>
                 </Box>
               </Box>
