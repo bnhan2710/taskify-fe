@@ -34,7 +34,7 @@ function CreateChecklistModal({ anchorEl, onClose, onCreateChecklist }) {
       }}
     >
       <Box sx={{ p: 2, width: 300 }}>
-        <Typography variant="h6" sx={{ mb: 2 }}>Add Checklist Group</Typography>
+        <Typography variant="h6" sx={{ mb: 2 }}>Add Checklist</Typography>
         <form onSubmit={handleSubmit}>
           <TextField
             autoFocus

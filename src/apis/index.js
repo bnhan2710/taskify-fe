@@ -12,6 +12,11 @@ export const addCardAPI = async (newCardDto) => {
   return response.data.data
 }
 
+export const removeCardAPI = async (cardId) => {
+  const response = await authorizedAxiosInstance.delete(`${API_URL}/cards/${cardId}`)
+  return response.data
+}
+
 export const updateBoard = async (boardId, updateBoardDto) => {
   const response = await authorizedAxiosInstance.put(`${API_URL}/boards/${boardId}`, updateBoardDto)
   return response.data.data
