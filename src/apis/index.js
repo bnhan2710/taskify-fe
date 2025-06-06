@@ -183,3 +183,8 @@ export const uploadBoardBackgroundAPI = async (boardId, formData) => {
   })
   return response.data?.data
 }
+
+export const removeBoardBackgroundAPI = async (boardId) => {
+  const response = await authorizedAxiosInstance.delete(`${API_URL}/upload/board-cover/${boardId}`)
+  return response.data
+}

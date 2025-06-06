@@ -17,7 +17,8 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import LockIcon from '@mui/icons-material/Lock'
 import PublicIcon from '@mui/icons-material/Public'
 import ChangeBackgroundModal from '~/components/Form/ChangeBackgroundModal'
-import { closeBoardAPI, updateBoard } from '~/apis'
+import DeleteIcon from '@mui/icons-material/Delete'
+import { closeBoardAPI, updateBoard, removeBoardBackgroundAPI  } from '~/apis'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { updatecurrentActiveBoard, selectcurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
@@ -43,6 +44,7 @@ export default function BoardSideBar ({ open, onClose, board }) {
   const drawerItems = [
     { icon: <PersonAddAltIcon />, label: 'Share' },
     { icon: <WallpaperIcon />, label: 'Change wallpaper' },
+    { icon: <DeleteIcon />, label: 'Delete wallpaper' },
     {
       icon: isCurrentlyPublic ? <LockIcon /> : <PublicIcon />,
       label: `Make this board to ${targetTypeLabel}`,
@@ -58,6 +60,7 @@ export default function BoardSideBar ({ open, onClose, board }) {
        (item.label === 'Share' ||
         item.label === 'Quit this board' ||
         item.label === 'Change wallpaper' ||
+        item.label === 'Delete wallpaper' ||
         item.boardToggle)) {
       return false
     }
@@ -87,6 +90,36 @@ export default function BoardSideBar ({ open, onClose, board }) {
         .catch(() => {
           toast.error('Failed to delete board')
         })
+    }).catch(() => {
+    })
+  }
+
+  const handleDeleteWallpaper = () => {
+    confirm({
+      title: 'Delete Wallpaper?',
+      description: 'Are you sure you want to delete the current board wallpaper? This action cannot be undone.',
+      confirmationText: 'Yes, delete it',
+      confirmationButtonProps: {
+        variant: 'contained',
+        color: 'error'
+      },
+      cancellationText: 'Cancel',
+      cancellationButtonProps: {
+        variant: 'contained',
+        color: 'primary'
+      }
+    }).then(async () => {
+      try {
+        await removeBoardBackgroundAPI(board.id)
+        const updatedBoard = { ...currentBoard, cover: null }
+        dispatch(updatecurrentActiveBoard(updatedBoard))
+        navigate('/boards/' + updatedBoard.id)
+        toast.success('Wallpaper deleted successfully!')
+        onClose()
+      } catch (error) {
+        console.error('Error deleting wallpaper:', error)
+        toast.error(error?.response?.data?.message || 'Failed to delete wallpaper')
+      }
     }).catch(() => {
     })
   }
@@ -136,6 +169,9 @@ export default function BoardSideBar ({ open, onClose, board }) {
       break
     case 'Change wallpaper':
       setChangeBackgroundOpen(true)
+      break
+    case 'Delete wallpaper':
+      handleDeleteWallpaper()
       break
     default:
       // handle other actions
