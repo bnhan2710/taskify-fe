@@ -6,6 +6,7 @@ import CancelIcon from '@mui/icons-material/Cancel'
 import RestoreIcon from '@mui/icons-material/Restore'
 import Button from '@mui/material/Button'
 import { toast } from 'react-toastify'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
 import { getClosedBoardsAPI, reopenBoardAPI, removeBoardAPI } from '~/apis'
 import InventoryIcon from '@mui/icons-material/Inventory'
@@ -138,7 +139,7 @@ function SidebarViewClosedBoardsModal({ afterReopenBoard }) {
                     <Button
                       variant="outlined"
                       color="error"
-                      startIcon={<CloseFullscreenIcon />}
+                      startIcon={<DeleteForeverIcon />}
                       onClick={() => handleCloseBoard(board.id)}
                     >
                         Delete

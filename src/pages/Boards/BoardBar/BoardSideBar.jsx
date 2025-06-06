@@ -50,17 +50,10 @@ export default function BoardSideBar ({ open, onClose, board }) {
 
   const drawerItems = [
     { icon: <PersonAddAltIcon />, label: 'Share' },
-    { icon: <SettingsIcon />, label: 'Setting' },
     { icon: <WallpaperIcon />, label: 'Change wallpaper' },
-    { icon: <LabelIcon />, label: 'Label' },
-    { icon: <HistoryIcon />, label: 'Work' },
-    { icon: <ArchiveIcon />, label: 'Archived items' },
-    { icon: <VisibilityIcon />, label: 'Monitor' },
-    { icon: <FileCopyIcon />, label: 'Copy information table' },
-    { icon: <EmailIcon />, label: 'Email to board setup' },
     {
       icon: isCurrentlyPublic ? <LockIcon /> : <PublicIcon />,
-      label: `Make ${targetTypeLabel} Board`,
+      label: `Make this board to ${targetTypeLabel} `,
       boardToggle: true
     },
     {
@@ -70,10 +63,10 @@ export default function BoardSideBar ({ open, onClose, board }) {
   ]
   const filteredDrawerItems = drawerItems.filter((item) => {
     if (role !== 'Owner' &&
-       (item.label === 'Share' || 
-        item.label === 'Quit this board' || 
+       (item.label === 'Share' ||
+        item.label === 'Quit this board' ||
         item.label === 'Change wallpaper' ||
-        item.boardToggle)) { 
+        item.boardToggle)) {
       return false
     }
     return true
@@ -109,7 +102,7 @@ export default function BoardSideBar ({ open, onClose, board }) {
   const handleToggleBoardType = () => {
     confirm({
       title: `Make ${targetTypeLabel} Board?`,
-      description: `Please type "${board?.title}" to confirm changing this board to ${targetTypeLabel.toLowerCase()}.`,
+      description: `This will change the board type to ${targetTypeLabel}`,
       confirmationText: 'Yes, delete it',
       confirmationKeyword: board?.title,
       confirmationButtonProps: {

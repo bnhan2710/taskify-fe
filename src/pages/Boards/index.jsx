@@ -54,7 +54,7 @@ function Boards() {
   const query = new URLSearchParams(location.search)
   const page = parseInt(query.get('page') || '1', 9)
   const isPublic = query.get('public') === 'true'
-  const ITEMS_PER_PAGE = 9;
+  const ITEMS_PER_PAGE = 9
 
   const updateStateData = (res) => {
     setBoards(res.boards?.slice(0, ITEMS_PER_PAGE))
@@ -68,9 +68,9 @@ function Boards() {
     if (isPublic) {
       getPublicBoardsAPI(`?${params.toString()}`).then(updateStateData)
     } else {
-      getMyBoardsAPI(`?${params.toString()}`).then(updateStateData) 
+      getMyBoardsAPI(`?${params.toString()}`).then(updateStateData)
     }
-  }, [location.search, isPublic])
+  }, [location.search, isPublic, page])
 
   const afterCreateBoard = () => {
     const params = new URLSearchParams(location.search)
@@ -79,7 +79,7 @@ function Boards() {
     if (isPublic) {
       getPublicBoardsAPI(`?${params.toString()}`).then(updateStateData)
     } else {
-      getMyBoardsAPI(`?${params.toString()}`).then(updateStateData) 
+      getMyBoardsAPI(`?${params.toString()}`).then(updateStateData)
     }
   }
 
@@ -109,7 +109,7 @@ function Boards() {
                 <SpaceDashboardIcon fontSize="small" />
                 Boards
               </SidebarItem>
-              <SidebarItem>
+              <SidebarItem component={Link} to="/boards/templates" sx={{ textDecoration: 'none', color: 'inherit' }}>
                 <ListAltIcon fontSize="small" />
                 Templates
               </SidebarItem>
@@ -194,7 +194,8 @@ function Boards() {
                         component="div"
                         sx={{
                           height: '140px',
-                          backgroundColor: randomColor()
+                          backgroundColor: randomColor(),
+                          backgroundImage: `url(${b.cover})`
                         }}
                       />
                       <CardContent sx={{ p: 3 }}>
@@ -265,7 +266,7 @@ function Boards() {
                   color="secondary"
                   showFirstButton
                   showLastButton
-                  count={Math.ceil(totalBoards / 8)}
+                  count={Math.ceil(totalBoards / 6)}
                   page={page}
                   renderItem={(item) => {
                     // Preserve the public parameter when paginating
