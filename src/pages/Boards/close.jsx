@@ -8,6 +8,8 @@ import Button from '@mui/material/Button'
 import { toast } from 'react-toastify'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
+import Pagination from '@mui/material/Pagination'
+import Stack from '@mui/material/Stack'
 import { getClosedBoardsAPI, reopenBoardAPI, removeBoardAPI } from '~/apis'
 import InventoryIcon from '@mui/icons-material/Inventory'
 import { styled } from '@mui/material/styles'
@@ -29,6 +31,9 @@ const SidebarItem = styled(Box)(({ theme }) => ({
 function SidebarViewClosedBoardsModal({ afterReopenBoard }) {
   const [isOpen, setIsOpen] = useState(false)
   const [boards, setBoards] = useState([])
+  const [page, setPage] = useState(1)
+  const [totalBoards, setTotalBoards] = useState(0)
+  const ITEMS_PER_PAGE = 4
   const confirmDelete = useConfirm()
   const handleOpenModal = () => {
     setIsOpen(true)
@@ -41,17 +46,39 @@ function SidebarViewClosedBoardsModal({ afterReopenBoard }) {
     getClosedBoardsAPI()
       .then(res => {
         setBoards(res.data.boards) // nếu API trả về dạng { data: [...] }
+        setTotalBoards(res.data.boards.length)
       })
       .catch(() => {})
   }
+
+  const getCurrentPageBoards = () => {
+    const startIndex = (page - 1) * ITEMS_PER_PAGE
+    const endIndex = startIndex + ITEMS_PER_PAGE
+    return boards.slice(startIndex, endIndex)
+  }
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage)
+  }
+
   const handleReopenBoard = (boardId) => {
     reopenBoardAPI(boardId)
       .then(() => {
+        // Cập nhật state local bằng cách lọc ra board vừa reopen
+        const updatedBoards = boards.filter(board => board.id !== boardId)
+        setBoards(updatedBoards)
+        setTotalBoards(prevTotal => prevTotal - 1)
+        const totalPages = Math.ceil(updatedBoards.length / ITEMS_PER_PAGE)
+        if (page > 1 && page > totalPages) {
+          setPage(page - 1)
+        }
         toast.success('Board reopened successfully!')
+        // Chỉ gọi afterReopenBoard() để update UI ở component cha
         afterReopenBoard?.()
-        fetchClosedBoards() // refresh
       })
-      .catch(() => {})
+      .catch(() => {
+        toast.error('Failed to reopen board')
+      })
   }
 
   const handleCloseBoard = (boardId) => {
@@ -70,12 +97,19 @@ function SidebarViewClosedBoardsModal({ afterReopenBoard }) {
       }
     }).then(() => {
       removeBoardAPI(boardId)
-    }).then(() => {
-      toast.success('Board closed successfully!')
-      afterReopenBoard?.()
-      fetchClosedBoards() // refresh
+      .then(() => {
+        // Cập nhật state local bằng cách lọc ra board vừa xóa
+        const updatedBoards = boards.filter(board => board.id !== boardId)
+        setBoards(updatedBoards)
+        setTotalBoards(prevTotal => prevTotal - 1)
+        const totalPages = Math.ceil(updatedBoards.length / ITEMS_PER_PAGE)
+        if (page > 1 && page > totalPages) {
+          setPage(page - 1)
+        }
+        toast.success('Board deleted successfully!')
+      })
     })
-      .catch(() => {})
+    .catch(() => {})
   }
 
   return (
@@ -88,7 +122,7 @@ function SidebarViewClosedBoardsModal({ afterReopenBoard }) {
       <Modal open={isOpen} onClose={handleCloseModal}>
         <Box sx={{
           position: 'absolute',
-          top: '20%',
+          top: '300px',
           left: '50%',
           transform: 'translate(-50%, -50%)',
           width: 600,
@@ -99,21 +133,43 @@ function SidebarViewClosedBoardsModal({ afterReopenBoard }) {
           padding: '20px 30px',
           outline: 0,
           p: 3,
-          backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : 'white'
+          backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : 'white',
+          display: 'flex',  
+          flexDirection: 'column',
+          overflowY: 'auto',
         }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <InventoryIcon fontSize="small" color="action" />
-              <Typography variant="h6">Closed Boards</Typography>
+          <Box sx={{ 
+            position: 'sticky',
+            top: 0,
+            bgcolor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : 'white',
+            zIndex: 1,
+            py: 2,
+            borderBottom: '1px solid #ddd'
+          }}>
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              gap: 1 
+            }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <InventoryIcon fontSize="small" color="action" />
+                  <Typography variant="h6">
+                    Closed Boards
+                  </Typography>
+                </Box>
+                <CancelIcon onClick={handleCloseModal} sx={{ cursor: 'pointer' }} color="error" />
             </Box>
-            <CancelIcon onClick={handleCloseModal} sx={{ cursor: 'pointer' }} color="error" />
           </Box>
 
-          <Box sx={{ mt: 2 }}>
+          <Box sx={{ 
+            flex: 1,
+            py: 2
+          }}>
             {boards.length === 0 ? (
               <Typography>No closed boards found.</Typography>
             ) : (
-              boards.map(board => (
+              getCurrentPageBoards().map(board => (
                 <Box key={board.id} sx={{
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -149,6 +205,25 @@ function SidebarViewClosedBoardsModal({ afterReopenBoard }) {
               ))
             )}
           </Box>
+
+          {totalBoards > ITEMS_PER_PAGE && (
+            <Box sx={{
+              position: 'sticky',
+              bottom: 0,
+              bgcolor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : 'white',
+              pt: 2,
+              borderTop: '1px solid #ddd'
+            }}>
+              <Stack spacing={2} alignItems="center">
+                <Pagination
+                  count={Math.ceil(totalBoards / ITEMS_PER_PAGE)}
+                  page={page}
+                  onChange={handleChangePage}
+                  color="primary"
+                />
+              </Stack>
+            </Box>
+          )}
         </Box>
       </Modal>
     </>

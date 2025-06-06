@@ -24,7 +24,7 @@ import Divider from '@mui/material/Divider'
 import Modal from '@mui/material/Modal'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
-import TextField from '@mui/material/TextField'
+import { Check } from '@mui/icons-material'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
@@ -493,6 +493,7 @@ function ActiveCard() {  const dispatch = useDispatch()
               <SidebarItem><AttachFileOutlinedIcon fontSize="small" />Attachment</SidebarItem>
               <SidebarItem><LocalOfferOutlinedIcon fontSize="small" />Labels</SidebarItem>              
               <SidebarItem>
+                <Check fontSize="small" />
                 Checklist
               </SidebarItem>
               <SidebarItem><WatchLaterOutlinedIcon fontSize="small" />Dates</SidebarItem>

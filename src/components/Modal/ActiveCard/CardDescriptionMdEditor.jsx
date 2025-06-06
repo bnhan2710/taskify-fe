@@ -9,10 +9,8 @@ import { updateCardAPI } from '~/apis'
 
 
 const markdownValueExample = `
-  const a = 1
-  const b = 2
-  const c = a + b
-  \`\`\`
+## 📝 Card Description
+**Add a more detailed description here...**
 `
 
 function CardDescriptionMdEditor({ cardDescriptionProp, handleUpdateCardDescription }) {
