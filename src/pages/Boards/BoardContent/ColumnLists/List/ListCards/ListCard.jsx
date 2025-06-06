@@ -12,7 +12,7 @@ function ListCard({ cards }) {
         gap: 1,
         overflowX:'hidden',
         overflowY:'auto',
-        maxHeight:(theme) => `calc(${theme.taskify.boardContentHeight} - ${theme.spacing(5)} - ${theme.listHeaderHeight} - ${theme.listFooterHeight})`,
+        maxHeight: theme => `calc(${theme.taskify.boardContentHeight} - ${theme.spacing(5)} - ${theme.taskify.listHeaderHeight} - ${theme.taskify.listFooterHeight})`,
         '*::-webkit-scrollbar-thumb': { backgroundColor: '#9EACBA', borderRadius: '8px' },
         '*::-webkit-scrollbar-thumb:hover': { backgroundColor: '#9EACBA' }
       }}>

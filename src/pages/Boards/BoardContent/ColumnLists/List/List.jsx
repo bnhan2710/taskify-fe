@@ -29,7 +29,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { updateList } from '~/apis'
 
-function List({ list }) {
+function List({ list, isReadOnly }) {
   const dispatch = useDispatch()
   const board = useSelector(selectcurrentActiveBoard)
 
@@ -154,7 +154,12 @@ function List({ list }) {
             p: 2,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            pointerEvents: isReadOnly ? 'auto' : 'auto',
+            '& .MuiInputBase-root': isReadOnly ? {
+              pointerEvents: 'none',
+              cursor: 'default'
+            } : {}
           }}
         >
           <ToggleFocusInput
@@ -163,11 +168,17 @@ function List({ list }) {
             data-no-dnd = "true"
           />
           <Box>
-            <Tooltip title= "More options">
+            <Tooltip 
+              title={!isReadOnly ? "More options" : ""}
+              sx={{
+                pointerEvents: isReadOnly ? 'none' : 'auto'
+              }}
+            >
               <KeyboardArrowDownIcon
                 sx={{
                   color: '#9EACBA',
                   cursor: 'pointer',
+                  pointerEvents: isReadOnly ? 'none' : 'auto',
                   '&:hover': {
                     bgcolor: '#282F27',
                     borderRadius: '4px',
@@ -256,7 +267,7 @@ function List({ list }) {
           </Box>
         </Box>
         {/* List card */}
-        <ListCard cards = {orderedCards}/>
+        <ListCard cards = {orderedCards} isReadOnly={isReadOnly}/>
         {/* Footer */}
         <Box
           sx={{
@@ -264,89 +275,92 @@ function List({ list }) {
             p: 2
           }}
         >
-          {!openNewCardForm
-            ?<Box sx ={{
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
-              <Button
-                startIcon={<AddCardIcon/>} onClick={toggleOpenNewCardForm} width="100%" > Add a card </Button>
-              <Tooltip title="Drag to move">
-                <DragHandleIcon sx={{ cursor:'pointer' }}/>
-              </Tooltip>
-            </Box>:
-            <Box
-              sx={{
+          { !isReadOnly && (
+            <>
+            {!openNewCardForm
+              ?<Box sx ={{
                 height: '100%',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
-                flexDirection: 'column',
-                gap: 1
-              }}
-            >
-              <TextField
-                id="outlined-search"
-                label="Enter card title..."
-                type="text"
-                size="small"
-                variant="outlined"
-                value={newCardTitle}
-                onChange={(e) => setNewCardTitle(e.target.value)}
-                autoFocus
-                sx={{
-                  '& label': {
-                    color: 'text.primary'
-                  },
-                  '& label.Mui-focused': {
-                    color: (theme) => theme.palette.primary.main
-                  },
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      borderColor: (theme) => theme.palette.primary.main
-                    },
-                    '&:hover fieldset': {
-                      borderColor: (theme) => theme.palette.primary.main
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: (theme) => theme.palette.primary.main
-                    }
-                  },
-                  '& .MuiOutlinedInput-input': {
-                    borderRadius: 1
-                  }
-                }}
-              />
+                justifyContent: 'space-between'
+              }}>
+                <Button
+                  startIcon={<AddCardIcon/>} onClick={toggleOpenNewCardForm} width="100%" > Add a card </Button>
+                <Tooltip title="Drag to move">
+                  <DragHandleIcon sx={{ cursor:'pointer' }}/>
+                </Tooltip>
+              </Box>:
               <Box
                 sx={{
+                  height: '100%',
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexDirection: 'column',
                   gap: 1
                 }}
               >
-                <Button
-                  className='interceptor-loading'
-                  variant="contained"
-                  color="primary"
-                  onClick={addNewCard}
-                  disabled={!newCardTitle.trim()}
-                >
-      Add
-                </Button>
-                <Button
-                  startIcon={<CloseIcon />}
-                  onClick={toggleOpenNewCardForm}
+                <TextField
+                  id="outlined-search"
+                  label="Enter card title..."
+                  type="text"
+                  size="small"
+                  variant="outlined"
+                  value={newCardTitle}
+                  onChange={(e) => setNewCardTitle(e.target.value)}
+                  autoFocus
                   sx={{
-                    color: (theme) => theme.palette.grey[500]
+                    '& label': {
+                      color: 'text.primary'
+                    },
+                    '& label.Mui-focused': {
+                      color: (theme) => theme.palette.primary.main
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: (theme) => theme.palette.primary.main
+                      },
+                      '&:hover fieldset': {
+                        borderColor: (theme) => theme.palette.primary.main
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: (theme) => theme.palette.primary.main
+                      }
+                    },
+                    '& .MuiOutlinedInput-input': {
+                      borderRadius: 1
+                    }
+                  }}
+                />
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
                   }}
                 >
-                </Button>
+                  <Button
+                    className='interceptor-loading'
+                    variant="contained"
+                    color="primary"
+                    onClick={addNewCard}
+                    disabled={!newCardTitle.trim()}
+                  >
+                    Add
+                  </Button>
+                  <Button
+                    startIcon={<CloseIcon />}
+                    onClick={toggleOpenNewCardForm}
+                    sx={{
+                      color: (theme) => theme.palette.grey[500]
+                    }}
+                  >
+                  </Button>
+                </Box>
               </Box>
-            </Box>
-          }
-
+            }
+            </>
+          )}
         </Box>
       </Box>
     </div>

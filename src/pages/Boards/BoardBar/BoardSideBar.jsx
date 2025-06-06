@@ -21,7 +21,10 @@ import FileCopyIcon from '@mui/icons-material/FileCopy'
 import EmailIcon from '@mui/icons-material/Email'
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
-import { closeBoardAPI } from '~/apis'
+import LockIcon from '@mui/icons-material/Lock'
+import PublicIcon from '@mui/icons-material/Public'
+import ChangeBackgroundModal from '~/components/Form/ChangeBackgroundModal'
+import { closeBoardAPI, updateBoard } from '~/apis'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { updatecurrentActiveBoard, selectcurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
@@ -36,8 +39,14 @@ export default function BoardSideBar ({ open, onClose, board }) {
   const currentUser = useSelector(selectCurrentUser)
   const role = currentBoard?.boardUsers?.find((user) => user.id === currentUser.id)?.role
   const [isInviteUserOpen, setInviteUserOpen] = useState(false)
+  const [isChangeBackgroundOpen, setChangeBackgroundOpen] = useState(false)
   const [openInvite, setOpenInvite] = useState(false)
   const confirmDelete = useConfirm()
+  const confirm = useConfirm()
+
+  const isCurrentlyPublic = board?.type === 'public'
+  const targetType = isCurrentlyPublic ? 'private' : 'public'
+  const targetTypeLabel = isCurrentlyPublic ? 'Private' : 'Public'
 
   const drawerItems = [
     { icon: <PersonAddAltIcon />, label: 'Share' },
@@ -50,13 +59,21 @@ export default function BoardSideBar ({ open, onClose, board }) {
     { icon: <FileCopyIcon />, label: 'Copy information table' },
     { icon: <EmailIcon />, label: 'Email to board setup' },
     {
+      icon: isCurrentlyPublic ? <LockIcon /> : <PublicIcon />,
+      label: `Make ${targetTypeLabel} Board`,
+      boardToggle: true
+    },
+    {
       icon: <CloseFullscreenIcon />,
       label: role === 'Owner' ? 'Close this board' : 'Quit this board'
     }
   ]
   const filteredDrawerItems = drawerItems.filter((item) => {
     if (role !== 'Owner' &&
-       (item.label === 'Share' || item.label === 'Quit this board' || item.label === 'Change wallpaper' )) {
+       (item.label === 'Share' || 
+        item.label === 'Quit this board' || 
+        item.label === 'Change wallpaper' ||
+        item.boardToggle)) { 
       return false
     }
     return true
@@ -89,6 +106,37 @@ export default function BoardSideBar ({ open, onClose, board }) {
     })
   }
 
+  const handleToggleBoardType = () => {
+    confirm({
+      title: `Make ${targetTypeLabel} Board?`,
+      description: `Please type "${board?.title}" to confirm changing this board to ${targetTypeLabel.toLowerCase()}.`,
+      confirmationText: 'Yes, delete it',
+      confirmationKeyword: board?.title,
+      confirmationButtonProps: {
+        variant: 'contained',
+        color: 'primary'
+      },
+      cancellationText: 'Cancel',
+      cancellationButtonProps: {
+        variant: 'outlined',
+        color: 'inherit'
+      }
+    }).then(() => {
+      updateBoard(board.id, { type: targetType })
+        .then(() => {
+          const updatedBoard = { ...currentBoard, type: targetType }
+          dispatch(updatecurrentActiveBoard(updatedBoard))
+          navigate('/boards/' + updatedBoard.id)
+          toast.success(`Board changed to ${targetTypeLabel} successfully!`)
+          onClose()
+        })
+        .catch((error) => {
+          toast.error(error?.response?.data?.message || `Failed to change board to ${targetTypeLabel}`)
+        })
+    }).catch(() => {
+    })
+  }
+
   const handleAction = (label) => {
     switch (label) {
     case 'Close this board':
@@ -98,6 +146,12 @@ export default function BoardSideBar ({ open, onClose, board }) {
       // handleShare()
       setInviteUserOpen(true)
       setOpenInvite(true)
+      break
+    case `Make ${targetTypeLabel} Board`:
+      handleToggleBoardType()
+      break
+    case 'Change wallpaper':
+      setChangeBackgroundOpen(true)
       break
     default:
       // handle other actions
@@ -139,6 +193,11 @@ export default function BoardSideBar ({ open, onClose, board }) {
           <CloseIcon />
         </IconButton>
       </Box>
+      <ChangeBackgroundModal
+        open={isChangeBackgroundOpen}
+        onClose={() => setChangeBackgroundOpen(false)}
+        board={board}
+      />
       <List sx={{ overflowY: 'auto', flex: 1 }}>
         {filteredDrawerItems.map((item, index) => (
           <ListItem button key={index} onClick={() => handleAction(item.label)}>

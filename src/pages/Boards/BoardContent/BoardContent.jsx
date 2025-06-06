@@ -14,6 +14,8 @@ import List from './ColumnLists/List/List'
 import Card from './ColumnLists/List/ListCards/Card/Card'
 import { cloneDeep } from 'lodash'
 import { generatePlaceholder } from '~/utils/formatter'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '~/redux/user/userSlice'
 const ACTIVE_DRAG_ITEM_TYPE = {
   LIST: 'ACTIVE_DRAG_ITEM_TYPE_LIST',
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
@@ -92,9 +94,12 @@ function BoardContent({
   const dropAnimation = {
     sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.5' } } })
   }
-
-  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
-  const sensors = useSensors(pointerSensor)
+  const currentUser = useSelector(selectCurrentUser)
+  const isBoardMember = board?.boardUsers?.some(user => user.id === currentUser.id)
+  const isPublicBoard = board?.type === 'public'
+  const isReadOnly = isPublicBoard && !isBoardMember
+  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 }, enabled: !isReadOnly })
+  const sensors = isReadOnly ? useSensors(null) : useSensors(pointerSensor)
 
   const [orderedLists, setOrderedLists] = useState([])
 
@@ -219,6 +224,7 @@ function BoardContent({
     setActiveDragItemData(null)
     setOldListDragging(null)
   }
+  console.log('Board cover URL:', board.cover) // Debug log
   return (
     <DndContext
       sensors={sensors}
@@ -235,10 +241,20 @@ function BoardContent({
           p:'10px 0',
           display: 'flex',
           overflowX: 'auto',
-          overflowY: 'hidden'
+          overflowY: 'hidden',
+          ...(board.cover ? {
+            backgroundImage: `url(${board.cover})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          } : {
+            backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#0093E9' : '#1976d2'),
+            background:(themes) => themes.palette.mode === 'dark' ? 'linear-gradient(160deg, #0b3e76 0%, #10559a 10%, #125998 20%, #145b97 30%, #165f95 40%, #176294 50%, #186593 60%, #1b6891 70%, #1c6b90 80%, #1f728e 100%)' : 'linear-gradient(90deg, rgba(14,0,252,1) 0%, rgba(52,52,198,1) 0%, rgba(50,57,200,1) 34%, rgba(0,212,255,1) 100%)'
+          })
         }}>
         <ColumnLists
           lists = {orderedLists}
+          isReadOnly = {isReadOnly}
         />
         <DragOverlay dropAnimation={ dropAnimation }>
           {!activeDragItemType && null}

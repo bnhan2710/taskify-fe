@@ -34,6 +34,9 @@ function BoardBar({ board }) {
   const currentBoard = useSelector(selectcurrentActiveBoard)
   const currentUser = useSelector(selectCurrentUser)
   const role = currentBoard?.boardUsers?.find((user) => user.id === currentUser.id)?.role
+  const isBoardMember = board?.boardUsers?.some(user => user.id === currentUser.id)
+  const isPublicBoard = board?.type === 'public'
+  const isReadOnly = isPublicBoard && !isBoardMember
   return (
     <Box
       sx={{
@@ -47,7 +50,26 @@ function BoardBar({ board }) {
         padding: 2,
         overflowX: 'auto',
         bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#0D4374' : '#1565c0'),
-        opacity: 0.9
+        opacity: 0.9,
+        position: 'relative',
+        ...(isReadOnly && {
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+            zIndex: 10
+          },
+          '& button:not(.close-button), & input, & textarea, & [role="button"]:not(.close-button-container)': {
+            pointerEvents: 'none',
+          },
+          '& *:not(.close-button):not(.close-button-container)': {
+            userSelect: 'none'
+          }
+        })
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>

@@ -174,3 +174,12 @@ export const getChecklistByIdAPI = async (checklistId) => {
   const response = await authorizedAxiosInstance.get(`${API_URL}/checklists/${checklistId}`)
   return response.data.data
 }
+
+export const uploadBoardBackgroundAPI = async (boardId, formData) => {
+  const response = await authorizedAxiosInstance.post(`${API_URL}/upload/board-cover/${boardId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  return response.data?.data
+}
