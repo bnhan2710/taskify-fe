@@ -14,7 +14,7 @@ import { getClosedBoardsAPI, reopenBoardAPI, removeBoardAPI } from '~/apis'
 import InventoryIcon from '@mui/icons-material/Inventory'
 import { styled } from '@mui/material/styles'
 import { useConfirm } from 'material-ui-confirm'
-// Sidebar item UI
+
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -64,7 +64,6 @@ function SidebarViewClosedBoardsModal({ afterReopenBoard }) {
   const handleReopenBoard = (boardId) => {
     reopenBoardAPI(boardId)
       .then(() => {
-        // Cập nhật state local bằng cách lọc ra board vừa reopen
         const updatedBoards = boards.filter(board => board.id !== boardId)
         setBoards(updatedBoards)
         setTotalBoards(prevTotal => prevTotal - 1)
@@ -73,7 +72,6 @@ function SidebarViewClosedBoardsModal({ afterReopenBoard }) {
           setPage(page - 1)
         }
         toast.success('Board reopened successfully!')
-        // Chỉ gọi afterReopenBoard() để update UI ở component cha
         afterReopenBoard?.()
       })
       .catch(() => {
@@ -98,7 +96,6 @@ function SidebarViewClosedBoardsModal({ afterReopenBoard }) {
     }).then(() => {
       removeBoardAPI(boardId)
       .then(() => {
-        // Cập nhật state local bằng cách lọc ra board vừa xóa
         const updatedBoards = boards.filter(board => board.id !== boardId)
         setBoards(updatedBoards)
         setTotalBoards(prevTotal => prevTotal - 1)

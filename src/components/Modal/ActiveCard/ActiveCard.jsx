@@ -32,6 +32,9 @@ import { cloneDeep } from 'lodash'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
+import { useConfirm } from 'material-ui-confirm' 
+import { removeCardAPI } from '~/apis'
+import { useNavigate } from 'react-router-dom'
 import {
   addChecklistAPI,
   cardMemberAPI,
@@ -53,6 +56,7 @@ import CardActivitySection from './CardActivitySection'
 import CardChecklist from './CardChecklist'
 import CardDescriptionMdEditor from './CardDescriptionMdEditor'
 import CardUserGroup from './CardUserGroup'
+import CreateChecklistModal from '~/components/Form/CreateChecklistModal'
 
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -82,7 +86,8 @@ function ActiveCard() {  const dispatch = useDispatch()
   const isBoardMember = board?.boardUsers?.some(user => user.id === currentUser.id)
   const isPublicBoard = board?.type === 'public'
   const isReadOnly = isPublicBoard && !isBoardMember
-
+  const confirmDelete = useConfirm()
+  const [checklistAnchorEl, setChecklistAnchorEl] = useState(null)
   const handleCloseModal = () => {
   try {
     const newBoard = cloneDeep(board)
@@ -106,6 +111,14 @@ function ActiveCard() {  const dispatch = useDispatch()
     console.error('Error closing modal:', error)
     toast.error('Failed to close card')
   }
+  }
+  
+  const handleOpenChecklistModal = (event) => {
+    setChecklistAnchorEl(event.currentTarget)
+  }
+
+  const handleCloseChecklistModal = () => {
+    setChecklistAnchorEl(null)
   }
   // BUG
   const onUpdateCardTitle = (newTitle) => {
@@ -315,6 +328,77 @@ function ActiveCard() {  const dispatch = useDispatch()
     }
   }
 
+  const handleCreateChecklistFromModal = async (title) => {
+    try {
+      const response = await addChecklistAPI({
+        cardId: activeCard.id,
+        description: title
+      })
+
+      if (response) {
+        setChecklists([response.data]);
+        toast.success('Checklist created successfully')
+        handleCloseChecklistModal()
+      }
+      const fetch = await getChecklistAPI(activeCard.id)
+        if (fetch && fetch.data) {
+          setChecklists(fetch.data || [])
+        } else {
+          setChecklists([])
+        }
+        dispatch(updateCurrentActiveCard({
+          ...activeCard,
+          checklists: [...fetch.data]
+      }));
+    } catch (error) {
+      console.error('Error creating checklist:', error)
+      toast.error('Failed to create checklist')
+    }
+  }
+
+  const handleDeleteCard = () => {
+  confirmDelete({
+    title: 'Delete Card?', 
+    description: 'All actions will be removed from the activity feed and you will not be able to re-open the card. There is no undo.',
+    confirmationText: 'Delete',
+    confirmationButtonProps: {
+      variant: 'contained',
+      color: 'error'
+    },
+    cancellationText: 'Cancel',
+    cancellationButtonProps: {
+      variant: 'contained',
+      color: 'primary'
+    }
+  }).then(async () => {
+      try {
+        if (activeCard?.cover) {
+          await removeCardCoverAPI(activeCard.id)
+        }
+
+        await removeCardAPI(activeCard.id)
+
+        const newBoard = cloneDeep(board)
+        const listContainingCard = newBoard.lists.find(list =>
+          list.cards.some(card => card.id === activeCard.id)
+        )
+        if (listContainingCard) {
+          listContainingCard.cards = listContainingCard.cards.filter(
+            card => card.id !== activeCard.id
+          )
+          dispatch(updatecurrentActiveBoard(newBoard))
+        }
+
+        dispatch(clearCurrentActiveCard())
+        toast.success('Card deleted successfully!')
+      } catch (error) {
+        console.error('Error deleting card:', error)
+        toast.error('Failed to delete card')
+      }
+    }).catch(() => {
+    })
+  }
+
   useEffect(() => {
     const loadChecklists = async () => {
       if (!activeCard?.id) return
@@ -490,34 +574,35 @@ function ActiveCard() {  const dispatch = useDispatch()
                 <VisuallyHiddenInput type="file" onChange={onUploadCardCover} />
               </SidebarItem>
 
-              <SidebarItem><AttachFileOutlinedIcon fontSize="small" />Attachment</SidebarItem>
-              <SidebarItem><LocalOfferOutlinedIcon fontSize="small" />Labels</SidebarItem>              
-              <SidebarItem>
+              <SidebarItem><AttachFileOutlinedIcon fontSize="small" />Attachment</SidebarItem>             
+              <SidebarItem onClick={handleOpenChecklistModal}>
                 <Check fontSize="small" />
                 Checklist
               </SidebarItem>
-              <SidebarItem><WatchLaterOutlinedIcon fontSize="small" />Dates</SidebarItem>
-              <SidebarItem><AutoFixHighOutlinedIcon fontSize="small" />Custom Fields</SidebarItem>
-            </Stack>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Power-Ups</Typography>
-            <Stack direction="column" spacing={1}>
-              <SidebarItem><AspectRatioOutlinedIcon fontSize="small" />Card Size</SidebarItem>
-              <SidebarItem><AddToDriveOutlinedIcon fontSize="small" />Google Drive</SidebarItem>
-              <SidebarItem><AddOutlinedIcon fontSize="small" />Add Power-Ups</SidebarItem>
+              <CreateChecklistModal
+                anchorEl={checklistAnchorEl}
+                onClose={handleCloseChecklistModal}
+                onCreateChecklist={handleCreateChecklistFromModal}
+              />
             </Stack>
 
             <Divider sx={{ my: 2 }} />
 
             <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Actions</Typography>
             <Stack direction="column" spacing={1}>
-              <SidebarItem><ArrowForwardOutlinedIcon fontSize="small" />Move</SidebarItem>
-              <SidebarItem><ContentCopyOutlinedIcon fontSize="small" />Copy</SidebarItem>
-              <SidebarItem><AutoAwesomeOutlinedIcon fontSize="small" />Make Template</SidebarItem>
-              <SidebarItem><ArchiveOutlinedIcon fontSize="small" />Archive</SidebarItem>
-              <SidebarItem><ShareOutlinedIcon fontSize="small" />Share</SidebarItem>
+              <SidebarItem 
+                onClick={handleDeleteCard}
+                sx={{ 
+                  color: 'error.main',
+                  '&:hover': {
+                    backgroundColor: 'error.light',
+                    color: 'error.main'
+                  }
+                }}
+              >
+                <DeleteOutlineIcon fontSize="small" />
+                Delete
+              </SidebarItem>
             </Stack>
           </Grid>
         </Grid>
