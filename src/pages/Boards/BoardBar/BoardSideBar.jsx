@@ -58,7 +58,7 @@ export default function BoardSideBar ({ open, onClose, board }) {
   const filteredDrawerItems = drawerItems.filter((item) => {
     if (role !== 'Owner' &&
        (item.label === 'Share' ||
-        item.label === 'Quit this board' ||
+        item.label === 'Close this board' ||
         item.label === 'Change wallpaper' ||
         item.label === 'Delete wallpaper' ||
         item.boardToggle)) {

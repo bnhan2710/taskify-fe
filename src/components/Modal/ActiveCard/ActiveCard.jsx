@@ -450,11 +450,15 @@ function ActiveCard() {  const dispatch = useDispatch()
             backgroundColor: 'rgba(255, 255, 255, 0)',
             zIndex: 10
           },
-          '& button:not(.close-button), & input, & textarea, & [role="button"]:not(.close-button-container)': {
+          '& button:not(.close-button):not(.MuiCheckbox-root), & input:not([type="checkbox"]), & textarea, & [role="button"]:not(.close-button-container)': {
             pointerEvents: 'none',
             opacity: 0.5
           },
-          '& *:not(.close-button):not(.close-button-container)': {
+          '& .MuiCheckbox-root': {
+            pointerEvents: 'none',
+            opacity: 1
+          },
+          '& *:not(.close-button):not(.close-button-container):not(.MuiCheckbox-root)': {
             userSelect: 'none'
           }
         })
