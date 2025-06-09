@@ -54,8 +54,8 @@ const predefinedTemplates = [
       {
         title: 'Backlog',
         cards: [
-          { 
-            title: 'Define project requirements', 
+          {
+            title: 'Define project requirements',
             description: 'Gather and document all project requirements',
             checklists: [
               'Research similar projects',
@@ -64,8 +64,8 @@ const predefinedTemplates = [
               'Document non-functional requirements'
             ]
           },
-          { 
-            title: 'Set up development environment', 
+          {
+            title: 'Set up development environment',
             description: 'Configure tools and development setup',
             checklists: [
               'Install development tools',
@@ -80,8 +80,8 @@ const predefinedTemplates = [
       {
         title: 'In Progress',
         cards: [
-          { 
-            title: 'Implement user authentication', 
+          {
+            title: 'Implement user authentication',
             description: 'Build login and registration functionality',
             checklists: [
               'Design authentication flow',
@@ -121,8 +121,8 @@ const predefinedTemplates = [
       {
         title: 'Sprint Backlog',
         cards: [
-          { 
-            title: 'User Story: Login Feature', 
+          {
+            title: 'User Story: Login Feature',
             description: 'As a user, I want to login to access my account',
             checklists: [
               'Create login form design',
@@ -133,8 +133,8 @@ const predefinedTemplates = [
             ]
           },
           { title: 'User Story: Dashboard', description: 'As a user, I want to see my dashboard overview' },
-          { 
-            title: 'Bug Fix: Navigation Issue', 
+          {
+            title: 'Bug Fix: Navigation Issue',
             description: 'Fix navigation menu not working on mobile',
             checklists: [
               'Reproduce the bug',
@@ -181,8 +181,8 @@ const predefinedTemplates = [
       {
         title: 'Strategic Goals',
         cards: [
-          { 
-            title: 'Increase market share by 20%', 
+          {
+            title: 'Increase market share by 20%',
             description: 'Expand customer base and improve market position',
             checklists: [
               'Market research and analysis',
@@ -199,8 +199,8 @@ const predefinedTemplates = [
       {
         title: 'Key Initiatives',
         cards: [
-          { 
-            title: 'Digital transformation project', 
+          {
+            title: 'Digital transformation project',
             description: 'Modernize business processes and technology',
             checklists: [
               'Assess current systems',
@@ -239,8 +239,8 @@ const predefinedTemplates = [
       {
         title: 'To Do',
         cards: [
-          { 
-            title: 'Morning workout', 
+          {
+            title: 'Morning workout',
             description: '30 minutes cardio and strength training',
             checklists: [
               '10 minutes warm-up',
@@ -250,8 +250,8 @@ const predefinedTemplates = [
             ]
           },
           { title: 'Read 20 pages of book', description: 'Continue reading current book' },
-          { 
-            title: 'Grocery shopping', 
+          {
+            title: 'Grocery shopping',
             description: 'Buy ingredients for weekly meal prep',
             checklists: [
               'Check pantry inventory',
@@ -267,8 +267,8 @@ const predefinedTemplates = [
       {
         title: 'In Progress',
         cards: [
-          { 
-            title: 'Learn new programming language', 
+          {
+            title: 'Learn new programming language',
             description: 'Complete online course modules',
             checklists: [
               'Complete Chapter 1: Basics',
@@ -308,8 +308,8 @@ const predefinedTemplates = [
       {
         title: 'Pre-Planning',
         cards: [
-          { 
-            title: 'Define event objectives', 
+          {
+            title: 'Define event objectives',
             description: 'Set clear goals and success metrics',
             checklists: [
               'Define event purpose',
@@ -320,8 +320,8 @@ const predefinedTemplates = [
             ]
           },
           { title: 'Set budget and timeline', description: 'Establish financial limits and key dates' },
-          { 
-            title: 'Choose venue', 
+          {
+            title: 'Choose venue',
             description: 'Research and book appropriate venue',
             checklists: [
               'Research potential venues',
@@ -370,8 +370,8 @@ const predefinedTemplates = [
       {
         title: 'Content Ideas',
         cards: [
-          { 
-            title: 'How to be productive working from home', 
+          {
+            title: 'How to be productive working from home',
             description: 'Blog post about remote work tips',
             checklists: [
               'Research current trends',
@@ -388,8 +388,8 @@ const predefinedTemplates = [
       {
         title: 'In Writing',
         cards: [
-          { 
-            title: 'Guide to React hooks', 
+          {
+            title: 'Guide to React hooks',
             description: 'Comprehensive tutorial on React hooks usage',
             checklists: [
               'Write introduction',
@@ -431,8 +431,8 @@ const predefinedTemplates = [
       {
         title: 'Campaign Ideas',
         cards: [
-          { 
-            title: 'Social media campaign for new product', 
+          {
+            title: 'Social media campaign for new product',
             description: 'Create engaging content for social platforms',
             checklists: [
               'Define campaign objectives',
@@ -478,8 +478,8 @@ const predefinedTemplates = [
       {
         title: 'Research & Discovery',
         cards: [
-          { 
-            title: 'User research interviews', 
+          {
+            title: 'User research interviews',
             description: 'Conduct interviews with target users',
             checklists: [
               'Prepare interview questions',
@@ -496,8 +496,8 @@ const predefinedTemplates = [
       {
         title: 'Design & Prototyping',
         cards: [
-          { 
-            title: 'Create user personas', 
+          {
+            title: 'Create user personas',
             description: 'Define target user archetypes',
             checklists: [
               'Analyze user research data',
@@ -565,14 +565,14 @@ function Templates() {
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
   const [imageErrors, setImageErrors] = useState({})
-  
+
   // Modal states
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const [boardTitle, setBoardTitle] = useState('')
   const [selectedCover, setSelectedCover] = useState('')
   const [uploadedCover, setUploadedCover] = useState(null)
-  
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -601,7 +601,7 @@ function Templates() {
         const description = template.description?.toLowerCase() || ''
         const title = template.title?.toLowerCase() || ''
         const type = template.type?.toLowerCase() || ''
-        
+
         switch (selectedCategory) {
         case 'business':
           return description.includes('business') || title.includes('business') || type.includes('business')
@@ -624,11 +624,11 @@ function Templates() {
 
   const handleUseTemplate = async (template) => {
     if (creating) return
-    
+
     setCreating(true)
     try {
       const workspaceId = 'a693e862-6dd3-4f7c-b32a-f72d22a94840' // Default workspace ID
-      
+
       // Create board from template with full structure
       const createBoardDto = {
         title: template.title,
@@ -638,43 +638,43 @@ function Templates() {
       }
 
       const newBoardId = await createBoardAPI(createBoardDto)
-      
+
       // Create lists and cards sequentially to ensure proper order
       for (let i = 0; i < template.lists.length; i++) {
         const listTemplate = template.lists[i]
-        
+
         // Create list with proper boardId
         const createListDto = {
           title: listTemplate.title,
           boardId: String(newBoardId) // Ensure boardId is string
         }
-        
+
         const listResponse = await addListAPI(createListDto)
         // Extract list ID properly from response and ensure it's a string
         const newListId = String(listResponse.id)
-        
+
         // Create cards for this list with proper listId
         for (let j = 0; j < listTemplate.cards.length; j++) {
           const cardTemplate = listTemplate.cards[j]
-          
+
           const createCardDto = {
             title: cardTemplate.title,
             listId: newListId // Ensure listId is properly set as string according to backend API
           }
-          
+
           const newCardResponse = await addCardAPI(createCardDto)
           const newCardId = String(newCardResponse.id)
-          
+
           // Create checklists for this card if they exist
           if (cardTemplate.checklists && cardTemplate.checklists.length > 0) {
             for (let k = 0; k < cardTemplate.checklists.length; k++) {
               const checklistItem = cardTemplate.checklists[k]
-              
+
               const createChecklistDto = {
                 description: checklistItem,
                 cardId: newCardId
               }
-              
+
               try {
                 await addChecklistAPI(createChecklistDto)
               } catch (checklistError) {
@@ -685,7 +685,7 @@ function Templates() {
           }
         }
       }
-      
+
       toast.success('Template created successfully with all lists and cards!')
       navigate(`/boards/${newBoardId}`)
     } catch (error) {
@@ -745,13 +745,13 @@ function Templates() {
         toast.error('Please select an image file')
         return
       }
-      
+
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         toast.error('Image size should be less than 5MB')
         return
       }
-      
+
       setUploadedCover(file)
       setSelectedCover(URL.createObjectURL(file))
     }
@@ -763,10 +763,10 @@ function Templates() {
       const ctx = canvas.getContext('2d')
       canvas.width = 800
       canvas.height = 400
-      
+
       // Create gradient
       const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height)
-      
+
       // Parse gradient colors from CSS
       const matches = gradient.match(/rgba?\([^)]+\)|#[a-fA-F0-9]{6}|#[a-fA-F0-9]{3}|\b\w+\b/g)
       if (matches && matches.length >= 2) {
@@ -777,21 +777,21 @@ function Templates() {
         grad.addColorStop(0, '#667eea')
         grad.addColorStop(1, '#764ba2')
       }
-      
+
       ctx.fillStyle = grad
       ctx.fillRect(0, 0, canvas.width, canvas.height)
-      
+
       canvas.toBlob(resolve, 'image/jpeg', 0.8)
     })
   }
 
   const handleCreateBoard = async () => {
     if (!selectedTemplate || creating) return
-    
+
     setCreating(true)
     try {
       const workspaceId = 'a693e862-6dd3-4f7c-b32a-f72d22a94840' // Default workspace ID
-      
+
       // Create board from template with full structure including cover
       const createBoardDto = {
         title: boardTitle,
@@ -803,7 +803,7 @@ function Templates() {
       }
 
       const newBoardId = await createBoardAPI(createBoardDto)
-      
+
       // Handle cover upload (custom file or gradient)
       if (uploadedCover) {
         // Upload custom file
@@ -827,43 +827,43 @@ function Templates() {
           console.warn('Failed to upload gradient cover:', coverError)
         }
       }
-      
+
       // Create lists and cards sequentially to ensure proper order
       for (let i = 0; i < selectedTemplate.lists.length; i++) {
         const listTemplate = selectedTemplate.lists[i]
-        
+
         // Create list with proper boardId
         const createListDto = {
           title: listTemplate.title,
           boardId: String(newBoardId) // Ensure boardId is string
         }
-        
+
         const listResponse = await addListAPI(createListDto)
         // Extract list ID properly from response and ensure it's a string
         const newListId = String(listResponse.id)
-        
+
         // Create cards for this list with proper listId
         for (let j = 0; j < listTemplate.cards.length; j++) {
           const cardTemplate = listTemplate.cards[j]
-          
+
           const createCardDto = {
             title: cardTemplate.title,
             listId: newListId // Ensure listId is properly set as string according to backend API
           }
-          
+
           const newCardResponse = await addCardAPI(createCardDto)
           const newCardId = String(newCardResponse.id)
-          
+
           // Create checklists for this card if they exist
           if (cardTemplate.checklists && cardTemplate.checklists.length > 0) {
             for (let k = 0; k < cardTemplate.checklists.length; k++) {
               const checklistItem = cardTemplate.checklists[k]
-              
+
               const createChecklistDto = {
                 description: checklistItem,
                 cardId: newCardId
               }
-              
+
               try {
                 await addChecklistAPI(createChecklistDto)
               } catch (checklistError) {
@@ -874,7 +874,7 @@ function Templates() {
           }
         }
       }
-      
+
       toast.success('Board created successfully from template!')
       handleCloseConfirmModal()
       navigate(`/boards/${newBoardId}`)
@@ -891,12 +891,12 @@ function Templates() {
   }
 
   return (
-    <Container disableGutters maxWidth={false} sx={{ 
-      minHeight: '100vh', 
+    <Container disableGutters maxWidth={false} sx={{
+      minHeight: '100vh',
       backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : '#f8f9fa'
     }}>
       <AppBar />
-      
+
       {/* Header Section */}
       <Box sx={{
         background: (theme) => (
@@ -953,8 +953,8 @@ function Templates() {
 
         {/* Category Filter */}
         <Box sx={{ mb: 4, textAlign: 'center' }}>
-          <Typography variant="h6" sx={{ 
-            mb: 2, 
+          <Typography variant="h6" sx={{
+            mb: 2,
             fontWeight: 'bold',
             color: (theme) => theme.palette.mode === 'dark' ? '#fff' : 'inherit'
           }}>
@@ -972,20 +972,20 @@ function Templates() {
                 sx={{
                   borderRadius: 2,
                   transition: 'all 0.2s ease',
-                  backgroundColor: selectedCategory === category.id 
-                    ? undefined 
+                  backgroundColor: selectedCategory === category.id
+                    ? undefined
                     : (theme) => theme.palette.mode === 'dark' ? '#2f3542' : undefined,
-                  color: selectedCategory === category.id 
-                    ? undefined 
+                  color: selectedCategory === category.id
+                    ? undefined
                     : (theme) => theme.palette.mode === 'dark' ? '#fff' : undefined,
-                  borderColor: (theme) => theme.palette.mode === 'dark' && selectedCategory !== category.id 
-                    ? '#555' 
+                  borderColor: (theme) => theme.palette.mode === 'dark' && selectedCategory !== category.id
+                    ? '#555'
                     : undefined,
                   '&:hover': {
                     transform: 'translateY(-2px)',
                     boxShadow: 2,
-                    backgroundColor: selectedCategory === category.id 
-                      ? undefined 
+                    backgroundColor: selectedCategory === category.id
+                      ? undefined
                       : (theme) => theme.palette.mode === 'dark' ? '#33485D' : '#f5f5f5'
                   }
                 }}
@@ -994,7 +994,7 @@ function Templates() {
           </Box>
         </Box>
 
-        <Divider sx={{ 
+        <Divider sx={{
           mb: 4,
           borderColor: (theme) => theme.palette.mode === 'dark' ? '#555' : undefined
         }} />
@@ -1002,9 +1002,9 @@ function Templates() {
         {/* Templates Grid */}
         {filteredTemplates.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
-            <Typography variant="h5" sx={{ 
-              fontWeight: 'bold', 
-              mb: 2, 
+            <Typography variant="h5" sx={{
+              fontWeight: 'bold',
+              mb: 2,
               color: (theme) => theme.palette.mode === 'dark' ? '#ccc' : '#666'
             }}>
               {searchTerm || selectedCategory !== 'all'
@@ -1021,8 +1021,8 @@ function Templates() {
           </Box>
         ) : (
           <>
-            <Typography variant="h5" sx={{ 
-              fontWeight: 'bold', 
+            <Typography variant="h5" sx={{
+              fontWeight: 'bold',
               mb: 3,
               color: (theme) => theme.palette.mode === 'dark' ? '#fff' : 'inherit'
             }}>
@@ -1030,14 +1030,14 @@ function Templates() {
               <Chip
                 label={filteredTemplates.length}
                 size="small"
-                sx={{ 
+                sx={{
                   ml: 2,
                   backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#2f3542' : undefined,
                   color: (theme) => theme.palette.mode === 'dark' ? '#fff' : undefined
                 }}
               />
             </Typography>
-            
+
             <Grid container spacing={3}>
               {filteredTemplates.map((template) => (
                 <Grid item xs={12} sm={6} md={4} key={template.id}>
@@ -1048,15 +1048,15 @@ function Templates() {
                       flexDirection: 'column',
                       borderRadius: 3,
                       backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#2f3542' : 'white',
-                      boxShadow: (theme) => theme.palette.mode === 'dark' 
-                        ? '0 4px 12px rgba(0,0,0,0.3)' 
+                      boxShadow: (theme) => theme.palette.mode === 'dark'
+                        ? '0 4px 12px rgba(0,0,0,0.3)'
                         : '0 4px 12px rgba(0,0,0,0.1)',
                       border: (theme) => theme.palette.mode === 'dark' ? '1px solid #555' : 'none',
                       transition: 'all 0.3s ease',
                       '&:hover': {
                         transform: 'translateY(-8px)',
-                        boxShadow: (theme) => theme.palette.mode === 'dark' 
-                          ? '0 8px 25px rgba(0,0,0,0.4)' 
+                        boxShadow: (theme) => theme.palette.mode === 'dark'
+                          ? '0 8px 25px rgba(0,0,0,0.4)'
                           : '0 8px 25px rgba(0,0,0,0.15)'
                       }
                     }}
@@ -1065,7 +1065,7 @@ function Templates() {
                       component="div"
                       sx={{
                         height: 160,
-                        background: imageErrors[template.id] || !template.cover 
+                        background: imageErrors[template.id] || !template.cover
                           ? template.fallbackColor || getRandomColor()
                           : `url(${template.cover})`,
                         backgroundSize: 'cover',
@@ -1096,7 +1096,7 @@ function Templates() {
                           onError={() => handleImageError(template.id)}
                         />
                       )}
-                      
+
                       <Chip
                         label="Template"
                         size="small"
@@ -1125,7 +1125,7 @@ function Templates() {
                         {template.title || 'Untitled Template'}
                       </Typography>
                     </CardMedia>
-                    
+
                     <CardContent sx={{ flexGrow: 1, p: 3 }}>
                       <Typography
                         variant="body2"
@@ -1243,8 +1243,8 @@ function Templates() {
                     sx={{
                       height: 120,
                       borderRadius: 2,
-                      background: selectedCover?.startsWith('http') 
-                        ? `url(${selectedCover})` 
+                      background: selectedCover?.startsWith('http')
+                        ? `url(${selectedCover})`
                         : selectedCover || selectedTemplate.fallbackColor,
                       backgroundSize: 'cover',
                       backgroundPosition: 'center',
@@ -1302,7 +1302,7 @@ function Templates() {
                   <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
                     Choose Cover
                   </Typography>
-                  
+
                   {/* Upload Cover */}
                   <Box sx={{ mb: 2 }}>
                     <Button
@@ -1337,8 +1337,8 @@ function Templates() {
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             cursor: 'pointer',
-                            border: selectedCover === cover 
-                              ? '3px solid #1976d2' 
+                            border: selectedCover === cover
+                              ? '3px solid #1976d2'
                               : (theme) => `1px solid ${theme.palette.mode === 'dark' ? '#555' : '#e0e0e0'}`,
                             transition: 'all 0.2s ease',
                             '&:hover': {

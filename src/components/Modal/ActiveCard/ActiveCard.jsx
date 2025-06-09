@@ -32,7 +32,7 @@ import { cloneDeep } from 'lodash'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
-import { useConfirm } from 'material-ui-confirm' 
+import { useConfirm } from 'material-ui-confirm'
 import { removeCardAPI } from '~/apis'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -79,7 +79,7 @@ const SidebarItem = styled(Box)(({ theme }) => ({
 }))
 
 
-function ActiveCard() {  const dispatch = useDispatch()
+function ActiveCard() { const dispatch = useDispatch()
   const activeCard = useSelector(selectCurrentActiveCard)
   const board = useSelector(selectcurrentActiveBoard)
   const currentUser = useSelector(selectCurrentUser)
@@ -89,30 +89,30 @@ function ActiveCard() {  const dispatch = useDispatch()
   const confirmDelete = useConfirm()
   const [checklistAnchorEl, setChecklistAnchorEl] = useState(null)
   const handleCloseModal = () => {
-  try {
-    const newBoard = cloneDeep(board)
-    const listContainingCard = newBoard.lists.find(list =>
-      list.cards.some(card => card.id === activeCard.id)
-    )
+    try {
+      const newBoard = cloneDeep(board)
+      const listContainingCard = newBoard.lists.find(list =>
+        list.cards.some(card => card.id === activeCard.id)
+      )
 
-    if (listContainingCard) {
-      const cardToUpdate = listContainingCard.cards.find(card => card.id === activeCard.id)
-      if (cardToUpdate) {
-        cardToUpdate.checklists = activeCard.checklists
-        cardToUpdate.cover = activeCard.cover
-        cardToUpdate.members = activeCard.members
-        cardToUpdate.comments = activeCard.comments
-        dispatch(updatecurrentActiveBoard(newBoard))
+      if (listContainingCard) {
+        const cardToUpdate = listContainingCard.cards.find(card => card.id === activeCard.id)
+        if (cardToUpdate) {
+          cardToUpdate.checklists = activeCard.checklists
+          cardToUpdate.cover = activeCard.cover
+          cardToUpdate.members = activeCard.members
+          cardToUpdate.comments = activeCard.comments
+          dispatch(updatecurrentActiveBoard(newBoard))
+        }
       }
-    }
 
-    dispatch(clearCurrentActiveCard())
-  } catch (error) {
-    console.error('Error closing modal:', error)
-    toast.error('Failed to close card')
+      dispatch(clearCurrentActiveCard())
+    } catch (error) {
+      console.error('Error closing modal:', error)
+      toast.error('Failed to close card')
+    }
   }
-  }
-  
+
   const handleOpenChecklistModal = (event) => {
     setChecklistAnchorEl(event.currentTarget)
   }
@@ -249,70 +249,22 @@ function ActiveCard() {  const dispatch = useDispatch()
     } catch (error) {
       console.error('Error updating card members:', error)
       toast.error('Failed to update card member')
-    }  
+    }
   }
 
   const [checklists, setChecklists] = useState([])
   const handleUpdateChecklist = async (updatedChecklist) => {
     try {
-        const existingChecklist = updatedChecklist.items
-        const updateResponse = await updateChecklistAPI(existingChecklist.id, {
-          description: existingChecklist.description,
-          isDone: existingChecklist.isDone
-        })
-        
-        if (updateResponse && updateResponse.data) {
-          setChecklists([updateResponse.data])
-        }
-        const fetch = await getChecklistAPI(activeCard.id)
-        if (fetch && fetch.data) {
-          setChecklists(fetch.data || [])
-        } else {
-          setChecklists([])
-        }
-        dispatch(updateCurrentActiveCard({
-          ...activeCard,
-          checklists: [...fetch.data]
-        }));
-    } catch (error) {
-      console.error('Error handling checklist:', error)
-      toast.error('Failed to update checklist')
-    }
-  }
-
-  const handleCreateChecklist = async (data) => {
-    try {
-      const description = data?.description || 'TODO';
-      
-      const response = await addChecklistAPI({
-        cardId: activeCard.id,
-        description: description
+      const existingChecklist = updatedChecklist.items
+      const updateResponse = await updateChecklistAPI(existingChecklist.id, {
+        description: existingChecklist.description,
+        isDone: existingChecklist.isDone
       })
-      if (response) {
-        setChecklists([response.data]);
-        toast.success('Checklist created successfully');
+
+      if (updateResponse && updateResponse.data) {
+        setChecklists([updateResponse.data])
       }
       const fetch = await getChecklistAPI(activeCard.id)
-        if (fetch && fetch.data) {
-          setChecklists(fetch.data || [])
-        } else {
-          setChecklists([])
-        }
-        dispatch(updateCurrentActiveCard({
-          ...activeCard,
-          checklists: [...fetch.data]
-        }));
-    } catch (error) {
-      console.error('Error creating checklist:', error);
-      toast.error('Failed to create checklist');
-    }
-  }
-
-  const handleDeleteChecklist = async (checklistId) => {
-  try {
-    await deleteChecklistAPI(checklistId);
-    setChecklists(prevChecklists => prevChecklists.filter(c => c.id !== checklistId));
-    const fetch = await getChecklistAPI(activeCard.id)
       if (fetch && fetch.data) {
         setChecklists(fetch.data || [])
       } else {
@@ -321,10 +273,58 @@ function ActiveCard() {  const dispatch = useDispatch()
       dispatch(updateCurrentActiveCard({
         ...activeCard,
         checklists: [...fetch.data]
-      }));
+      }))
     } catch (error) {
-      console.error('Error deleting checklist:', error);
-      toast.error('Failed to delete checklist');
+      console.error('Error handling checklist:', error)
+      toast.error('Failed to update checklist')
+    }
+  }
+
+  const handleCreateChecklist = async (data) => {
+    try {
+      const description = data?.description || 'TODO'
+
+      const response = await addChecklistAPI({
+        cardId: activeCard.id,
+        description: description
+      })
+      if (response) {
+        setChecklists([response.data])
+        toast.success('Checklist created successfully')
+      }
+      const fetch = await getChecklistAPI(activeCard.id)
+      if (fetch && fetch.data) {
+        setChecklists(fetch.data || [])
+      } else {
+        setChecklists([])
+      }
+      dispatch(updateCurrentActiveCard({
+        ...activeCard,
+        checklists: [...fetch.data]
+      }))
+    } catch (error) {
+      console.error('Error creating checklist:', error)
+      toast.error('Failed to create checklist')
+    }
+  }
+
+  const handleDeleteChecklist = async (checklistId) => {
+    try {
+      await deleteChecklistAPI(checklistId)
+      setChecklists(prevChecklists => prevChecklists.filter(c => c.id !== checklistId))
+      const fetch = await getChecklistAPI(activeCard.id)
+      if (fetch && fetch.data) {
+        setChecklists(fetch.data || [])
+      } else {
+        setChecklists([])
+      }
+      dispatch(updateCurrentActiveCard({
+        ...activeCard,
+        checklists: [...fetch.data]
+      }))
+    } catch (error) {
+      console.error('Error deleting checklist:', error)
+      toast.error('Failed to delete checklist')
     }
   }
 
@@ -336,20 +336,20 @@ function ActiveCard() {  const dispatch = useDispatch()
       })
 
       if (response) {
-        setChecklists([response.data]);
+        setChecklists([response.data])
         toast.success('Checklist created successfully')
         handleCloseChecklistModal()
       }
       const fetch = await getChecklistAPI(activeCard.id)
-        if (fetch && fetch.data) {
-          setChecklists(fetch.data || [])
-        } else {
-          setChecklists([])
-        }
-        dispatch(updateCurrentActiveCard({
-          ...activeCard,
-          checklists: [...fetch.data]
-      }));
+      if (fetch && fetch.data) {
+        setChecklists(fetch.data || [])
+      } else {
+        setChecklists([])
+      }
+      dispatch(updateCurrentActiveCard({
+        ...activeCard,
+        checklists: [...fetch.data]
+      }))
     } catch (error) {
       console.error('Error creating checklist:', error)
       toast.error('Failed to create checklist')
@@ -357,20 +357,20 @@ function ActiveCard() {  const dispatch = useDispatch()
   }
 
   const handleDeleteCard = () => {
-  confirmDelete({
-    title: 'Delete Card?', 
-    description: 'All actions will be removed from the activity feed and you will not be able to re-open the card. There is no undo.',
-    confirmationText: 'Delete',
-    confirmationButtonProps: {
-      variant: 'contained',
-      color: 'error'
-    },
-    cancellationText: 'Cancel',
-    cancellationButtonProps: {
-      variant: 'contained',
-      color: 'primary'
-    }
-  }).then(async () => {
+    confirmDelete({
+      title: 'Delete Card?',
+      description: 'All actions will be removed from the activity feed and you will not be able to re-open the card. There is no undo.',
+      confirmationText: 'Delete',
+      confirmationButtonProps: {
+        variant: 'contained',
+        color: 'error'
+      },
+      cancellationText: 'Cancel',
+      cancellationButtonProps: {
+        variant: 'contained',
+        color: 'primary'
+      }
+    }).then(async () => {
       try {
         if (activeCard?.cover) {
           await removeCardCoverAPI(activeCard.id)
@@ -412,7 +412,7 @@ function ActiveCard() {  const dispatch = useDispatch()
         dispatch(updateCurrentActiveCard({
           ...activeCard,
           checklists: response.data
-        }));
+        }))
       } catch (error) {
         console.error('Error loading checklists:', error)
         setChecklists([])
@@ -470,14 +470,14 @@ function ActiveCard() {  const dispatch = useDispatch()
           cursor: 'pointer',
           zIndex: 11
         }}>
-          <CancelIcon 
-          color="error" 
-          sx={{ 
-            '&:hover': { color: 'error.light' }, 
-            pointerEvents: 'auto', 
-            cursor: 'pointer'  
-            }} 
-          onClick={handleCloseModal} />
+          <CancelIcon
+            color="error"
+            sx={{
+              '&:hover': { color: 'error.light' },
+              pointerEvents: 'auto',
+              cursor: 'pointer'
+            }}
+            onClick={handleCloseModal} />
         </Box>
         {activeCard?.cover &&
         <Box sx={{ position: 'relative', mb: 4 }}>
@@ -522,7 +522,7 @@ function ActiveCard() {  const dispatch = useDispatch()
                 memberIds={activeCard?.members}
                 onUpdateCardMembers={onUpdateCardMembers}
               />
-            </Box>            
+            </Box>
             <Box sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <SubjectRoundedIcon />
@@ -532,14 +532,14 @@ function ActiveCard() {  const dispatch = useDispatch()
                 cardDescriptionProp={activeCard?.description}
                 handleUpdateCardDescription={onUpdateCardDescription}
               />
-            </Box>            
-            
+            </Box>
+
             {checklists.length >= 0 && (
               <Box sx={{ mb: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                   <TaskAltOutlinedIcon />
                   <Typography variant="span" sx={{ fontWeight: '600', fontSize: '20px' }}>
-                    {checklists[0]?.title || 'ToDo'} 
+                    {checklists[0]?.title || 'ToDo'}
                   </Typography>
                 </Box>
                 <CardChecklist
@@ -550,7 +550,7 @@ function ActiveCard() {  const dispatch = useDispatch()
                 />
               </Box>
             )}
-            
+
 
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -578,7 +578,7 @@ function ActiveCard() {  const dispatch = useDispatch()
                 <VisuallyHiddenInput type="file" onChange={onUploadCardCover} />
               </SidebarItem>
 
-              <SidebarItem><AttachFileOutlinedIcon fontSize="small" />Attachment</SidebarItem>             
+              <SidebarItem><AttachFileOutlinedIcon fontSize="small" />Attachment</SidebarItem>
               <SidebarItem onClick={handleOpenChecklistModal}>
                 <Check fontSize="small" />
                 Checklist
@@ -594,9 +594,9 @@ function ActiveCard() {  const dispatch = useDispatch()
 
             <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Actions</Typography>
             <Stack direction="column" spacing={1}>
-              <SidebarItem 
+              <SidebarItem
                 onClick={handleDeleteCard}
-                sx={{ 
+                sx={{
                   color: 'error.main',
                   '&:hover': {
                     backgroundColor: 'error.light',

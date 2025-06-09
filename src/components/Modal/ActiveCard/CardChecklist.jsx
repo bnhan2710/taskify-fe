@@ -11,24 +11,24 @@ function CardChecklist({ checklist, onUpdateChecklist, onAddChecklist, onDeleteC
   const [showAddForm, setShowAddForm] = useState(false)
   const [newItemText, setNewItemText] = useState('')
   const items = checklist || []
-  
+
   const totalItems = items.length
   const completedItems = items.filter(item => item.isDone)?.length || 0
   const progress = totalItems > 0 ? (completedItems / totalItems) * 100 : 0
 
-    const handleToggleItem = (index) => {
-    const updatedItems = [...items];
-    
+  const handleToggleItem = (index) => {
+    const updatedItems = [...items]
+
     updatedItems[index] = {
-        index: index,
-        ...items[index],
-        isDone: !items[index].isDone
-    };
-    
-    onUpdateChecklist({
-        items: updatedItems[index]
-    });
+      index: index,
+      ...items[index],
+      isDone: !items[index].isDone
     }
+
+    onUpdateChecklist({
+      items: updatedItems[index]
+    })
+  }
 
   return (
     <Box sx={{ mt: 2 }}>
@@ -54,10 +54,10 @@ function CardChecklist({ checklist, onUpdateChecklist, onAddChecklist, onDeleteC
         />
       </Box>
 
-        {items.map((item, index) => (
+      {items.map((item, index) => (
         <Box
-            key={index}
-            sx={{
+          key={index}
+          sx={{
             display: 'flex',
             alignItems: 'center',
             gap: 1,
@@ -65,50 +65,50 @@ function CardChecklist({ checklist, onUpdateChecklist, onAddChecklist, onDeleteC
             p: 0.5,
             borderRadius: '4px',
             '&:hover': {
-                backgroundColor: 'rgba(9, 30, 66, 0.04)',
-                '& .delete-button': {
+              backgroundColor: 'rgba(9, 30, 66, 0.04)',
+              '& .delete-button': {
                 visibility: 'visible'
-                }
+              }
             }
-            }}
+          }}
         >
-            <Checkbox
+          <Checkbox
             checked={item.isDone}
             onChange={() => handleToggleItem(index)}
             sx={{
-                color: '#DFE1E6',
-                '&.Mui-checked': {
+              color: '#DFE1E6',
+              '&.Mui-checked': {
                 color: '#0C66E4'
-                }
+              }
             }}
-            />
-            <Typography
+          />
+          <Typography
             variant="body2"
             sx={{
-                fontSize: '14px',
-                flexGrow: 1,
-                wordBreak: 'break-word',
-                textDecoration: item.isDone ? 'line-through' : 'none',
+              fontSize: '14px',
+              flexGrow: 1,
+              wordBreak: 'break-word',
+              textDecoration: item.isDone ? 'line-through' : 'none'
             }}
-            >
+          >
             {item.description}
-            </Typography>
-            <Button
+          </Typography>
+          <Button
             className="delete-button"
             size="small"
             onClick={() => {
-                onDeleteChecklist(checklist[index].id);
+              onDeleteChecklist(checklist[index].id)
             }}
             sx={{
-                minWidth: '32px',
-                p: '2px 8px',
-                textTransform: 'none',
+              minWidth: '32px',
+              p: '2px 8px',
+              textTransform: 'none'
             }}
-            >
+          >
             Delete
-            </Button>
+          </Button>
         </Box>
-        ))}
+      ))}
 
       {!showAddForm ? (
         <Button
@@ -134,7 +134,7 @@ function CardChecklist({ checklist, onUpdateChecklist, onAddChecklist, onDeleteC
             onKeyDown={(e) => {
               if (e.key === 'Enter' && newItemText.trim()) {
                 onUpdateChecklist({
-                  ...checklist,  
+                  ...checklist,
                   items: [...items, { description: newItemText.trim(), isDone: false }]
                 })
                 setNewItemText('')
@@ -146,18 +146,18 @@ function CardChecklist({ checklist, onUpdateChecklist, onAddChecklist, onDeleteC
           />
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Button
-            variant="contained"
-            size="small"
-            onClick={() => {
+              variant="contained"
+              size="small"
+              onClick={() => {
                 if (!newItemText.trim()) return
                 onAddChecklist({
-                description: newItemText.trim(),
-                isDone: false
+                  description: newItemText.trim(),
+                  isDone: false
                 })
                 setNewItemText('')
                 setShowAddForm(false)
-            }}
-            sx={{ backgroundColor: '#0C66E4' }}
+              }}
+              sx={{ backgroundColor: '#0C66E4' }}
             >
             Add
             </Button>

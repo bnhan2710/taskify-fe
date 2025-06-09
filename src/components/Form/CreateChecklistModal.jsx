@@ -1,9 +1,9 @@
 import {
-    Box,
-    Button,
-    Popover,
-    TextField,
-    Typography
+  Box,
+  Button,
+  Popover,
+  TextField,
+  Typography
 } from '@mui/material'
 import { useState } from 'react'
 
@@ -26,11 +26,11 @@ function CreateChecklistModal({ anchorEl, onClose, onCreateChecklist }) {
       onClose={onClose}
       anchorOrigin={{
         vertical: 'bottom',
-        horizontal: 'left',
+        horizontal: 'left'
       }}
       transformOrigin={{
         vertical: 'top',
-        horizontal: 'left',
+        horizontal: 'left'
       }}
     >
       <Box sx={{ p: 2, width: 300 }}>
@@ -50,7 +50,7 @@ function CreateChecklistModal({ anchorEl, onClose, onCreateChecklist }) {
             <Button onClick={onClose}>
               Cancel
             </Button>
-            <Button 
+            <Button
               type="submit"
               variant="contained"
               disabled={!title.trim()}

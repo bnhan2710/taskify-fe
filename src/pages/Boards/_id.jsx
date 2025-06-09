@@ -80,10 +80,10 @@ function Board() {
     <Container disableGutters maxWidth = {false} sx = {{ height: '100vh', backgroundColor: 'primary.main' }}>
       {activeCard && <ActiveCard/>}
       <AppBar/>
-      <Box sx={{ 
-        position: 'relative', 
+      <Box sx={{
+        position: 'relative',
         height: 'calc(100vh - 58px)',
-        overflow: 'hidden' 
+        overflow: 'hidden'
       }}>
         <BoardBar board={board}/>
         <BoardContent

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Drawer,
@@ -8,7 +8,9 @@ import {
   ListItemText,
   IconButton,
   Typography,
-  Box
+  Box,
+  Divider,
+  Collapse
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import WallpaperIcon from '@mui/icons-material/Wallpaper'
@@ -16,15 +18,20 @@ import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import LockIcon from '@mui/icons-material/Lock'
 import PublicIcon from '@mui/icons-material/Public'
+import HistoryIcon from '@mui/icons-material/History'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ChangeBackgroundModal from '~/components/Form/ChangeBackgroundModal'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { closeBoardAPI, updateBoard, removeBoardBackgroundAPI  } from '~/apis'
+import { closeBoardAPI, updateBoard, removeBoardBackgroundAPI, getBoardActivityLogsAPI } from '~/apis'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { updatecurrentActiveBoard, selectcurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { useConfirm } from 'material-ui-confirm'
 import InviteBoardUser from './InviteBoardUser'
+import ActivityLog from '~/components/ActivityLog/ActivityLog'
+import { logBoardActivity, ActivityTypes } from '~/utils/activityLogger'
 
 export default function BoardSideBar ({ open, onClose, board }) {
   const navigate = useNavigate()
@@ -35,8 +42,32 @@ export default function BoardSideBar ({ open, onClose, board }) {
   const [isInviteUserOpen, setInviteUserOpen] = useState(false)
   const [isChangeBackgroundOpen, setChangeBackgroundOpen] = useState(false)
   const [openInvite, setOpenInvite] = useState(false)
+  const [showActivityLog, setShowActivityLog] = useState(false)
+  const [activityLogs, setActivityLogs] = useState([])
+  const [loadingActivities, setLoadingActivities] = useState(false)
   const confirmDelete = useConfirm()
   const confirm = useConfirm()
+
+  // Load activity logs when showing activity log section
+  useEffect(() => {
+    if (showActivityLog && board?.id) {
+      loadActivityLogs()
+    }
+  }, [showActivityLog, board?.id])
+
+  const loadActivityLogs = async () => {
+    try {
+      setLoadingActivities(true)
+      const logs = await getBoardActivityLogsAPI(board.id, 20)
+      setActivityLogs(logs || [])
+    } catch (error) {
+      console.error('Error loading activity logs:', error)
+      toast.error('Failed to load activity history')
+      setActivityLogs([])
+    } finally {
+      setLoadingActivities(false)
+    }
+  }
 
   const isCurrentlyPublic = board?.type === 'public'
   const targetType = isCurrentlyPublic ? 'private' : 'public'
@@ -53,6 +84,11 @@ export default function BoardSideBar ({ open, onClose, board }) {
     {
       icon: <CloseFullscreenIcon />,
       label: role === 'Owner' ? 'Close this board' : 'Quit this board'
+    },
+    {
+      icon: showActivityLog ? <ExpandLessIcon /> : <ExpandMoreIcon />,
+      label: 'Activity',
+      expandable: true
     }
   ]
   const filteredDrawerItems = drawerItems.filter((item) => {
@@ -83,6 +119,13 @@ export default function BoardSideBar ({ open, onClose, board }) {
     }).then(() => {
       closeBoardAPI(currentBoard.id)
         .then(() => {
+          // Log activity
+          logBoardActivity(
+            ActivityTypes.BOARD_CLOSED,
+            currentUser.id,
+            currentBoard.id,
+            { boardTitle: currentBoard.title }
+          )
           toast.success(`Board closed: ${currentBoard.title}`)
           dispatch(updatecurrentActiveBoard(null))
           navigate('/boards')
@@ -113,6 +156,15 @@ export default function BoardSideBar ({ open, onClose, board }) {
         await removeBoardBackgroundAPI(board.id)
         const updatedBoard = { ...currentBoard, cover: null }
         dispatch(updatecurrentActiveBoard(updatedBoard))
+
+        // Log activity
+        logBoardActivity(
+          ActivityTypes.BOARD_UPDATED,
+          currentUser.id,
+          board.id,
+          { action: 'wallpaper_removed', boardTitle: board.title }
+        )
+
         navigate('/boards/' + updatedBoard.id)
         toast.success('Wallpaper deleted successfully!')
         onClose()
@@ -143,6 +195,20 @@ export default function BoardSideBar ({ open, onClose, board }) {
         .then(() => {
           const updatedBoard = { ...currentBoard, type: targetType }
           dispatch(updatecurrentActiveBoard(updatedBoard))
+
+          // Log activity
+          logBoardActivity(
+            ActivityTypes.BOARD_UPDATED,
+            currentUser.id,
+            board.id,
+            {
+              action: 'type_changed',
+              oldType: isCurrentlyPublic ? 'public' : 'private',
+              newType: targetType,
+              boardTitle: board.title
+            }
+          )
+
           navigate('/boards/' + updatedBoard.id)
           toast.success(`Board changed to ${targetTypeLabel} successfully!`)
           onClose()
@@ -173,6 +239,9 @@ export default function BoardSideBar ({ open, onClose, board }) {
     case 'Delete wallpaper':
       handleDeleteWallpaper()
       break
+    case 'Activity':
+      setShowActivityLog(!showActivityLog)
+      break
     default:
       // handle other actions
       break
@@ -186,15 +255,15 @@ export default function BoardSideBar ({ open, onClose, board }) {
       onClose={onClose}
       PaperProps={{
         sx: {
-          width: 320,
+          width: 360,
           backgroundColor: '#2c2f35',
           color: '#fff'
         }
       }}
     >
       {isInviteUserOpen && (
-        <InviteBoardUser 
-          isSelected={!isInviteUserOpen} openModal={openInvite} 
+        <InviteBoardUser
+          isSelected={!isInviteUserOpen} openModal={openInvite}
           handleOpenModal={() => setOpenInvite(true)} handleCloseModal={() => setOpenInvite(false)}
           boardId={board.id} boardUsers={board?.boardUsers}/>
       )}
@@ -218,27 +287,45 @@ export default function BoardSideBar ({ open, onClose, board }) {
         onClose={() => setChangeBackgroundOpen(false)}
         board={board}
       />
-      <List sx={{ overflowY: 'auto', flex: 1 }}>
-        {filteredDrawerItems.map((item, index) => (
-          <ListItem button key={index} onClick={() => handleAction(item.label)}>
-            <ListItemIcon sx={{ color: '#bbb' }}>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.label} />
-            {item.warning && (
-              <Typography color="warning.main" fontWeight="bold">
-                ⚠
-              </Typography>
-            )}
-            {item.upgrade && (
-              <Typography
-                variant="caption"
-                sx={{ color: 'violet', ml: 1, fontWeight: 'bold' }}
-              >
-                Upgrade
-              </Typography>
-            )}
-          </ListItem>
-        ))}
-      </List>
+      <Box sx={{ overflowY: 'auto', flex: 1 }}>
+        <List>
+          {filteredDrawerItems.map((item, index) => (
+            <React.Fragment key={index}>
+              <ListItem button onClick={() => handleAction(item.label)}>
+                <ListItemIcon sx={{ color: '#bbb' }}>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.label} />
+                {item.warning && (
+                  <Typography color="warning.main" fontWeight="bold">
+                    ⚠
+                  </Typography>
+                )}
+                {item.upgrade && (
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'violet', ml: 1, fontWeight: 'bold' }}
+                  >
+                    Upgrade
+                  </Typography>
+                )}
+              </ListItem>
+              {item.expandable && item.label === 'Activity' && (
+                <Collapse in={showActivityLog} timeout="auto" unmountOnExit>
+                  <Box sx={{ px: 2, pb: 2 }}>
+                    <Divider sx={{ bgcolor: '#444', mb: 2 }} />
+                    <Typography variant="subtitle2" sx={{ color: '#fff', mb: 1 }}>
+                      Activity History
+                    </Typography>
+                    <ActivityLog
+                      activities={activityLogs}
+                      loading={loadingActivities}
+                    />
+                  </Box>
+                </Collapse>
+              )}
+            </React.Fragment>
+          ))}
+        </List>
+      </Box>
     </Drawer>
   )
 }

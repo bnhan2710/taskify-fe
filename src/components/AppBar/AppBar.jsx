@@ -422,7 +422,7 @@ function AppBar() {
                     ))}
                   </Box>
                 )}
-                
+
                 {searchResults.length > 0 && !searching && (
                   <>
                     <Box sx={{
@@ -487,7 +487,7 @@ function AppBar() {
                             }
                             secondary={
                               <Typography
-                                variant="caption" 
+                                variant="caption"
                                 color="text.secondary"
                                 sx={{
                                   overflow: 'hidden',
