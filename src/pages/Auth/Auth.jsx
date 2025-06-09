@@ -20,8 +20,6 @@ function Auth() {
     <Box sx={{
       width: '100vw',
       height: '100vh',
-      background: 'rgb(2,0,36)',
-      // eslint-disable-next-line no-dupe-keys
       background: 'linear-gradient(45deg, rgba(2,0,36,1) 23%, rgba(11,63,125,1) 60%, rgba(68,0,102,1) 95%)',
       color: 'white'
     }}>
@@ -33,7 +31,7 @@ function Auth() {
         animation: 'stars 12s linear infinite alternate',
         width: '100%',
         height: '100%',
-        backgroundImage: 'url("src/assets/404/particles.png")',
+        backgroundImage: 'url("/assets/404/particles.png")',
         backgroundSize: 'contain',
         backgroundRepeat: 'repeat',
         backgroundPosition: 'center',
@@ -46,7 +44,7 @@ function Auth() {
           position : 'absolute',
           top : '30%',
           left : '10%',
-          backgroundImage : 'url("src/assets/auth/person.png")',
+          backgroundImage : 'url("/assets/auth/person.png")',
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
@@ -67,7 +65,7 @@ function Auth() {
             '75%': { transform: 'rotate(270deg) translateX(200px) rotate(-180deg)' },
             '100%': { transform: 'rotate(360deg) translateX(200px) rotate(-180deg)' }
           },
-          backgroundImage : 'url("src/assets/auth/rocket.png")',
+          backgroundImage : 'url("/assets/auth/rocket.png")',
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
@@ -85,7 +83,7 @@ function Auth() {
             '0%': { transform: 'translateX(400px) translateY(-400px)' },
             '100%': { transform: 'translateX(-400px) translateY(400px)' }
           },
-          backgroundImage : 'url("src/assets/auth/asteroid.png")',
+          backgroundImage : 'url("/assets/auth/asteroid.png")',
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
@@ -103,7 +101,7 @@ function Auth() {
             '0%': { transform: 'translateX(400px) translateY(-400px)' },
             '100%': { transform: 'translateX(-400px) translateY(400px)' }
           },
-          backgroundImage : 'url("src/assets/auth/asteroid.png")',
+          backgroundImage : 'url("/assets/auth/asteroid.png")',
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
@@ -121,7 +119,7 @@ function Auth() {
             '0%': { transform: 'translateX(750px) translateY(-650px)' },
             '100%': { transform: 'translateX(-500px) translateY(650px)' }
           },
-          backgroundImage : 'url("src/assets/auth/asteroid.png")',
+          backgroundImage : 'url("/assets/auth/asteroid.png")',
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',

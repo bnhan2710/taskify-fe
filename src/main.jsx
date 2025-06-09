@@ -18,7 +18,7 @@ const persistor = persistStore(store)
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
     <PersistGate persistor={persistor}>
-      <BrowserRouter basename='/'>
+      <BrowserRouter>
         <CssVarsProvider theme = {theme}>
           <ConfirmProvider>
             <CssBaseline />

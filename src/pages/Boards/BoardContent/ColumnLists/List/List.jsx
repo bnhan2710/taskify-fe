@@ -28,13 +28,10 @@ import { selectcurrentActiveBoard, updatecurrentActiveBoard } from '~/redux/acti
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { updateList } from '~/apis'
-import { selectCurrentUser } from '~/redux/user/userSlice'
-import { logCardActivity, ActivityTypes } from '~/utils/activityLogger'
 
 function List({ list, isReadOnly }) {
   const dispatch = useDispatch()
   const board = useSelector(selectcurrentActiveBoard)
-  const currentUser = useSelector(selectCurrentUser)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging
   } = useSortable({ id: list.id, data: { ...list } })
@@ -69,37 +66,21 @@ function List({ list, isReadOnly }) {
       title: newCardTitle.trim(),
       listId: list.id
     }
-
-    try {
-      const createdCard = await addCardAPI(newCardDto)
-      const newBoard = cloneDeep(board)
-      const listUpdated = newBoard.lists.find(list => list.id === newCardDto.listId)
-      if (listUpdated) {
-        if (listUpdated.cards.some(card => card.FE_placeholder)) {
-          listUpdated.cards = [createdCard]
-          listUpdated.cardOrderIds = [createdCard.id]
-        } else {
-          listUpdated.cards.push(createdCard)
-          listUpdated.cardOrderIds.push(createdCard.id)
-        }
+    const createdCard = await addCardAPI(newCardDto)
+    const newBoard = cloneDeep(board)
+    const listUpdated = newBoard.lists.find(list => list.id === newCardDto.listId)
+    if (listUpdated) {
+      if (listUpdated.cards.some(card => card.FE_placeholder)) {
+        listUpdated.cards = [createdCard]
+        listUpdated.cardOrderIds = [createdCard.id]
+      } else {
+        listUpdated.cards.push(createdCard)
+        listUpdated.cardOrderIds.push(createdCard.id)
       }
-      dispatch(updatecurrentActiveBoard(newBoard))
-
-      // Log activity (already logged by backend)
-      // logCardActivity(
-      //   ActivityTypes.CARD_CREATED,
-      //   currentUser.id,
-      //   board.id,
-      //   list.id,
-      //   createdCard.id,
-      //   { cardTitle: createdCard.title }
-      // )
-
-      toggleOpenNewCardForm()
-      setNewCardTitle('')
-    } catch (error) {
-      console.error('Error creating card:', error)
     }
+    dispatch(updatecurrentActiveBoard(newBoard))
+    toggleOpenNewCardForm()
+    setNewCardTitle('')
   }
   const deleteList = async(listId) => {
     // update board state
@@ -187,8 +168,8 @@ function List({ list, isReadOnly }) {
             data-no-dnd = "true"
           />
           <Box>
-            <Tooltip
-              title={!isReadOnly ? 'More options' : ''}
+            <Tooltip 
+              title={!isReadOnly ? "More options" : ""}
               sx={{
                 pointerEvents: isReadOnly ? 'none' : 'auto'
               }}
@@ -296,97 +277,97 @@ function List({ list, isReadOnly }) {
         >
           { !isReadOnly && (
             <>
-              {!openNewCardForm
-                ?<Box sx ={{
+            {!openNewCardForm
+              ?<Box sx ={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}>
+                <Button
+                  startIcon={<AddCardIcon/>} 
+                  onClick={toggleOpenNewCardForm} 
+                  width="100%" 
+                > 
+                  Add a card 
+                </Button>
+                <Tooltip title="Drag to move">
+                  <DragHandleIcon sx={{ cursor:'pointer' }}/>
+                </Tooltip>
+              </Box>:
+              <Box
+                sx={{
                   height: '100%',
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}>
-                  <Button
-                    startIcon={<AddCardIcon/>}
-                    onClick={toggleOpenNewCardForm}
-                    width="100%"
-                  >
-                  Add a card
-                  </Button>
-                  <Tooltip title="Drag to move">
-                    <DragHandleIcon sx={{ cursor:'pointer' }}/>
-                  </Tooltip>
-                </Box>:
-                <Box
+                  alignItems: 'center', // Căn giữa theo chiều dọc
+                  gap: 1,
+                  justifyContent: 'space-between' // Căn đều
+                }}
+              >
+                <TextField
+                  id="outlined-search"
+                  label="Enter card title..."
+                  type="text"
+                  size="small"
+                  variant="outlined"
+                  value={newCardTitle}
+                  onChange={(e) => setNewCardTitle(e.target.value)}
+                  autoFocus
                   sx={{
-                    height: '100%',
-                    display: 'flex',
-                    alignItems: 'center', // Căn giữa theo chiều dọc
-                    gap: 1,
-                    justifyContent: 'space-between' // Căn đều
+                    flex: 1,
+                    '& label': {
+                      color: 'text.primary'
+                    },
+                    '& label.Mui-focused': {
+                      color: (theme) => theme.palette.primary.main
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: (theme) => theme.palette.primary.main
+                      },
+                      '&:hover fieldset': {
+                        borderColor: (theme) => theme.palette.primary.main
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: (theme) => theme.palette.primary.main
+                      }
+                    },
+                    '& .MuiOutlinedInput-input': {
+                      borderRadius: 1
+                    }
                   }}
-                >
-                  <TextField
-                    id="outlined-search"
-                    label="Enter card title..."
-                    type="text"
-                    size="small"
-                    variant="outlined"
-                    value={newCardTitle}
-                    onChange={(e) => setNewCardTitle(e.target.value)}
-                    autoFocus
+                />
+               <Box sx={{ display: 'flex', gap: 0.5 }}>
+                  <Button
+                    className='interceptor-loading'
+                    variant="contained"
+                    color="primary"
+                    onClick={addNewCard}
+                    disabled={!newCardTitle.trim()}
                     sx={{
-                      flex: 1,
-                      '& label': {
-                        color: 'text.primary'
-                      },
-                      '& label.Mui-focused': {
-                        color: (theme) => theme.palette.primary.main
-                      },
-                      '& .MuiOutlinedInput-root': {
-                        '& fieldset': {
-                          borderColor: (theme) => theme.palette.primary.main
-                        },
-                        '&:hover fieldset': {
-                          borderColor: (theme) => theme.palette.primary.main
-                        },
-                        '&.Mui-focused fieldset': {
-                          borderColor: (theme) => theme.palette.primary.main
-                        }
-                      },
-                      '& .MuiOutlinedInput-input': {
-                        borderRadius: 1
+                      textTransform: 'none',
+                      minWidth: '60px'
+                    }}
+                  >
+                    Add
+                  </Button>
+
+                  <Button
+                    size="small"
+                    onClick={toggleOpenNewCardForm}
+                    sx={{
+                      minWidth: '40px',
+                      color: (theme) => theme.palette.grey[600],
+                      '&:hover': {
+                        backgroundColor: (theme) => theme.palette.grey[200]
                       }
                     }}
-                  />
-                  <Box sx={{ display: 'flex', gap: 0.5 }}>
-                    <Button
-                      className='interceptor-loading'
-                      variant="contained"
-                      color="primary"
-                      onClick={addNewCard}
-                      disabled={!newCardTitle.trim()}
-                      sx={{
-                        textTransform: 'none',
-                        minWidth: '60px'
-                      }}
-                    >
-                    Add
-                    </Button>
-
-                    <Button
-                      size="small"
-                      onClick={toggleOpenNewCardForm}
-                      sx={{
-                        minWidth: '40px',
-                        color: (theme) => theme.palette.grey[600],
-                        '&:hover': {
-                          backgroundColor: (theme) => theme.palette.grey[200]
-                        }
-                      }}
-                    >
-                      <CloseIcon fontSize="small" />
-                    </Button>
-                  </Box>
+                  >
+                    <CloseIcon fontSize="small" />
+                  </Button>
                 </Box>
-              }
+              </Box>
+            }
             </>
           )}
         </Box>

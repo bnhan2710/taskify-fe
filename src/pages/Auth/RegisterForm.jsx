@@ -139,7 +139,7 @@ function RegisterForm() {
           <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
             <Typography>Already have an account?</Typography>
             <Link to="/login" style={{ textDecoration: 'none' }}>
-              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' }, color : '#6d73ff' }}>Log in!</Typography>
+              <Typography sx={{ color: '#6d73ff', '&:hover': { color: '#ffbb39' } }}>Log in!</Typography>
             </Link>
           </Box>
         </MuiCard>
