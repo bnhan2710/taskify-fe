@@ -10,6 +10,7 @@ import { selectCurrentUser } from '~/redux/user/userSlice'
 
 function CardActivitySection({ cardComments = [], onAddCardComment }) {
   const currentUser = useSelector(selectCurrentUser)
+
   const handleAddCardComment = (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault()

@@ -198,3 +198,19 @@ export const removeBoardBackgroundAPI = async (boardId) => {
   const response = await authorizedAxiosInstance.delete(`${API_URL}/upload/board-cover/${boardId}`)
   return response.data
 }
+
+// Activity Logs APIs
+export const getBoardActivityLogsAPI = async (boardId, limit = 50) => {
+  const response = await authorizedAxiosInstance.get(`${API_URL}/activities/board/${boardId}?limit=${limit}`)
+  return response.data.data
+}
+
+export const getAllActivityLogsAPI = async (limit = 100) => {
+  const response = await authorizedAxiosInstance.get(`${API_URL}/activities?limit=${limit}`)
+  return response.data.data
+}
+
+export const createActivityLogAPI = async (activityLogDto) => {
+  const response = await authorizedAxiosInstance.post(`${API_URL}/activities`, activityLogDto)
+  return response.data.data
+}

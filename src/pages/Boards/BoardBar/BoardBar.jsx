@@ -95,8 +95,8 @@ function BoardBar({ board }) {
         right: 0,
         zIndex: 100, // Đảm bảo hiển thị trên cùng
         // Background trong suốt
-        backgroundColor: board?.cover 
-          ? 'rgba(0, 0, 0, 0.4)' 
+        backgroundColor: board?.cover
+          ? 'rgba(0, 0, 0, 0.4)'
           : 'rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(8px)',
         ...(isReadOnly && {
@@ -111,7 +111,7 @@ function BoardBar({ board }) {
             zIndex: 10
           },
           '& button:not(.close-button), & input, & textarea, & [role="button"]:not(.close-button-container)': {
-            pointerEvents: 'none',
+            pointerEvents: 'none'
           },
           '& *:not(.close-button):not(.close-button-container)': {
             userSelect: 'none'
@@ -143,7 +143,7 @@ function BoardBar({ board }) {
       <Box sx={{ display: 'flex', alignItems: 'center', gap:2 }}>
         { role === 'Owner' &&
         (<InviteBoardUser
-          isSelected={true} openModal={openInvite} 
+          isSelected={true} openModal={openInvite}
           handleOpenModal={() => setOpenInvite(true)} handleCloseModal={() => setOpenInvite(false)}
           boardId={board.id} boardUsers={board?.boardUsers}/> )}
         <BoardUserGroup boardUsers={board?.boardUsers}/>

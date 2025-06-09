@@ -11,10 +11,13 @@ import { generatePlaceholder } from '~/utils/formatter'
 import { selectcurrentActiveBoard, updatecurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { addListAPI } from '~/apis'
 import { useSelector, useDispatch } from 'react-redux'
+import { selectCurrentUser } from '~/redux/user/userSlice'
+import { logListActivity, ActivityTypes } from '~/utils/activityLogger'
 
 function ColumnLists({ lists, isReadOnly }) {
   const dispatch = useDispatch()
   const board = useSelector(selectcurrentActiveBoard)
+  const currentUser = useSelector(selectCurrentUser)
   const [openNewListForm, setOpenNewListForm] = useState(false)
   const toggleOpenNewListForm = () => setOpenNewListForm(!openNewListForm)
   const [newListTitle, setNewListTitle] = useState('')
@@ -24,25 +27,38 @@ function ColumnLists({ lists, isReadOnly }) {
     const newListDto = {
       title: newListTitle.trim()
     }
-    const createdList = await addListAPI({
-      ...newListDto,
-      boardId: board.id
-    })
 
-    createdList.cards = [generatePlaceholder(createdList)]
-    createdList.cardOrderIds = [generatePlaceholder(createdList).id]
+    try {
+      const createdList = await addListAPI({
+        ...newListDto,
+        boardId: board.id
+      })
 
-    // const newBoard = { ...board }
-    const newBoard = cloneDeep(board)
-    // console.log(createdList)
-    newBoard.lists.push(createdList)
-    if (!newBoard.listOrderIds) {
-      newBoard.listOrderIds = []
+      createdList.cards = [generatePlaceholder(createdList)]
+      createdList.cardOrderIds = [generatePlaceholder(createdList).id]
+
+      const newBoard = cloneDeep(board)
+      newBoard.lists.push(createdList)
+      if (!newBoard.listOrderIds) {
+        newBoard.listOrderIds = []
+      }
+      newBoard.listOrderIds.push(createdList.id)
+      dispatch(updatecurrentActiveBoard(newBoard))
+
+      // Log activity (this is already logged by backend, but keeping for consistency)
+      // logListActivity(
+      //   ActivityTypes.LIST_CREATED,
+      //   currentUser.id,
+      //   board.id,
+      //   createdList.id,
+      //   { listTitle: createdList.title }
+      // )
+
+      setNewListTitle('')
+      toggleOpenNewListForm()
+    } catch (error) {
+      console.error('Error creating list:', error)
     }
-    newBoard.listOrderIds.push(createdList.id)
-    dispatch(updatecurrentActiveBoard(newBoard))
-    setNewListTitle('')
-    toggleOpenNewListForm()
   }
 
 
@@ -65,85 +81,85 @@ function ColumnLists({ lists, isReadOnly }) {
         {/* Add New List Button or Form */}
         { !isReadOnly && (
           <>
-          {!openNewListForm ? (
-            <Box
-              onClick={toggleOpenNewListForm}
-              sx={{
-                minWidth: '250px',
-                maxWidth: '300px',
-                mx: 2,
-                borderRadius: '6px',
-                height: 'fit-content',
-                bgcolor: '#ffffff5d'
-              }}
-            >
-              <Button
-                startIcon={<AddIcon />}
+            {!openNewListForm ? (
+              <Box
+                onClick={toggleOpenNewListForm}
                 sx={{
-                  color: 'white',
-                  width: '100%',
-                  justifyContent: 'flex-start',
-                  pl: 2.5,
-                  py: 1
+                  minWidth: '250px',
+                  maxWidth: '300px',
+                  mx: 2,
+                  borderRadius: '6px',
+                  height: 'fit-content',
+                  bgcolor: '#ffffff5d'
                 }}
               >
+                <Button
+                  startIcon={<AddIcon />}
+                  sx={{
+                    color: 'white',
+                    width: '100%',
+                    justifyContent: 'flex-start',
+                    pl: 2.5,
+                    py: 1
+                  }}
+                >
                 Add another list
-              </Button>
-            </Box>
-          ) : (
-            <Box
-              sx={{
-                minWidth: '250px',
-                maxWidth: '300px',
-                mx: 2,
-                p: 1,
-                borderRadius: '6px',
-                height: 'fit-content',
-                bgcolor: '#ffffff5d',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 1
-              }}
-            >
-              <TextField
-                id="outlined-search"
-                label="Enter list title..."
-                type="text"
-                size="small"
-                variant="outlined"
-                value={newListTitle}
-                onChange={(e) => setNewListTitle(e.target.value)}
-                autoFocus
-                sx={{
-                  '& label': { color: 'white' },
-                  '& input': { color: 'white' },
-                  '& label.Mui-focused': { color: 'white' },
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': { borderColor: 'white' },
-                    '&:hover fieldset': { borderColor: 'white' },
-                    '&.Mui-focused fieldset': { borderColor: 'white' }
-                  }
-                }}
-              />
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={addNewList}
-                  disabled={!newListTitle.trim()}
-                >
-                  Add List
-                </Button>
-                <Button
-                  startIcon={<CloseIcon />}
-                  onClick={toggleOpenNewListForm}
-                  sx={{ color: 'white' }}
-                >
-                  Cancel
                 </Button>
               </Box>
-            </Box>
-          )}
+            ) : (
+              <Box
+                sx={{
+                  minWidth: '250px',
+                  maxWidth: '300px',
+                  mx: 2,
+                  p: 1,
+                  borderRadius: '6px',
+                  height: 'fit-content',
+                  bgcolor: '#ffffff5d',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1
+                }}
+              >
+                <TextField
+                  id="outlined-search"
+                  label="Enter list title..."
+                  type="text"
+                  size="small"
+                  variant="outlined"
+                  value={newListTitle}
+                  onChange={(e) => setNewListTitle(e.target.value)}
+                  autoFocus
+                  sx={{
+                    '& label': { color: 'white' },
+                    '& input': { color: 'white' },
+                    '& label.Mui-focused': { color: 'white' },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': { borderColor: 'white' },
+                      '&:hover fieldset': { borderColor: 'white' },
+                      '&.Mui-focused fieldset': { borderColor: 'white' }
+                    }
+                  }}
+                />
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={addNewList}
+                    disabled={!newListTitle.trim()}
+                  >
+                  Add List
+                  </Button>
+                  <Button
+                    startIcon={<CloseIcon />}
+                    onClick={toggleOpenNewListForm}
+                    sx={{ color: 'white' }}
+                  >
+                  Cancel
+                  </Button>
+                </Box>
+              </Box>
+            )}
           </>
         )}
       </Box>

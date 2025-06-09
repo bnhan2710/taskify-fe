@@ -46,11 +46,11 @@ function ChangeBackgroundModal({ open, onClose, board }) {
     }
 
     setUploading(true)
-    
+
     try {
       const formData = new FormData()
       formData.append('boardCover', file)
-    
+
       await uploadBoardBackgroundAPI(board.id, formData)
       dispatch(fetchBoardDetailAPI(board.id))
       navigate('/boards/' + board.id)

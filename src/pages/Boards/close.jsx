@@ -6,7 +6,7 @@ import CancelIcon from '@mui/icons-material/Cancel'
 import RestoreIcon from '@mui/icons-material/Restore'
 import Button from '@mui/material/Button'
 import { toast } from 'react-toastify'
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
 import Pagination from '@mui/material/Pagination'
 import Stack from '@mui/material/Stack'
@@ -95,18 +95,18 @@ function SidebarViewClosedBoardsModal({ afterReopenBoard }) {
       }
     }).then(() => {
       removeBoardAPI(boardId)
-      .then(() => {
-        const updatedBoards = boards.filter(board => board.id !== boardId)
-        setBoards(updatedBoards)
-        setTotalBoards(prevTotal => prevTotal - 1)
-        const totalPages = Math.ceil(updatedBoards.length / ITEMS_PER_PAGE)
-        if (page > 1 && page > totalPages) {
-          setPage(page - 1)
-        }
-        toast.success('Board deleted successfully!')
-      })
+        .then(() => {
+          const updatedBoards = boards.filter(board => board.id !== boardId)
+          setBoards(updatedBoards)
+          setTotalBoards(prevTotal => prevTotal - 1)
+          const totalPages = Math.ceil(updatedBoards.length / ITEMS_PER_PAGE)
+          if (page > 1 && page > totalPages) {
+            setPage(page - 1)
+          }
+          toast.success('Board deleted successfully!')
+        })
     })
-    .catch(() => {})
+      .catch(() => {})
   }
 
   return (
@@ -131,11 +131,11 @@ function SidebarViewClosedBoardsModal({ afterReopenBoard }) {
           outline: 0,
           p: 3,
           backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : 'white',
-          display: 'flex',  
+          display: 'flex',
           flexDirection: 'column',
-          overflowY: 'auto',
+          overflowY: 'auto'
         }}>
-          <Box sx={{ 
+          <Box sx={{
             position: 'sticky',
             top: 0,
             bgcolor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : 'white',
@@ -143,23 +143,23 @@ function SidebarViewClosedBoardsModal({ afterReopenBoard }) {
             py: 2,
             borderBottom: '1px solid #ddd'
           }}>
-            <Box sx={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
+            <Box sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
               alignItems: 'center',
-              gap: 1 
+              gap: 1
             }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <InventoryIcon fontSize="small" color="action" />
-                  <Typography variant="h6">
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <InventoryIcon fontSize="small" color="action" />
+                <Typography variant="h6">
                     Closed Boards
-                  </Typography>
-                </Box>
-                <CancelIcon onClick={handleCloseModal} sx={{ cursor: 'pointer' }} color="error" />
+                </Typography>
+              </Box>
+              <CancelIcon onClick={handleCloseModal} sx={{ cursor: 'pointer' }} color="error" />
             </Box>
           </Box>
 
-          <Box sx={{ 
+          <Box sx={{
             flex: 1,
             py: 2
           }}>

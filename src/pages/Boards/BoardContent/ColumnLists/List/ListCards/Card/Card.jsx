@@ -5,8 +5,8 @@ import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import CommentIcon from '@mui/icons-material/Comment'
-import PeopleIcon from '@mui/icons-material/People';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import PeopleIcon from '@mui/icons-material/People'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useDispatch, useSelector } from 'react-redux'
@@ -75,12 +75,12 @@ function Card({ card }) {
       </CardContent>
       {shouldShowCardActions() && <CardActions sx={{ p: '0 4px 8px 4px' }} >
         {!!cardState.comments?.length
-          && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<CommentIcon sx={{ color:"blueviolet"}}/>}>{cardState.comments.length}</Button>}
+          && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<CommentIcon sx={{ color:'blueviolet' }}/>}>{cardState.comments.length}</Button>}
         {!!cardState.members?.length
           && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<PeopleIcon/>}>{cardState.members.length}</Button>}
         {!!cardState.checklists?.length
-          && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<CheckCircleIcon sx={{ color:"greenyellow" }}/>}>
-            { cardState.checklists.filter(item => item.isDone).length + "/" + cardState.checklists.length}
+          && <Button sx ={{ mr: 0.5 }} variant="text" color="inherit" size="small" startIcon={<CheckCircleIcon sx={{ color:'greenyellow' }}/>}>
+            { cardState.checklists.filter(item => item.isDone).length + '/' + cardState.checklists.length}
           </Button>}
       </CardActions> }
     </MuiCard>
