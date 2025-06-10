@@ -41,13 +41,20 @@ function LoginForm() {
       {
         pending: 'Login in progress...'
       }).then((res) => {
-      if (!res.error) {
+      console.log('Login response in component:', res)
+      // Check if the action was fulfilled
+      if (res.type === 'user/loginUserAPI/fulfilled') {
         toast.success('Login successful!')
         navigate('/')
       }
-      else {
-        toast.error('Username or password is incorrect')
+      else if (res.type === 'user/loginUserAPI/rejected') {
+        // Handle login error
+        const errorMessage = res.payload?.message || res.payload || 'Username or password is incorrect'
+        toast.error(errorMessage)
       }
+    }).catch((error) => {
+      console.error('Login promise error:', error)
+      toast.error('An unexpected error occurred')
     })
   }
 

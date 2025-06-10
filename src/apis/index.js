@@ -154,7 +154,17 @@ export const updateNotificationAPI = async (notificationId, status) => {
 }
 
 export const removeUserFromBoardAPI = async (boardId, userId) => {
-  const response = await authorizedAxiosInstance.delete(`${API_URL}/boards/${boardId}/member/`, { userId })
+  const response = await authorizedAxiosInstance.delete(`${API_URL}/boards/${boardId}/member/${userId}`)
+  return response.data
+}
+
+export const quitBoardAPI = async (boardId) => {
+  const response = await authorizedAxiosInstance.delete(`${API_URL}/boards/${boardId}/quit`)
+  return response.data
+}
+
+export const changeUserRoleInBoardAPI = async (boardId, data) => {
+  const response = await authorizedAxiosInstance.put(`${API_URL}/boards/${boardId}/member/change-role`, data)
   return response.data
 }
 

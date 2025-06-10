@@ -23,7 +23,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ChangeBackgroundModal from '~/components/Form/ChangeBackgroundModal'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { closeBoardAPI, updateBoard, removeBoardBackgroundAPI, getBoardActivityLogsAPI } from '~/apis'
+import { closeBoardAPI, updateBoard, removeBoardBackgroundAPI, getBoardActivityLogsAPI, quitBoardAPI } from '~/apis'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { updatecurrentActiveBoard, selectcurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
@@ -137,6 +137,45 @@ export default function BoardSideBar ({ open, onClose, board }) {
     })
   }
 
+  const handleQuitBoard = () => {
+    confirm({
+      title: 'Quit this board?',
+      description: 'Are you sure you want to leave this board? You will lose access to all cards and lists.',
+      confirmationText: 'Yes, quit board',
+      confirmationButtonProps: {
+        variant: 'contained',
+        color: 'error'
+      },
+      cancellationText: 'Cancel',
+      cancellationButtonProps: {
+        variant: 'contained',
+        color: 'primary'
+      }
+    }).then(() => {
+      quitBoardAPI(currentBoard.id)
+        .then(() => {
+          // Log activity
+          logBoardActivity(
+            ActivityTypes.BOARD_UPDATED,
+            currentUser.id,
+            currentBoard.id,
+            { 
+              action: 'user_quit', 
+              boardTitle: currentBoard.title,
+              userName: currentUser.displayName || currentUser.username
+            }
+          )
+          toast.success(`Successfully left the board: ${currentBoard.title}`)
+          dispatch(updatecurrentActiveBoard(null))
+          navigate('/boards')
+        })
+        .catch((error) => {
+          toast.error(error?.response?.data?.message || 'Failed to quit board')
+        })
+    }).catch(() => {
+    })
+  }
+
   const handleDeleteWallpaper = () => {
     confirm({
       title: 'Delete Wallpaper?',
@@ -224,6 +263,9 @@ export default function BoardSideBar ({ open, onClose, board }) {
     switch (label) {
     case 'Close this board':
       handleDeleteBoard()
+      break
+    case 'Quit this board':
+      handleQuitBoard()
       break
     case 'Share':
       // handleShare()

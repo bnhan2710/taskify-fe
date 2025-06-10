@@ -46,9 +46,13 @@ authorizedAxiosInstance.interceptors.response.use(
   },
   async error => {
     const config = error.config
+    
+    // Don't interfere with login/auth requests - let them handle their own errors
     if (config.url.includes('/login') || config.url.includes('/auth/login')) {
-      return config
+      interceptorLoadingElements(false)
+      return Promise.reject(error)
     }
+    
     interceptorLoadingElements(false)
     const originalRequest = error.config
     if (error.response?.status === 401 && !originalRequest._retry && error.response?.data.status === 'TokenExpired') {

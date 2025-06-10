@@ -9,7 +9,7 @@ import TextField from '@mui/material/TextField'
 import { useForm } from 'react-hook-form'
 import { EMAIL_RULE, FIELD_REQUIRED_MESSAGE, EMAIL_RULE_MESSAGE } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
-import { inviteUserToBoardAPI, removeUserFromBoardAPI } from '~/apis'
+import { inviteUserToBoardAPI, removeUserFromBoardAPI, changeUserRoleInBoardAPI } from '~/apis'
 import { toast } from 'react-toastify'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
@@ -25,13 +25,26 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import IconButton from '@mui/material/IconButton'
+import CircularProgress from '@mui/material/CircularProgress'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
 
-function InviteBoardUser({ isSelected, openModal, handleOpenModal, handleCloseModal, boardId, boardUsers = [] }) {
+function InviteBoardUser({ isSelected, openModal, handleOpenModal, handleCloseModal, boardId, boardUsers = [], onBoardUsersUpdate }) {
   const [tabValue, setTabValue] = useState('email')
   const [role, setRole] = useState('Member')
   const [isInviting, setIsInviting] = useState(false)
   const [isRemoving, setIsRemoving] = useState(false)
+  const [changingRoleUserId, setChangingRoleUserId] = useState(null)
   const [currentBoardUsers, setCurrentBoardUsers] = useState(boardUsers)
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    userId: null,
+    newRole: null,
+    userName: ''
+  })
 
   useEffect(() => {
     setCurrentBoardUsers(boardUsers)
@@ -44,6 +57,19 @@ function InviteBoardUser({ isSelected, openModal, handleOpenModal, handleCloseMo
   const handleRemoveUser = async (userId) => {
     if (isRemoving) return
 
+    // Tránh xóa chính mình
+    if (userId === currentUser?.id) {
+      toast.error('You cannot remove yourself from the board')
+      return
+    }
+
+    // Tránh xóa Owner
+    const userToRemove = currentBoardUsers.find(user => user.id === userId)
+    if (userToRemove?.role === 'Owner') {
+      toast.error('Cannot remove board owner')
+      return
+    }
+
     try {
       setIsRemoving(true)
 
@@ -54,11 +80,83 @@ function InviteBoardUser({ isSelected, openModal, handleOpenModal, handleCloseMo
 
       toast.success('User removed from board successfully')
     } catch (error) {
-      console.error('Error removing user from board:', error)
       toast.error(error?.response?.data?.message || 'Error removing user from board')
     } finally {
       setIsRemoving(false)
     }
+  }
+
+  const handleRoleChangeRequest = (userId, newRole, userName) => {
+    if (changingRoleUserId) return
+
+    // Tránh thay đổi role của chính mình
+    if (userId === currentUser?.id) {
+      toast.error('You cannot change your own role')
+      return
+    }
+
+    // Tránh thay đổi role của Owner
+    const userToChange = currentBoardUsers.find(user => user.id === userId)
+    if (userToChange?.role === 'Owner') {
+      toast.error('Cannot change owner role')
+      return
+    }
+
+    // Hiển thị dialog xác nhận
+    setConfirmDialog({
+      open: true,
+      userId,
+      newRole,
+      userName
+    })
+  }
+
+  const handleRoleChangeConfirm = async () => {
+    const { userId, newRole } = confirmDialog
+    
+    try {
+      setChangingRoleUserId(userId)
+
+      await changeUserRoleInBoardAPI(boardId, { 
+        userId, 
+        roleId: newRole 
+      })
+
+      // Update local state to immediately reflect the change
+      setCurrentBoardUsers(prevUsers => 
+        prevUsers.map(user => 
+          user.id === userId 
+            ? { ...user, role: newRole } 
+            : user
+        )
+      )
+
+      toast.success('User role changed successfully')
+      
+      // Call callback to update parent component if needed
+      if (onBoardUsersUpdate) {
+        onBoardUsersUpdate()
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Error changing user role')
+    } finally {
+      setChangingRoleUserId(null)
+      setConfirmDialog({
+        open: false,
+        userId: null,
+        newRole: null,
+        userName: ''
+      })
+    }
+  }
+
+  const handleConfirmDialogClose = () => {
+    setConfirmDialog({
+      open: false,
+      userId: null,
+      newRole: null,
+      userName: ''
+    })
   }
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm()
@@ -119,7 +217,6 @@ function InviteBoardUser({ isSelected, openModal, handleOpenModal, handleCloseMo
                 <TabList onChange={handleChangeTab}>
                   <Tab label="Email" value="email" />
                   <Tab label="Board members" value="members" />
-                  <Tab label="Join requests" value="requests" />
                 </TabList>
               </Box>
 
@@ -187,7 +284,7 @@ function InviteBoardUser({ isSelected, openModal, handleOpenModal, handleCloseMo
                         <Box>
                           <Typography variant="subtitle1">
                             {user.displayName || user.username || 'Unknown User'}
-                            {user.username === currentUser.username && <strong> <span style={{ color: 'green' }}> (You)</span> </strong>}
+                            {user.id === currentUser.id && <strong> <span style={{ color: 'green' }}> (You)</span> </strong>}
                           </Typography>
                           <Typography variant="caption" color="texzt.secondary">
                             {user.email || (user.username && '@' + user.username) || ''}
@@ -198,12 +295,16 @@ function InviteBoardUser({ isSelected, openModal, handleOpenModal, handleCloseMo
                       <FormControl size="small" sx={{ minWidth: 120 }}>
                         <Select
                           value={user.role}
-                          disabled={ user.role === 'Owner'}
+                          disabled={user.role === 'Owner' || changingRoleUserId === user.id}
+                          onChange={(e) => handleRoleChangeRequest(user.id, e.target.value, user.displayName || user.username)}
                         >
                           <MenuItem value="Owner">Owner</MenuItem>
                           <MenuItem value="Member">Member</MenuItem>
                           <MenuItem value="Guest">Guest</MenuItem>
                         </Select>
+                        {changingRoleUserId === user.id && (
+                          <CircularProgress size={16} sx={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)' }} />
+                        )}
                       </FormControl>
 
                       <IconButton
@@ -228,6 +329,36 @@ function InviteBoardUser({ isSelected, openModal, handleOpenModal, handleCloseMo
           </Box>
         </Box>
       </Modal>
+
+      {/* Confirmation Dialog for Role Change */}
+      <Dialog
+        open={confirmDialog.open}
+        onClose={handleConfirmDialogClose}
+        aria-labelledby="role-change-dialog-title"
+        aria-describedby="role-change-dialog-description"
+      >
+        <DialogTitle id="role-change-dialog-title">
+          Confirm Role Change
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="role-change-dialog-description">
+            Are you sure you want to change {confirmDialog.userName}&apos;s role to {confirmDialog.newRole}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirmDialogClose} disabled={changingRoleUserId}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleRoleChangeConfirm} 
+            autoFocus 
+            disabled={changingRoleUserId}
+            variant="contained"
+          >
+            {changingRoleUserId ? <CircularProgress size={20} /> : 'Confirm'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }

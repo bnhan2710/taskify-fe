@@ -113,10 +113,6 @@ function Boards() {
                 <ListAltIcon fontSize="small" />
                 Templates
               </SidebarItem>
-              <SidebarItem>
-                <HomeIcon fontSize="small" />
-                Home
-              </SidebarItem>
               <Divider sx={{ my: 1 }} />
               <SidebarCreateBoardModal afterCreateBoard={afterCreateBoard} />
               <SidebarViewClosedBoardsModal board={boards} afterReopenBoard={afterCreateBoard} />
