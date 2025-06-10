@@ -45,7 +45,7 @@ function BoardBar({ board }) {
   const role = currentBoard?.boardUsers?.find((user) => user.id === currentUser.id)?.role
   const isBoardMember = board?.boardUsers?.some(user => user.id === currentUser.id)
   const isPublicBoard = board?.type === 'public'
-  const isReadOnly = isPublicBoard && !isBoardMember
+  const isReadOnly = ( isPublicBoard && !isBoardMember ) || role === 'Guest'
   const isCurrentlyPublic = board?.type === 'public'
   const targetType = isCurrentlyPublic ? 'private' : 'public'
   const targetTypeLabel = isCurrentlyPublic ? 'Private' : 'Public'
@@ -131,7 +131,7 @@ function BoardBar({ board }) {
           icon={<VpnLockIcon />}
           label= {capitalizeFirstLetter(board?.type)}
           clickable
-          onClick={handleToggleBoardType}
+          onClick={role === 'Owner' ? handleToggleBoardType : undefined} 
         />
         <Chip
           sx={MENU_STYLES}

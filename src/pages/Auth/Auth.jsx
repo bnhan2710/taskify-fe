@@ -4,6 +4,10 @@ import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
+import rocketImg from '~/assets/auth/rocket.png'
+import personImg from '~/assets/auth/person.png'
+import asteroidImg from '~/assets/auth/asteroid.png'
+import particlesImg from '~/assets/404/particles.png'
 
 function Auth() {
   const location = useLocation()
@@ -31,7 +35,7 @@ function Auth() {
         animation: 'stars 12s linear infinite alternate',
         width: '100%',
         height: '100%',
-        backgroundImage: 'url("/assets/404/particles.png")',
+        backgroundImage: `url(${particlesImg})`,
         backgroundSize: 'contain',
         backgroundRepeat: 'repeat',
         backgroundPosition: 'center',
@@ -44,7 +48,7 @@ function Auth() {
           position : 'absolute',
           top : '30%',
           left : '10%',
-          backgroundImage : 'url("/assets/auth/person.png")',
+          backgroundImage: `url(${personImg})`,
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
@@ -65,7 +69,7 @@ function Auth() {
             '75%': { transform: 'rotate(270deg) translateX(200px) rotate(-180deg)' },
             '100%': { transform: 'rotate(360deg) translateX(200px) rotate(-180deg)' }
           },
-          backgroundImage : 'url("/assets/auth/rocket.png")',
+          backgroundImage: `url(${rocketImg})`,
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
@@ -83,7 +87,7 @@ function Auth() {
             '0%': { transform: 'translateX(400px) translateY(-400px)' },
             '100%': { transform: 'translateX(-400px) translateY(400px)' }
           },
-          backgroundImage : 'url("/assets/auth/asteroid.png")',
+          backgroundImage: `url(${asteroidImg})`,
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
@@ -101,7 +105,7 @@ function Auth() {
             '0%': { transform: 'translateX(400px) translateY(-400px)' },
             '100%': { transform: 'translateX(-400px) translateY(400px)' }
           },
-          backgroundImage : 'url("/assets/auth/asteroid.png")',
+          backgroundImage: `url(${asteroidImg})`,
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
@@ -119,7 +123,7 @@ function Auth() {
             '0%': { transform: 'translateX(750px) translateY(-650px)' },
             '100%': { transform: 'translateX(-500px) translateY(650px)' }
           },
-          backgroundImage : 'url("/assets/auth/asteroid.png")',
+          backgroundImage: `url(${asteroidImg})`,
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',

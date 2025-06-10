@@ -83,9 +83,10 @@ function ActiveCard() { const dispatch = useDispatch()
   const activeCard = useSelector(selectCurrentActiveCard)
   const board = useSelector(selectcurrentActiveBoard)
   const currentUser = useSelector(selectCurrentUser)
+  const role = board?.boardUsers?.find((user) => user.id === currentUser.id)?.role
   const isBoardMember = board?.boardUsers?.some(user => user.id === currentUser.id)
   const isPublicBoard = board?.type === 'public'
-  const isReadOnly = isPublicBoard && !isBoardMember
+  const isReadOnly = ( isPublicBoard && !isBoardMember ) || role === 'Guest'
   const confirmDelete = useConfirm()
   const [checklistAnchorEl, setChecklistAnchorEl] = useState(null)
   const handleCloseModal = () => {

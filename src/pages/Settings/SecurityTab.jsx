@@ -18,8 +18,9 @@ import { FIELD_REQUIRED_MESSAGE, PASSWORD_RULE, PASSWORD_RULE_MESSAGE } from '~/
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import { useForm } from 'react-hook-form'
 import { useConfirm } from 'material-ui-confirm'
-import { channgePasswordAPI } from '~/apis'
+import { changePasswordAPI } from '~/apis'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 
 
 function PasswordStrengthIndicator({ password }) {
@@ -64,6 +65,7 @@ function SecurityTab() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm()
   const confirmChangePassword = useConfirm()
   const [newPassword, setNewPassword] = useState('')
+  const navigate = useNavigate()
 
   const submitChangePassword = (data) => {
     confirmChangePassword({
@@ -73,26 +75,23 @@ function SecurityTab() {
       description: 'Are you sure you want to change your password?',
       confirmationText: 'Confirm',
       cancellationText: 'Cancel'
-    }).then(() => {
+    }).then(async () => {
       const { current_password, new_password } = data
       const changePasswordDto = {
         currentPassword: current_password,
         newPassword: new_password
       }
-      channgePasswordAPI(changePasswordDto)
-        .then((res) => {
-          if (res.status === 200) {
-            toast.success('Password changed successfully!')
-          } else {
-            toast.error(res.data.message)
-          }
-        }
-        ).catch((err) => {
-          toast.error(err.response?.data?.message || 'Failed to change password')
-        }
-        )
+      changePasswordAPI(changePasswordDto)
+      .then(() => {
+        navigate('/login')
+        toast.success('Password changed successfully')
+      }).catch((error) => {
+        console.error('Change password error:', error)
+        toast.error('Failed to change password')
+    })
     }).catch(() => {})
   }
+  
 
   return (
     <Box sx={{

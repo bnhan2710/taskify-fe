@@ -95,9 +95,10 @@ function BoardContent({
     sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.5' } } })
   }
   const currentUser = useSelector(selectCurrentUser)
+  const role = board?.boardUsers?.find((user) => user.id === currentUser.id)?.role
   const isBoardMember = board?.boardUsers?.some(user => user.id === currentUser.id)
   const isPublicBoard = board?.type === 'public'
-  const isReadOnly = isPublicBoard && !isBoardMember
+  const isReadOnly = ( isPublicBoard && !isBoardMember ) || role === 'Guest'
   const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 }, enabled: !isReadOnly })
   const sensors = isReadOnly ? useSensors(null) : useSensors(pointerSensor)
 

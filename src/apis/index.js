@@ -115,7 +115,7 @@ export const cardMemberAPI = async (cardId, memberDto) => {
   return response.data.data
 }
 
-export const channgePasswordAPI = async ( changePassword ) => {
+export const changePasswordAPI = async ( changePassword ) => {
   const response = await authorizedAxiosInstance.put(`${API_URL}/auth/change-password`, changePassword)
   return response.data.data
 }
