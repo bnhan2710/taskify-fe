@@ -115,7 +115,7 @@ export const cardMemberAPI = async (cardId, memberDto) => {
   return response.data.data
 }
 
-export const changePasswordAPI = async ( changePassword ) => {
+export const channgePasswordAPI = async ( changePassword ) => {
   const response = await authorizedAxiosInstance.put(`${API_URL}/auth/change-password`, changePassword)
   return response.data.data
 }
@@ -155,11 +155,6 @@ export const updateNotificationAPI = async (notificationId, status) => {
 
 export const removeUserFromBoardAPI = async (boardId, userId) => {
   const response = await authorizedAxiosInstance.delete(`${API_URL}/boards/${boardId}/member/${userId}`)
-  return response.data
-}
-
-export const quitBoardAPI = async (boardId) => {
-  const response = await authorizedAxiosInstance.delete(`${API_URL}/boards/${boardId}/quit`)
   return response.data
 }
 
